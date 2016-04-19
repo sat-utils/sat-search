@@ -58,3 +58,7 @@ class Tests(unittest.TestCase):
         query = {'scene_id': 'some unknown scene', 'limit': 1}
         with self.assertRaises(SatSearchError):
             r = Search.query(**query)
+
+
+if __name__ == '__main__':
+    unittest.main()
