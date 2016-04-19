@@ -4,7 +4,7 @@ sat-search
 .. image:: https://travis-ci.org/sat-utils/sat-search.svg?branch=master
     :target: https://travis-ci.org/sat-utils/sat-search
 
-A python wrapper for sat-api
+A python SDK for sat-api
 
 
 Installation
