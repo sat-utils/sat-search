@@ -1,8 +1,8 @@
 sat-search
 ++++++++++++++
 
-.. image:: https://travis-ci.org/sat-utils/sat-download.svg?branch=master
-    :target: https://travis-ci.org/sat-utils/sat-download
+.. image:: https://travis-ci.org/sat-utils/sat-search.svg?branch=master
+    :target: https://travis-ci.org/sat-utils/sat-search
 
 A python wrapper for sat-api
 
