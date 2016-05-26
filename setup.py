@@ -23,7 +23,7 @@ setup(
     description='A python wrapper for sat-api',
     long_description=long_description,
     url='https://github.com/sat-utils/sat-search',
-    license='CC0',
+    license='MIT',
     classifiers=[
         'Framework :: Pytest',
         'Topic :: Scientific/Engineering :: GIS',
