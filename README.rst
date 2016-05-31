@@ -44,3 +44,7 @@ Example
   >>> results.scenes[0].cloud_coverage
   46.24
 
+
+About
+=====
+Sat Download was made by `Development Seed <http://developmentseed.org>`_.
