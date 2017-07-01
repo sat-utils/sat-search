@@ -18,9 +18,9 @@ install_requires = [x.strip() for x in all_reqs if 'git+' not in x]
 dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' not in x]
 
 setup(
-    name='ssearch',
+    name='satsearch',
     version=__version__,
-    description='A python wrapper for sat-api',
+    description='A python client for sat-api',
     long_description=long_description,
     url='https://github.com/sat-utils/sat-search',
     license='MIT',
