@@ -19,7 +19,7 @@ class Scene(object):
         """ Initialize a scene object """
         self.metadata = kwargs
         required = ['scene_id', 'date', 'data_geometry', 'download_links']
-        logger.debug(kwargs)
+        logger.debug('Creating Scene object with', kwargs)
         if not set(required).issubset(kwargs.keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
         # TODO - check validity of date and geometry, at least one download link
@@ -57,15 +57,16 @@ class Scene(object):
         # download
         return fname
 
-    def get(self, key, path=''):
+    def get(self, key, source=_DEFAULT_SOURCE, path=''):
         """ Download this key (e.g., a band, or metadata file) from the scene """
-        url = self.download_links()[key]
+        url = self.download_links(source)[key]
         fname = os.path.join(path, os.path.basename(url))
         return self.get_file(url, fname)
 
     def get_all(self, source=_DEFAULT_SOURCE, path=''):
         """ Download all files """
-        fnames = {key: self.download(key, path=path) for key in self.files}
+        links = self.download_links(source=source)
+        fnames = {key: self.get(key, source=source, path=path) for key in links}
         return fnames
 
     def get_file(self, url, filename):
