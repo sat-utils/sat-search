@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
-from codecs import open
+from imp import load_source
 from os import path
 
-__version__ = '0.1.0'
+__version__ = load_source('satsearch.version', 'satsearch/version.py').__version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -19,6 +19,7 @@ dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' no
 
 setup(
     name='satsearch',
+    author='Matthew Hanson (matthewhanson)',
     version=__version__,
     description='A python client for sat-api',
     long_description=long_description,
@@ -39,10 +40,8 @@ setup(
     keywords='',
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
-    author='Alireza J (scisco)',
     install_requires=install_requires,
     dependency_links=dependency_links,
-    author_email='alireza@developmentseed.org',
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
 )
