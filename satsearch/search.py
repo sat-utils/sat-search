@@ -1,4 +1,12 @@
+import os
+import logging
 import requests
+from satsearch.scene import Scene
+
+logger = logging.getLogger(__name__)
+
+
+SAT_API = os.getenv('SAT_API', 'https://api.developmentseed.org/satellites')
 
 
 class SatSearchError(Exception):
@@ -8,63 +16,45 @@ class SatSearchError(Exception):
 class Search(object):
     """ A single search to sat-api """
 
-    end_point = 'https://3u27f95avd.execute-api.us-east-1.amazonaws.com/dev/'
-    default_limit = 100
+    _DEFAULT_LIMIT = 100
 
-    """ Initialize a query object with parameters """
+    def __init__(self, **kwargs):
+        """ Initialize a query object with parameters """
+        self.kwargs = kwargs
+        self.results = None
 
-    @classmethod
-    def query(cls, **kwargs):
+    def found(self):
+        """ Small query to determine total number of hits """
+        if self.results is None:
+            self._query(limit=0)
+        return self.results['meta']['found']
 
-        if 'limit' not in kwargs:
-            kwargs['limit'] = cls.default_limit
+    def _query(self, **kwargs):
+        """ Make single query """
+        kwargs.update(self.kwargs)
+        response = requests.get(SAT_API, kwargs)
 
-        r = requests.get(cls.end_point, params=kwargs)
-        out = r.json()
+        # API error
+        if response.status_code != 200:
+            raise SatSearchError(response.message)
 
-        if r.status_code != 200:
-            raise SatSearchError(out.message)
+        self.results = response.json()
+        logger.debug(self.results['meta'])
+        return self.results
 
-        if r.status_code == 200:
-            meta = out['meta']
-            results = Results(kwargs, meta['found'], meta['limit'], meta['page'])
+    def query(self, limit=10):
+        """ Query and return up to limit results """
+        if limit < 0:
+            limit = self.found()
+        limit = min(limit, self.found())
+        page_size = min(limit, 1000)
 
-            if results.found > 0:
-                for result in out['results']:
-                    results.add(Scene(
-                        scene_id=result.pop('scene_id'),
-                        satellite_name=result.pop('satellite_name'),
-                        cloud_coverage=result.pop('cloud_coverage'),
-                        date=result.pop('date'),
-                        thumbnail=result.pop('thumbnail'),
-                        data_geometry=result.pop('data_geometry'),
-                        **result
-                    ))
-            else:
-                raise SatSearchError('No results were found')
-
-            return results
-
-
-class Results(object):
-
-    def __init__(self, query, found, limit, page, **kwargs):
-
-        self.query = query
-        self.found = found
-        self.limit = limit
-        self.page = page
         self.scenes = []
+        page = 1
+        while len(self.scenes) < limit:
+            results = self._query(page=page, limit=page_size)['results']
 
-    @property
-    def returned(self):
-        return len(self.scenes)
+            self.scenes += [Scene(**r) for r in results]
+            page += 1
 
-    def add(self, result):
-        assert isinstance(result, Scene)
-        self.scenes.append(result)
-
-    def __repr__(self):
-        return '%s results for %s' % (self.returned, self.query)
-
-
+        return self.scenes

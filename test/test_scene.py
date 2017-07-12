@@ -18,8 +18,7 @@ class TestScene(unittest.TestCase):
         'scene_id': 'testscene',
         'date': '2017-01-01',
         'data_geometry': {},
-        'thumbnail': 'http://earthexplorer.usgs.gov/browse/landsat_8/2016/007/029/'
-                     'LC08_L1TP_007029_20160827_20170321_01_T1.jpg',
+        'thumbnail': '%sthumb_large.jpg' % prefix['aws_s3'],
         'download_links': {
             'aws_s3': [
                 '%sB1.TIF' % prefix['aws_s3'],

@@ -6,20 +6,18 @@ import requests
 logger = logging.getLogger(__name__)
 
 
-_DEFAULT_SOURCE = 'aws_s3'
-
-
 class SatSceneError(Exception):
     pass
 
 
 class Scene(object):
 
+    _DEFAULT_SOURCE = 'aws_s3'
+
     def __init__(self, **kwargs):
         """ Initialize a scene object """
         self.metadata = kwargs
         required = ['scene_id', 'date', 'data_geometry', 'download_links']
-        logger.debug('Creating Scene object with', kwargs)
         if not set(required).issubset(kwargs.keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
         # TODO - check validity of date and geometry, at least one download link
@@ -53,8 +51,8 @@ class Scene(object):
     def get_thumbnail(self, path=''):
         """ Download thumbnail(s) for this scene """
         fname = os.path.join(path, os.path.basename(self.metadata['thumbnail']))
-        self.get_file(self.metadata['thumbnail'], fname)
-        # download
+        thumb = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
+        self.get_file(thumb, fname)
         return fname
 
     def get(self, key, source=_DEFAULT_SOURCE, path=''):
