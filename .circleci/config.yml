@@ -24,7 +24,11 @@ jobs:
 
       - run:
           name: install dependencies
-          command: pip install -r requirements.txt
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            pip install -r requiremtns-dev.txt
 
       - save_cache:
           paths:
@@ -34,7 +38,9 @@ jobs:
       # run tests!
       - run:
           name: run tests
-          command: nosetests -v -s --with-coverage --cover-package satsearch
+          command: |
+            . venv/bin/activate
+            nosetests -v -s --with-coverage --cover-package satsearch
 
       - store_artifacts:
           path: test-reports
