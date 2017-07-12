@@ -14,7 +14,10 @@ class TestScene(unittest.TestCase):
         'data_geometry': {},
         'thumbnail': 'http://earthexplorer.usgs.gov/browse/landsat_8/2016/007/029/LC08_L1TP_007029_20160827_20170321_01_T1.jpg',
         'download_links': {
-            'aws_s3': []
+            'aws_s3': [
+                'http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN00/LC80070292016240LGN00_B1.TIF',
+                'http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN00/LC80070292016240LGN00_MTL.txt'
+            ]
         }
     }
 
@@ -39,4 +42,10 @@ class TestScene(unittest.TestCase):
         """ Get thumbnail for scene """
         scene = self.get_test_scene()
         fname = scene.get_thumbnail(path=self.path)
+        self.assertTrue(os.path.exists(fname))
+
+    def test_get(self):
+        """ Retrieve a data file """
+        scene = self.get_test_scene()
+        fname = scene.get('MTL', path=self.path)
         self.assertTrue(os.path.exists(fname))
