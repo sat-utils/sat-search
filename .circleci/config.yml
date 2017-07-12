@@ -1,0 +1,18 @@
+version: 2
+
+jobs:
+  build:
+    working_directory: ~/sat-search
+    docker:
+      - image: circleci/python:2.7
+      - image: circleci/python:3.6.1
+    steps:
+      - checkout
+
+      - run:
+          name: Installing Dependencies
+          command: pip install .
+
+      - run:
+          name: Running Test
+          command: nosetests test/test_search.py -v -s --with-coverage --cover-package satsearch
