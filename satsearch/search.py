@@ -1,6 +1,7 @@
 import os
 import logging
 import requests
+import datetime
 from satsearch.scene import Scene
 
 logger = logging.getLogger(__name__)
@@ -16,45 +17,46 @@ class SatSearchError(Exception):
 class Search(object):
     """ A single search to sat-api """
 
-    _DEFAULT_LIMIT = 100
-
-    def __init__(self, **kwargs):
+    def __init__(self, savepath='', **kwargs):
         """ Initialize a query object with parameters """
         self.kwargs = kwargs
         self.results = None
+        self.path = savepath
 
     def found(self):
         """ Small query to determine total number of hits """
         if self.results is None:
-            self._query(limit=0)
+            self.query(limit=0)
         return self.results['meta']['found']
 
-    def _query(self, **kwargs):
+    def query(self, **kwargs):
         """ Make single query """
         kwargs.update(self.kwargs)
         response = requests.get(SAT_API, kwargs)
 
         # API error
         if response.status_code != 200:
-            raise SatSearchError(response.message)
+            raise SatSearchError(response.text)
 
         self.results = response.json()
         logger.debug(self.results['meta'])
         return self.results
 
-    def query(self, limit=10):
+    def scenes(self, limit=None):
         """ Query and return up to limit results """
-        if limit < 0:
+        if limit is None:
             limit = self.found()
         limit = min(limit, self.found())
         page_size = min(limit, 1000)
 
-        self.scenes = []
+        scenes = []
         page = 1
-        while len(self.scenes) < limit:
-            results = self._query(page=page, limit=page_size)['results']
-
-            self.scenes += [Scene(**r) for r in results]
+        while len(scenes) < limit:
+            results = self.query(page=page, limit=page_size)['results']
+            scenes += [Scene(savepath=self.path, **r) for r in results]
             page += 1
 
-        return self.scenes
+        return scenes
+
+    def scene_dates(self):
+        return sorted([datetime.datetime.strptime(s.date, '%Y-%m-%d') for s in self.scenes])
