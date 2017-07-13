@@ -1,6 +1,7 @@
 import os
 import logging
 import requests
+import json
 from datetime import datetime
 import calendar
 
@@ -120,3 +121,13 @@ class Scenes(object):
 
         for m in cals:
             print(cals[m])
+
+    def save(self, filename):
+        """ Save scene metadata """
+        scenes = [s.metadata for s in self.scenes]
+        with open(filename, 'w') as f:
+            f.write(json.dumps({'scenes': scenes}))
+
+    @classmethod
+    def load(cls):
+        """ Load a collections class from a file of metadata """

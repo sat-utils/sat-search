@@ -34,9 +34,9 @@ def parse_args(args):
     group.add_argument('--cloud_from', help='Lower limit for cloud coverage')
     group.add_argument('--cloud_to', help='Upper limit for cloud coverage')
 
-    group = parser.add_argument_group('Display')
+    group = parser.add_argument_group('Options')
     group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
-
+    group.add_argument('--save', help='Save Scenes as file', default=None)
 
     args = vars(parser.parse_args(args))
     args = {k: v for k, v in args.items() if v is not None}
@@ -49,13 +49,11 @@ def parse_args(args):
     return args
 
 
-
-
-
 def main(*args, **kwargs):
     """ Main function for performing a search """
     # arguments that aren't not search parameters
     printcal = kwargs.pop('printcal')
+    save = kwargs.pop('save')
 
     print('Searching for scenes matching criteria:')
     for kw in kwargs:
@@ -69,7 +67,10 @@ def main(*args, **kwargs):
 
     if printcal:
         scenes.print_calendar()
-    from pdb import set_trace; set_trace()
+
+    if save is not None:
+        scenes.save(filename=save)
+
     return scenes
 
 
