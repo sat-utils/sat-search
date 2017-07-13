@@ -1,21 +1,28 @@
+import os
+import sys
 import unittest
+from mock import patch
 import satsearch.main as main
+
+
+testpath = os.path.dirname(__file__)
 
 
 class TestMain(unittest.TestCase):
     """ Test main module """
 
+    args = '--date 2017-01-01 --satellite_name Landsat-8'.split(' ')
+
     def test_empty_parse_args(self):
         """ Parse arguments """
         args = main.parse_args([])
-        self.assertEqual(len(args), 2)
+        self.assertEqual(len(args), 1)
         self.assertFalse(args['printcal'])
-        self.assertFalse(args['save'])
 
     def test_parse_args(self):
         """ Parse arguments """
-        args = main.parse_args('--date 2017-01-01 --satellite_name Landsat-8'.split(' '))
-        self.assertEqual(len(args), 4)
+        args = main.parse_args(self.args)
+        self.assertEqual(len(args), 3)
         self.assertEqual(args['date'], '2017-01-01')
         self.assertEqual(args['satellite_name'], 'Landsat-8')
 
@@ -23,3 +30,17 @@ class TestMain(unittest.TestCase):
         """ Run main function """
         scenes = main.main(date='2017-01-01', satellite_name='Landsat-8')
         self.assertEqual(len(scenes), 564)
+
+    def test_main_options(self):
+        fname = os.path.join(testpath, 'test_main-save.json')
+        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', save=fname, printcal=True)
+        self.assertEqual(len(scenes), 564)
+        self.assertTrue(os.path.exists(fname))
+        os.remove(fname)
+        self.assertFalse(os.path.exists(fname))
+
+    def test_cli(self):
+        """ Run CLI program """
+        with patch.object(sys, 'argv', ['testprog'] + self.args):
+            n = main.cli()
+            self.assertEqual(n, 564)

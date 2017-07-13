@@ -91,8 +91,31 @@ class TestScene(unittest.TestCase):
 
 class TestScenes(unittest.TestCase):
 
+    def load_scenes(self):
+        return Scenes.load(os.path.join(testpath, 'scenes.json'))
+
     def test_load(self):
         """ Initialize Scenes with list of Scene objects """
-        scenes = Scenes.load(os.path.join(testpath, 'scenes.json'))
+        scenes = self.load_scenes()
         self.assertEqual(len(scenes), 10)
-        self.assertTrue(isinstance(scenes.scenes[0]), Scene)
+        self.assertTrue(isinstance(scenes.scenes[0], Scene))
+
+    def test_save(self):
+        """ Save scenes list """
+        scenes = self.load_scenes()
+        fname = os.path.join(testpath, 'save-test.json')
+        scenes.save(fname)
+        self.assertTrue(os.path.exists(fname))
+        os.remove(fname)
+        self.assertFalse(os.path.exists(fname))
+
+    def test_dates(self):
+        """ Get dates of all scenes """
+        scenes = self.load_scenes()
+        dates = scenes.dates()
+        self.assertEqual(len(dates), 10)
+
+    def test_print_calendar(self):
+        """ Print calendar showing dates """
+        scenes = self.load_scenes()
+        scenes.print_calendar()
