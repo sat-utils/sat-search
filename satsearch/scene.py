@@ -14,12 +14,16 @@ class Scene(object):
 
     _DEFAULT_SOURCE = 'aws_s3'
 
-    def __init__(self, **kwargs):
+    def __init__(self, savepath='', id_as_dir=True, **kwargs):
         """ Initialize a scene object """
         self.metadata = kwargs
         required = ['scene_id', 'date', 'data_geometry', 'download_links']
         if not set(required).issubset(kwargs.keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
+
+        self.path = savepath
+        if id_as_dir:
+            self.path = os.path.join(self.path, self.metadata['scene_id'])
         # TODO - check validity of date and geometry, at least one download link
 
     def __repr__(self):
@@ -48,27 +52,29 @@ class Scene(object):
         keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
         return dict(zip(keys, files))
 
-    def get_thumbnail(self, path=''):
+    def get_thumbnail(self):
         """ Download thumbnail(s) for this scene """
-        fname = os.path.join(path, os.path.basename(self.metadata['thumbnail']))
+        fname = os.path.join(self.path, os.path.basename(self.metadata['thumbnail']))
         thumb = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
         self.get_file(thumb, fname)
         return fname
 
-    def get(self, key, source=_DEFAULT_SOURCE, path=''):
+    def get(self, key, source=_DEFAULT_SOURCE):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         url = self.download_links(source)[key]
-        fname = os.path.join(path, os.path.basename(url))
+        fname = os.path.join(self.path, os.path.basename(url))
         return self.get_file(url, fname)
 
-    def get_all(self, source=_DEFAULT_SOURCE, path=''):
+    def get_all(self, source=_DEFAULT_SOURCE):
         """ Download all files """
         links = self.download_links(source=source)
-        fnames = {key: self.get(key, source=source, path=path) for key in links}
+        fnames = {key: self.get(key, source=source) for key in links}
         return fnames
 
     def get_file(self, url, filename):
         """ Download a file """
+        if not os.path.exists(self.path):
+            os.makedirs(self.path, exist_ok=True)
         logger.info('Downloading %s as %s' % (url, filename))
         r = requests.get(url, stream=True)
         with open(filename, 'wb') as f:

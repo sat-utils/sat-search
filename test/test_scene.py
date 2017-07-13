@@ -39,7 +39,7 @@ class TestScene(unittest.TestCase):
 
     def get_test_scene(self):
         """ Get valid test scene """
-        return Scene(**self.md)
+        return Scene(savepath=self.path, **self.md)
 
     @raises(SatSceneError)
     def test_invalid_init(self):
@@ -63,7 +63,7 @@ class TestScene(unittest.TestCase):
     def test_get_thumbnail(self):
         """ Get thumbnail for scene """
         scene = self.get_test_scene()
-        fname = scene.get_thumbnail(path=self.path)
+        fname = scene.get_thumbnail()
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
@@ -71,7 +71,7 @@ class TestScene(unittest.TestCase):
     def test_get(self):
         """ Retrieve a data file """
         scene = self.get_test_scene()
-        fname = scene.get('MTL', path=self.path)
+        fname = scene.get('MTL')
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
@@ -79,7 +79,7 @@ class TestScene(unittest.TestCase):
     def test_get_all(self):
         """ Retrieve all data files from a source """
         scene = self.get_test_scene()
-        fnames = scene.get_all(source='test', path=self.path)
+        fnames = scene.get_all(source='test')
         for f in fnames.values():
             self.assertTrue(os.path.exists(f))
             os.remove(f)
