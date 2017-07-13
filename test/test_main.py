@@ -2,6 +2,7 @@ import os
 import sys
 import unittest
 from mock import patch
+import json
 import satsearch.main as main
 
 
@@ -26,6 +27,12 @@ class TestMain(unittest.TestCase):
         self.assertEqual(len(args), 4)
         self.assertEqual(args['date'], '2017-01-01')
         self.assertEqual(args['satellite_name'], 'Landsat-8')
+
+    def test_parse_args_with_geojson(self):
+        args = ('--intersects %s' % os.path.join(testpath, 'aoi.json')).split(' ')
+        args = main.parse_args(args)
+        aoi = json.loads(args['intersects'])
+        self.assertEqual(aoi['type'], 'Feature')
 
     def test_main(self):
         """ Run main function """
