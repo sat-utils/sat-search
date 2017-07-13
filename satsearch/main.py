@@ -3,8 +3,6 @@ import sys
 import argparse
 import logging
 import json
-from datetime import datetime
-import calendar
 from .version import __version__
 from satsearch import Search, Scenes
 
@@ -36,7 +34,7 @@ def parse_args(args):
 
     group = parser.add_argument_group('Options')
     group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
-    group.add_argument('--save', help='Save Scenes as file', default=None)
+    group.add_argument('--save', help='Save Scenes as file', default=False, action='store_true')
 
     args = vars(parser.parse_args(args))
     args = {k: v for k, v in args.items() if v is not None}
@@ -52,8 +50,8 @@ def parse_args(args):
 def main(*args, **kwargs):
     """ Main function for performing a search """
     # arguments that aren't not search parameters
-    printcal = kwargs.pop('printcal')
-    save = kwargs.pop('save')
+    printcal = kwargs.pop('printcal', False)
+    save = kwargs.pop('save', None)
 
     print('Searching for scenes matching criteria:')
     for kw in kwargs:
