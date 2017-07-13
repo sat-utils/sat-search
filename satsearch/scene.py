@@ -59,7 +59,7 @@ class Scene(object):
     def save_thumbnail(self, path=None, nosubdirs=None):
         """ Download thumbnail(s) for this scene """
         url = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
-        return self.get_file(url, path=path, nosubdirs=nosubdirs)
+        return self.save_file(url, path=path, nosubdirs=nosubdirs)
 
     def save(self, key=None, source=_DEFAULT_SOURCE, path=None, nosubdirs=None):
         """ Download this key (e.g., a band, or metadata file) from the scene """
@@ -70,9 +70,9 @@ class Scene(object):
         else:
             keys = [key]
         # loop through keys and get files
-        return {k: self.get_file(links[k], path=path, nosubdirs=nosubdirs) for k in keys}
+        return {k: self.save_file(links[k], path=path, nosubdirs=nosubdirs) for k in keys}
 
-    def get_file(self, url, path=None, nosubdirs=None):
+    def save_file(self, url, path=None, nosubdirs=None):
         """ Download a file """
         if path is None:
             path = config.DATADIR
@@ -157,3 +157,9 @@ class Scenes(object):
             metadata = json.loads(f.read())['scenes']
         scenes = [Scene(**md) for md in metadata]
         return Scenes(scenes)
+
+    def save_thumbnails(self, **kwargs):
+        return [s.save_thumbnail(**kwargs) for s in self.scenes]
+
+    def save_files(self, **kwargs):
+        return [s.save(**kwargs) for s in self.scenes]

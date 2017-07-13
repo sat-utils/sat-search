@@ -41,6 +41,10 @@ def parse_args(args):
     group.add_argument('--nosubdirs', help='When saving, do not create directories usng scene_id',
                        default=False, action='store_true')
 
+    group = parser.add_argument_group('Download')
+    group.add_argument('--dlthumbs', help='Download thumbnails', default=False, action='store_true')
+    group.add_argument('--dlfiles', help='Download files', default=None, nargs='*')
+
     args = vars(parser.parse_args(args))
     args = {k: v for k, v in args.items() if v is not None}
 
@@ -52,7 +56,8 @@ def parse_args(args):
     return args
 
 
-def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, printcal=False, save=None, **kwargs):
+def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, printcal=False,
+         save=None, dlthumbs=None, dlfiles=None, **kwargs):
     """ Main function for performing a search """
     config.DATADIR = datadir
     config.NOSUBDIRS = nosubdirs
@@ -76,6 +81,13 @@ def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, pri
 
     if save is not None:
         scenes.save(filename=save)
+
+    if dlthumbs:
+        scenes.save_thumbnails(path=datadir, nosubdirs=nosubdirs)
+
+    if dlfiles is not None:
+        for key in dlfiles:
+            scenes.save_files(key=key, path=datadir, nosubdirs=nosubdirs)
 
     return scenes
 
