@@ -1,7 +1,10 @@
 import os
 import unittest
-from satsearch.scene import Scene, SatSceneError
+from satsearch.scene import Scene, Scenes, SatSceneError
 from nose.tools import raises
+
+
+testpath = os.path.dirname(__file__)
 
 
 class TestScene(unittest.TestCase):
@@ -84,3 +87,12 @@ class TestScene(unittest.TestCase):
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
+
+
+class TestScenes(unittest.TestCase):
+
+    def test_load(self):
+        """ Initialize Scenes with list of Scene objects """
+        scenes = Scenes.load(os.path.join(testpath, 'scenes.json'))
+        self.assertEqual(len(scenes), 10)
+        self.assertTrue(isinstance(scenes.scenes[0]), Scene)

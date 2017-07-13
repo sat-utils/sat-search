@@ -13,7 +13,7 @@ class TestSearch(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        fnames = glob.glob(os.path.join(cls.path, '*.json'))
+        fnames = glob.glob(os.path.join(cls.path, '*-response.json'))
         for fname in fnames:
             with open(fname) as f:
                 cls.results[os.path.basename(fname)[:-14]] = json.load(f)

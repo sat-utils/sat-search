@@ -21,5 +21,5 @@ class TestMain(unittest.TestCase):
 
     def test_main(self):
         """ Run main function """
-        scenes = main.main(date='2017-01-01')
-        self.assertEqual(len(scenes), 4279)
+        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8')
+        self.assertEqual(len(scenes), 564)
