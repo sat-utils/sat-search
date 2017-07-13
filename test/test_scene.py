@@ -68,27 +68,27 @@ class TestScene(unittest.TestCase):
         links = scene.download_links()
         self.assertEqual(links['B1'], self.md['download_links']['aws_s3'][0])
 
-    def test_get_thumbnail(self):
+    def test_save_thumbnail(self):
         """ Get thumbnail for scene """
         scene = self.get_test_scene()
-        fname = scene.get_thumbnail()
+        fname = scene.save_thumbnail()
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
 
-    def test_get(self):
+    def test_save(self):
         """ Retrieve a data file """
         scene = self.get_test_scene()
-        fnames = scene.get(key='MTL')
+        fnames = scene.save(key='MTL')
         for f in fnames.values():
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
 
-    def test_get_all(self):
+    def test_save_all(self):
         """ Retrieve all data files from a source """
         scene = self.get_test_scene()
-        fnames = scene.get(source='test')
+        fnames = scene.save(source='test')
         for f in fnames.values():
             self.assertTrue(os.path.exists(f))
             os.remove(f)

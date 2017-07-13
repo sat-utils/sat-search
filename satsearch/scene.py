@@ -4,7 +4,6 @@ import requests
 import json
 from datetime import datetime
 import calendar
-import operator
 import satsearch.config as config
 
 
@@ -57,12 +56,12 @@ class Scene(object):
         keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
         return dict(zip(keys, files))
 
-    def get_thumbnail(self, path=None, nosubdirs=None):
+    def save_thumbnail(self, path=None, nosubdirs=None):
         """ Download thumbnail(s) for this scene """
         url = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
         return self.get_file(url, path=path, nosubdirs=nosubdirs)
 
-    def get(self, key=None, source=_DEFAULT_SOURCE, path=None, nosubdirs=None):
+    def save(self, key=None, source=_DEFAULT_SOURCE, path=None, nosubdirs=None):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         links = self.download_links(source=source)
         # default to all files if no key provided
