@@ -57,6 +57,3 @@ class Search(object):
             page += 1
 
         return scenes
-
-    def scene_dates(self):
-        return sorted([datetime.datetime.strptime(s.date, '%Y-%m-%d') for s in self.scenes])

@@ -3,9 +3,10 @@ import sys
 import argparse
 import logging
 import json
-import datetime
+from datetime import datetime
+import calendar
 from .version import __version__
-from satsearch import Search
+from satsearch import Search, Scenes
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,8 @@ def parse_args(args):
 
     group = parser.add_argument_group('Temporal')
     group.add_argument('--date')
+    group.add_argument('--date_from')
+    group.add_argument('--date_to')
 
     group = parser.add_argument_group('Spatial')
     group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
@@ -30,6 +33,10 @@ def parse_args(args):
     group = parser.add_argument_group('Quality')
     group.add_argument('--cloud_from', help='Lower limit for cloud coverage')
     group.add_argument('--cloud_to', help='Upper limit for cloud coverage')
+
+    group = parser.add_argument_group('Display')
+    group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
+
 
     args = vars(parser.parse_args(args))
     args = {k: v for k, v in args.items() if v is not None}
@@ -42,18 +49,14 @@ def parse_args(args):
     return args
 
 
-def monthlist(dates):
-    start, end = [datetime.strptime(_, "%Y-%m-%d") for _ in dates]
-    total_months = lambda dt: dt.month + 12 * dt.year
-    mlist = []
-    for tot_m in xrange(total_months(start)-1, total_months(end)):
-        y, m = divmod(tot_m, 12)
-        mlist.append(datetime(y, m+1, 1).strftime("%b-%y"))
-    return mlist
+
 
 
 def main(*args, **kwargs):
     """ Main function for performing a search """
+    # arguments that aren't not search parameters
+    printcal = kwargs.pop('printcal')
+
     print('Searching for scenes matching criteria:')
     for kw in kwargs:
         print('  %s: %s' % (kw, kwargs[kw]))
@@ -62,10 +65,11 @@ def main(*args, **kwargs):
 
     print('Found %s matching scenes' % search.found())
 
-    scenes = search.scenes()
+    scenes = Scenes(search.scenes())
 
-    dates = search.scene_dates()
-
+    if printcal:
+        scenes.print_calendar()
+    from pdb import set_trace; set_trace()
     return scenes
 
 
