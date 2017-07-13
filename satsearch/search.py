@@ -11,11 +11,11 @@ class SatSearchError(Exception):
     pass
 
 
-class Search(object):
-    """ A single search to sat-api """
+class Query(object):
+    """ One search query (possibly multiple pages) """
 
     def __init__(self, **kwargs):
-        """ Initialize a query object with parameters """
+        """ Initialize a Query object with parameters """
         self.kwargs = kwargs
         self.results = None
 
@@ -26,7 +26,7 @@ class Search(object):
         return self.results['meta']['found']
 
     def query(self, **kwargs):
-        """ Make single query """
+        """ Make single API call """
         kwargs.update(self.kwargs)
         response = requests.get(config.SAT_API, kwargs)
 
@@ -52,4 +52,32 @@ class Search(object):
             scenes += [Scene(**r) for r in results]
             page += 1
 
+        return scenes
+
+
+class Search(object):
+    """ Search the API with multiple queries and combine """
+
+    def __init__(self, scene_id=[], **kwargs):
+        """ Initialize a Search object with parameters """
+        self.queries = []
+        if scene_id is None:
+            self.queries.append(kwargs)
+        else:
+            for s in scene_id:
+                kwargs.update({'scene_id': s})
+                self.queries.append(Query(**kwargs))
+
+    def found(self):
+        """ Total number of found scenes """
+        found = 0
+        for query in self.queries:
+            found += query.found()
+        return found
+
+    def scenes(self):
+        """ Return all of the scenes """
+        scenes = []
+        for query in self.queries:
+            scenes += query.scenes()
         return scenes

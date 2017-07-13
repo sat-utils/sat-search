@@ -38,6 +38,7 @@ def parse_args(args):
     group.add_argument('--contains', help='long,lat points')
 
     group = parser.add_argument_group('Other search parameters')
+    group.add_argument('--scene_id', help='One or more scene IDs', nargs='*', default=None)
     group.add_argument('--cloud_from', help='Lower limit for cloud coverage')
     group.add_argument('--cloud_to', help='Upper limit for cloud coverage')
     group.add_argument('--param', nargs='*', help='Additional parameters of form KEY=VALUE', action=KeyValuePair)
@@ -82,18 +83,23 @@ def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, pri
     # create Scenes collection
     scenes = Scenes(search.scenes())
 
+    # print summary
     if printsum:
         scenes.print_summary()
 
+    # print calendar
     if printcal:
         scenes.print_calendar()
 
+    # save all metadata in JSON file
     if save is not None:
         scenes.save(filename=save)
 
+    # download all thumbnails
     if dlthumbs:
         scenes.download_thumbnails(path=datadir, nosubdirs=nosubdirs)
 
+    # download files given keys
     if dlfiles is not None:
         for key in dlfiles:
             scenes.download(key=key, path=datadir, nosubdirs=nosubdirs)
