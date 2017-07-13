@@ -5,6 +5,7 @@ import logging
 import json
 from .version import __version__
 from satsearch import Search, Scenes
+import satsearch.config as config
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,10 @@ def parse_args(args):
     group = parser.add_argument_group('Output')
     group.add_argument('--printsum', help='Print basic metadata for matched scenes', default=False, action='store_true')
     group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
-    group.add_argument('--save', help='Save Scenes as file', default=None)
+    group.add_argument('--save', help='Save metadata of all scenes as file', default=None)
+    group.add_argument('--datadir', help='Local directory to save images', default=config.DATADIR)
+    group.add_argument('--nosubdirs', help='When saving, do not create directories usng scene_id',
+                       default=False, action='store_true')
 
     args = vars(parser.parse_args(args))
     args = {k: v for k, v in args.items() if v is not None}
@@ -48,12 +52,10 @@ def parse_args(args):
     return args
 
 
-def main(*args, **kwargs):
+def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, printcal=False, save=None, **kwargs):
     """ Main function for performing a search """
-    # arguments that aren't not search parameters
-    printsum = kwargs.pop('printsum', False)
-    printcal = kwargs.pop('printcal', False)
-    save = kwargs.pop('save', None)
+    config.DATADIR = datadir
+    config.NOSUBDIRS = nosubdirs
 
     print('Searching for scenes matching criteria:')
     for kw in kwargs:
@@ -63,6 +65,7 @@ def main(*args, **kwargs):
 
     print('Found %s matching scenes' % search.found())
 
+    # create Scenes collection
     scenes = Scenes(search.scenes())
 
     if printsum:

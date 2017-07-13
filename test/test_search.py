@@ -6,14 +6,16 @@ from satsearch.scene import Scene
 from satsearch.search import Search
 
 
+testpath = os.path.dirname(__file__)
+
+
 class TestSearch(unittest.TestCase):
 
-    path = os.path.dirname(__file__)
     results = {}
 
     @classmethod
     def setUpClass(cls):
-        fnames = glob.glob(os.path.join(cls.path, '*-response.json'))
+        fnames = glob.glob(os.path.join(testpath, '*-response.json'))
         for fname in fnames:
             with open(fname) as f:
                 cls.results[os.path.basename(fname)[:-14]] = json.load(f)

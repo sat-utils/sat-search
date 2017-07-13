@@ -1,13 +1,10 @@
-import os
 import logging
 import requests
-import datetime
+import satsearch.config as config
 from satsearch.scene import Scene
 
+
 logger = logging.getLogger(__name__)
-
-
-SAT_API = os.getenv('SAT_API', 'https://api.developmentseed.org/satellites')
 
 
 class SatSearchError(Exception):
@@ -17,11 +14,10 @@ class SatSearchError(Exception):
 class Search(object):
     """ A single search to sat-api """
 
-    def __init__(self, savepath='', **kwargs):
+    def __init__(self, **kwargs):
         """ Initialize a query object with parameters """
         self.kwargs = kwargs
         self.results = None
-        self.path = savepath
 
     def found(self):
         """ Small query to determine total number of hits """
@@ -32,7 +28,7 @@ class Search(object):
     def query(self, **kwargs):
         """ Make single query """
         kwargs.update(self.kwargs)
-        response = requests.get(SAT_API, kwargs)
+        response = requests.get(config.SAT_API, kwargs)
 
         # API error
         if response.status_code != 200:
@@ -53,7 +49,7 @@ class Search(object):
         page = 1
         while len(scenes) < limit:
             results = self.query(page=page, limit=page_size)['results']
-            scenes += [Scene(savepath=self.path, **r) for r in results]
+            scenes += [Scene(**r) for r in results]
             page += 1
 
         return scenes

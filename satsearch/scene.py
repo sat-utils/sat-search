@@ -4,6 +4,8 @@ import requests
 import json
 from datetime import datetime
 import calendar
+import operator
+import satsearch.config as config
 
 
 logger = logging.getLogger(__name__)
@@ -17,16 +19,12 @@ class Scene(object):
 
     _DEFAULT_SOURCE = 'aws_s3'
 
-    def __init__(self, savepath='', id_as_dir=True, **kwargs):
+    def __init__(self, **kwargs):
         """ Initialize a scene object """
         self.metadata = kwargs
         required = ['scene_id', 'date', 'data_geometry', 'download_links']
         if not set(required).issubset(kwargs.keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
-
-        self.path = savepath
-        if id_as_dir:
-            self.path = os.path.join(self.path, self.metadata['scene_id'])
         # TODO - check validity of date and geometry, at least one download link
 
     def __repr__(self):
@@ -35,6 +33,10 @@ class Scene(object):
     @property
     def scene_id(self):
         return self.metadata['scene_id']
+
+    @property
+    def platform(self):
+        return self.metadata.get('satellite_name', '')
 
     @property
     def date(self):
@@ -55,29 +57,38 @@ class Scene(object):
         keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
         return dict(zip(keys, files))
 
-    def get_thumbnail(self):
+    def get_thumbnail(self, path=None, nosubdirs=None):
         """ Download thumbnail(s) for this scene """
-        fname = os.path.join(self.path, os.path.basename(self.metadata['thumbnail']))
-        thumb = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
-        self.get_file(thumb, fname)
-        return fname
+        url = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
+        return self.get_file(url, path=path, nosubdirs=nosubdirs)
 
-    def get(self, key, source=_DEFAULT_SOURCE):
+    def get(self, key=None, source=_DEFAULT_SOURCE, path=None, nosubdirs=None):
         """ Download this key (e.g., a band, or metadata file) from the scene """
-        url = self.download_links(source)[key]
-        fname = os.path.join(self.path, os.path.basename(url))
-        return self.get_file(url, fname)
-
-    def get_all(self, source=_DEFAULT_SOURCE):
-        """ Download all files """
         links = self.download_links(source=source)
-        fnames = {key: self.get(key, source=source) for key in links}
-        return fnames
+        # default to all files if no key provided
+        if key is None:
+            keys = links.keys()
+        else:
+            keys = [key]
+        # loop through keys and get files
+        return {k: self.get_file(links[k], path=path, nosubdirs=nosubdirs) for k in keys}
 
-    def get_file(self, url, filename):
+    def get_file(self, url, path=None, nosubdirs=None):
         """ Download a file """
-        if not os.path.exists(self.path):
-            os.makedirs(self.path, exist_ok=True)
+        if path is None:
+            path = config.DATADIR
+        if nosubdirs is None:
+            nosubdirs = config.NOSUBDIRS
+
+        # output path
+        if not nosubdirs:
+            path = os.path.join(path, self.platform, self.scene_id)
+        # make output path if it does not exist
+        if not os.path.exists(path):
+            os.makedirs(path, exist_ok=True)
+        # if basename not provided use basename of url
+        filename = os.path.join(path, os.path.basename(url))
+        # download file
         logger.info('Downloading %s as %s' % (url, filename))
         r = requests.get(url, stream=True)
         with open(filename, 'wb') as f:
@@ -96,7 +107,7 @@ class Scenes(object):
 
     def __init__(self, scenes):
         """ Initialize with a list of Scene objects """
-        self.scenes = scenes
+        self.scenes = sorted(scenes, key=lambda s: s.date)
 
     def __len__(self):
         """ Number of scenes """
@@ -141,9 +152,9 @@ class Scenes(object):
             f.write(json.dumps({'scenes': scenes}))
 
     @classmethod
-    def load(cls, filename, savepath='', id_as_dir=True):
+    def load(cls, filename):
         """ Load a collections class from a file of metadata """
         with open(filename) as f:
             metadata = json.loads(f.read())['scenes']
-        scenes = [Scene(savepath=savepath, id_as_dir=id_as_dir, **md) for md in metadata]
+        scenes = [Scene(**md) for md in metadata]
         return Scenes(scenes)

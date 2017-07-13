@@ -1,5 +1,6 @@
 import os
 import unittest
+import satsearch.config as config
 from satsearch.scene import Scene, Scenes, SatSceneError
 from nose.tools import raises
 
@@ -19,6 +20,7 @@ class TestScene(unittest.TestCase):
 
     md = {
         'scene_id': 'testscene',
+        'satellite_name': 'test_satellite',
         'date': '2017-01-01',
         'data_geometry': {},
         'thumbnail': '%sthumb_large.jpg' % prefix['aws_s3'],
@@ -35,14 +37,17 @@ class TestScene(unittest.TestCase):
                 '%sANG.txt' % prefix['google'],
                 '%sMTL.txt' % prefix['google']
             ]
-
-
         }
     }
 
+    @classmethod
+    def setUpClass(cls):
+        """ Configure testing class """
+        config.DATADIR = testpath
+
     def get_test_scene(self):
         """ Get valid test scene """
-        return Scene(savepath=self.path, **self.md)
+        return Scene(**self.md)
 
     @raises(SatSceneError)
     def test_invalid_init(self):
@@ -74,15 +79,16 @@ class TestScene(unittest.TestCase):
     def test_get(self):
         """ Retrieve a data file """
         scene = self.get_test_scene()
-        fname = scene.get('MTL')
-        self.assertTrue(os.path.exists(fname))
-        os.remove(fname)
-        self.assertFalse(os.path.exists(fname))
+        fnames = scene.get(key='MTL')
+        for f in fnames.values():
+            self.assertTrue(os.path.exists(f))
+            os.remove(f)
+            self.assertFalse(os.path.exists(f))
 
     def test_get_all(self):
         """ Retrieve all data files from a source """
         scene = self.get_test_scene()
-        fnames = scene.get_all(source='test')
+        fnames = scene.get(source='test')
         for f in fnames.values():
             self.assertTrue(os.path.exists(f))
             os.remove(f)
