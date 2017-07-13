@@ -129,5 +129,8 @@ class Scenes(object):
             f.write(json.dumps({'scenes': scenes}))
 
     @classmethod
-    def load(cls):
+    def load(cls, filename):
         """ Load a collections class from a file of metadata """
+        with open(filename) as f:
+            scenes = json.load(f.read())['scenes']
+        return scenes
