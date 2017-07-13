@@ -38,6 +38,9 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     keywords='',
+    entry_points={
+        'console_scripts': ['sat-search=satsearch.main:cli'],
+    },
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
     install_requires=install_requires,
