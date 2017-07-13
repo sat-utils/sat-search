@@ -1,5 +1,6 @@
 import os
 import unittest
+import shutil
 import satsearch.config as config
 from satsearch.scene import Scene, Scenes, SatSceneError
 from nose.tools import raises
@@ -60,35 +61,37 @@ class TestScene(unittest.TestCase):
         self.assertEqual(scene.date, self.md['date'])
         self.assertEqual(scene.scene_id, self.md['scene_id'])
         self.assertEqual(scene.geometry, self.md['data_geometry'])
-        self.assertEqual(scene.download_sources, self.md['download_links'].keys())
+        self.assertEqual(scene.sources, self.md['download_links'].keys())
 
-    def test_download_links(self):
+    def test_links(self):
         """ Get links for download """
         scene = self.get_test_scene()
-        links = scene.download_links()
+        links = scene.links()
         self.assertEqual(links['B1'], self.md['download_links']['aws_s3'][0])
 
-    def test_save_thumbnail(self):
+    def test_download_thumbnail(self):
         """ Get thumbnail for scene """
         scene = self.get_test_scene()
-        fname = scene.save_thumbnail()
+        fname = scene.download_thumbnail()
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
+        shutil.rmtree(os.path.join(testpath, self.md['satellite_name']))
 
-    def test_save(self):
+    def test_download(self):
         """ Retrieve a data file """
         scene = self.get_test_scene()
-        fnames = scene.save(key='MTL')
+        fnames = scene.download(key='MTL')
         for f in fnames.values():
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
+        shutil.rmtree(os.path.join(testpath, self.md['satellite_name']))
 
-    def test_save_all(self):
+    def test_download_all(self):
         """ Retrieve all data files from a source """
         scene = self.get_test_scene()
-        fnames = scene.save(source='test')
+        fnames = scene.download(source='test')
         for f in fnames.values():
             self.assertTrue(os.path.exists(f))
             os.remove(f)
@@ -134,3 +137,22 @@ class TestScenes(unittest.TestCase):
         """ Print calendar showing dates """
         scenes = self.load_scenes()
         scenes.print_calendar()
+
+    def test_download_thumbnails(self):
+        scenes = self.load_scenes()
+        fnames = scenes.download_thumbnails()
+        for f in fnames:
+            self.assertTrue(os.path.exists(f))
+            os.remove(f)
+            self.assertFalse(os.path.exists(f))
+        shutil.rmtree(os.path.join(testpath, 'landsat-8'))
+
+    def test_download(self):
+        scenes = self.load_scenes()
+        dls = scenes.download(key='MTL')
+        for s in dls:
+            for f in s.values():
+                self.assertTrue(os.path.exists(f))
+                os.remove(f)
+                self.assertFalse(os.path.exists(f))
+        shutil.rmtree(os.path.join(testpath, 'landsat-8'))

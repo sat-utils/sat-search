@@ -46,33 +46,33 @@ class Scene(object):
         return self.metadata['data_geometry']
 
     @property
-    def download_sources(self):
+    def sources(self):
         return self.metadata['download_links'].keys()
 
-    def download_links(self, source=_DEFAULT_SOURCE):
+    def links(self, source=_DEFAULT_SOURCE):
         """ Return dictionary of file key and download link """
         files = self.metadata['download_links'][source]
         prefix = os.path.commonprefix(files)
         keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
         return dict(zip(keys, files))
 
-    def save_thumbnail(self, path=None, nosubdirs=None):
+    def download_thumbnail(self, path=None, nosubdirs=None):
         """ Download thumbnail(s) for this scene """
         url = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
-        return self.save_file(url, path=path, nosubdirs=nosubdirs)
+        return self.download_file(url, path=path, nosubdirs=nosubdirs)
 
-    def save(self, key=None, source=_DEFAULT_SOURCE, path=None, nosubdirs=None):
+    def download(self, key=None, source=_DEFAULT_SOURCE, path=None, nosubdirs=None):
         """ Download this key (e.g., a band, or metadata file) from the scene """
-        links = self.download_links(source=source)
+        links = self.links(source=source)
         # default to all files if no key provided
         if key is None:
             keys = links.keys()
         else:
             keys = [key]
         # loop through keys and get files
-        return {k: self.save_file(links[k], path=path, nosubdirs=nosubdirs) for k in keys}
+        return {k: self.download_file(links[k], path=path, nosubdirs=nosubdirs) for k in keys}
 
-    def save_file(self, url, path=None, nosubdirs=None):
+    def download_file(self, url, path=None, nosubdirs=None):
         """ Download a file """
         if path is None:
             path = config.DATADIR
@@ -158,8 +158,8 @@ class Scenes(object):
         scenes = [Scene(**md) for md in metadata]
         return Scenes(scenes)
 
-    def save_thumbnails(self, **kwargs):
-        return [s.save_thumbnail(**kwargs) for s in self.scenes]
+    def download_thumbnails(self, **kwargs):
+        return [s.download_thumbnail(**kwargs) for s in self.scenes]
 
-    def save_files(self, **kwargs):
-        return [s.save(**kwargs) for s in self.scenes]
+    def download(self, **kwargs):
+        return [s.download(**kwargs) for s in self.scenes]

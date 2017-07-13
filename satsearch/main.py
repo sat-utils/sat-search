@@ -83,11 +83,11 @@ def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, pri
         scenes.save(filename=save)
 
     if dlthumbs:
-        scenes.save_thumbnails(path=datadir, nosubdirs=nosubdirs)
+        scenes.download_thumbnails(path=datadir, nosubdirs=nosubdirs)
 
     if dlfiles is not None:
         for key in dlfiles:
-            scenes.save_files(key=key, path=datadir, nosubdirs=nosubdirs)
+            scenes.download(key=key, path=datadir, nosubdirs=nosubdirs)
 
     return scenes
 
