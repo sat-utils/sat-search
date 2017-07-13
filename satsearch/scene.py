@@ -124,6 +124,9 @@ class Scenes(object):
         """ Print a calendar in terminal indicating which days there are scenes for """
         dates = self.dates()
 
+        if len(dates) < 1:
+            return
+
         # create strings for printed calendar
         total_months = lambda dt: dt.month + 12 * dt.year
         cals = {}

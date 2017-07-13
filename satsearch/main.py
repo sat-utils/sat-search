@@ -10,28 +10,37 @@ import satsearch.config as config
 logger = logging.getLogger(__name__)
 
 
+class KeyValuePair(argparse.Action):
+    """ Custom action for getting arbitrary key values from argparse """
+    def __call__(self, parser, namespace, values, option_string=None):
+        for val in values:
+            n, v = val.split('=')
+            setattr(namespace, n, v)
+
+
 def parse_args(args):
     """ Parse arguments for sat-search CLI """
     desc = 'sat-search (v%s)' % __version__
     dhf = argparse.ArgumentDefaultsHelpFormatter
     parser = argparse.ArgumentParser(description=desc, formatter_class=dhf)
 
-    group = parser.add_argument_group('Platform')
+    group = parser.add_argument_group('Platform search parameters')
     group.add_argument('--satellite_name')
     group.add_argument('--sensor')
 
-    group = parser.add_argument_group('Temporal')
+    group = parser.add_argument_group('Temporal search parameters')
     group.add_argument('--date')
     group.add_argument('--date_from')
     group.add_argument('--date_to')
 
-    group = parser.add_argument_group('Spatial')
+    group = parser.add_argument_group('Spatial search parameters')
     group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
     group.add_argument('--contains', help='long,lat points')
 
-    group = parser.add_argument_group('Quality')
+    group = parser.add_argument_group('Other search parameters')
     group.add_argument('--cloud_from', help='Lower limit for cloud coverage')
     group.add_argument('--cloud_to', help='Upper limit for cloud coverage')
+    group.add_argument('--param', nargs='*', help='Additional parameters of form KEY=VALUE', action=KeyValuePair)
 
     group = parser.add_argument_group('Output')
     group.add_argument('--printsum', help='Print basic metadata for matched scenes', default=False, action='store_true')
