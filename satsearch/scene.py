@@ -70,7 +70,11 @@ class Scene(object):
         else:
             keys = [key]
         # loop through keys and get files
-        return {k: self.download_file(links[k], path=path, nosubdirs=nosubdirs) for k in keys}
+        filenames = {}
+        for k in keys:
+            if k in links:
+                filenames[k] = self.download_file(links[k], path=path, nosubdirs=nosubdirs)
+        return filenames
 
     def download_file(self, url, path=None, nosubdirs=None):
         """ Download a file """
