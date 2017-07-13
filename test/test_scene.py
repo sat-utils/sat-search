@@ -88,6 +88,11 @@ class TestScene(unittest.TestCase):
             os.remove(f)
             self.assertFalse(os.path.exists(f))
 
+    def test_print_summary(self):
+        """ Print summary metadata """
+        scene = self.get_test_scene()
+        scene.print_summary()
+
 
 class TestScenes(unittest.TestCase):
 
@@ -108,6 +113,10 @@ class TestScenes(unittest.TestCase):
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
+
+    def test_print_summary(self):
+        scenes = self.load_scenes()
+        scenes.print_summary()
 
     def test_dates(self):
         """ Get dates of all scenes """

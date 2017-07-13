@@ -86,6 +86,10 @@ class Scene(object):
                     f.write(chunk)
         return filename
 
+    def print_summary(self):
+        """ Print summary of metadata """
+        print('%s: %s' % (self.date, self.scene_id))
+
 
 class Scenes(object):
     """ A collection of Scene objects """
@@ -101,6 +105,10 @@ class Scenes(object):
     def dates(self):
         """ Get sorted list of dates for all scenes """
         return sorted([datetime.strptime(s.date, '%Y-%m-%d') for s in self.scenes])
+
+    def print_summary(self):
+        """ Print summary of all scenes """
+        [s.print_summary() for s in self.scenes]
 
     def print_calendar(self):
         """ Print a calendar in terminal indicating which days there are scenes for """

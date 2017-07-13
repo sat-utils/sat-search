@@ -32,7 +32,8 @@ def parse_args(args):
     group.add_argument('--cloud_from', help='Lower limit for cloud coverage')
     group.add_argument('--cloud_to', help='Upper limit for cloud coverage')
 
-    group = parser.add_argument_group('Options')
+    group = parser.add_argument_group('Output')
+    group.add_argument('--printsum', help='Print basic metadata for matched scenes', default=False, action='store_true')
     group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
     group.add_argument('--save', help='Save Scenes as file', default=None)
 
@@ -50,6 +51,7 @@ def parse_args(args):
 def main(*args, **kwargs):
     """ Main function for performing a search """
     # arguments that aren't not search parameters
+    printsum = kwargs.pop('printsum', False)
     printcal = kwargs.pop('printcal', False)
     save = kwargs.pop('save', None)
 
@@ -62,6 +64,9 @@ def main(*args, **kwargs):
     print('Found %s matching scenes' % search.found())
 
     scenes = Scenes(search.scenes())
+
+    if printsum:
+        scenes.print_summary()
 
     if printcal:
         scenes.print_calendar()
