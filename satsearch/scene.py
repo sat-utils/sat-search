@@ -94,6 +94,10 @@ class Scenes(object):
         """ Initialize with a list of Scene objects """
         self.scenes = scenes
 
+    def __len__(self):
+        """ Number of scenes """
+        return len(self.scenes)
+
     def dates(self):
         """ Get sorted list of dates for all scenes """
         return sorted([datetime.strptime(s.date, '%Y-%m-%d') for s in self.scenes])
@@ -129,8 +133,9 @@ class Scenes(object):
             f.write(json.dumps({'scenes': scenes}))
 
     @classmethod
-    def load(cls, filename):
+    def load(cls, filename, savepath='', id_as_dir=True):
         """ Load a collections class from a file of metadata """
         with open(filename) as f:
-            scenes = json.load(f.read())['scenes']
-        return scenes
+            metadata = json.loads(f.read())['scenes']
+        scenes = [Scene(savepath=savepath, id_as_dir=id_as_dir, **md) for md in metadata]
+        return Scenes(scenes)
