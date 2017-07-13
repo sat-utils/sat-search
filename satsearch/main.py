@@ -34,7 +34,7 @@ def parse_args(args):
 
     group = parser.add_argument_group('Options')
     group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
-    group.add_argument('--save', help='Save Scenes as file', default=False, action='store_true')
+    group.add_argument('--save', help='Save Scenes as file', default=None)
 
     args = vars(parser.parse_args(args))
     args = {k: v for k, v in args.items() if v is not None}
@@ -74,7 +74,8 @@ def main(*args, **kwargs):
 
 def cli():
     args = parse_args(sys.argv[1:])
-    main(**args)
+    scenes = main(**args)
+    return len(scenes)
 
 
 if __name__ == "__main__":
