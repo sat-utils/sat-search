@@ -1,6 +1,8 @@
 import os
 import logging
 import requests
+from datetime import datetime
+import calendar
 
 
 logger = logging.getLogger(__name__)
@@ -82,3 +84,39 @@ class Scene(object):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
         return filename
+
+
+class Scenes(object):
+    """ A collection of Scene objects """
+
+    def __init__(self, scenes):
+        """ Initialize with a list of Scene objects """
+        self.scenes = scenes
+
+    def dates(self):
+        """ Get sorted list of dates for all scenes """
+        return sorted([datetime.strptime(s.date, '%Y-%m-%d') for s in self.scenes])
+
+    def print_calendar(self):
+        """ Print a calendar in terminal indicating which days there are scenes for """
+        dates = self.dates()
+
+        # create strings for printed calendar
+        total_months = lambda dt: dt.month + 12 * dt.year
+        cals = {}
+        for tot_m in range(total_months(dates[0])-1, total_months(dates[-1])):
+            y, m = divmod(tot_m, 12)
+            cals['%s-%s' % (y, m+1)] = calendar.month(y, m+1)
+
+        # color dates in calendar
+        for d in dates:
+            key = '%s-%s' % (d.year, d.month)
+            if cals[key].find(' %s ' % d.day) != -1:
+                cals[key] = cals[key].replace(' %s ' % d.day, ' \033[1;31m%s\033[0m ' % d.day)
+            elif cals[key].find(' %s\n' % d.day) != -1:
+                cals[key] = cals[key].replace(' %s\n' % d.day, ' \033[1;31m%s\033[0m\n' % d.day)
+            elif cals[key].find('%s ' % d.day) != -1:
+                cals[key] = cals[key].replace('%s ' % d.day, '\033[1;31m%s\033[0m ' % d.day)
+
+        for m in cals:
+            print(cals[m])
