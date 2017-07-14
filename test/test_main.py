@@ -3,6 +3,7 @@ import sys
 import unittest
 from mock import patch
 import json
+import shutil
 import satsearch.main as main
 
 
@@ -29,6 +30,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(args['satellite_name'], 'Landsat-8')
 
     def test_parse_args_with_geojson(self):
+        """ Test parsing of arguments with geojson file input """
         args = ('--intersects %s' % os.path.join(testpath, 'aoi.json')).split(' ')
         args = main.parse_args(args)
         aoi = json.loads(args['intersects'])
@@ -40,6 +42,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(len(scenes.scenes), 564)
 
     def test_main_options(self):
+        """ Test main program with output options """
         fname = os.path.join(testpath, 'test_main-save.json')
         scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', save=fname, printcal=True, printsum=True)
         self.assertEqual(len(scenes.scenes), 564)
@@ -52,3 +55,17 @@ class TestMain(unittest.TestCase):
         with patch.object(sys, 'argv', ['testprog'] + self.args):
             n = main.cli()
             self.assertEqual(n, 564)
+
+    def test_main_download(self):
+        """ Test main program with downloading """
+        with open(os.path.join(testpath, 'aoi.json')) as f:
+            aoi = json.dumps(json.load(f))
+        scenes = main.main(date_from='2017-01-05', date_to='2017-01-21', satellite_name='Landsat-8',
+                           intersects=aoi, dlthumbs=True, dlfiles=['MTL'], datadir=testpath)
+
+        self.assertEqual(len(scenes), 2)
+        for scene in scenes.scenes:
+            path = os.path.join(testpath, scene.platform, scene.scene_id)
+            self.assertTrue(os.path.exists(os.path.join(path, os.path.basename(scene.metadata['aws_thumbnail']))))
+            self.assertTrue(os.path.exists(os.path.join(path, os.path.basename(scene.links()['MTL']))))
+        shutil.rmtree(os.path.join(testpath, scene.platform))

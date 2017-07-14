@@ -105,6 +105,11 @@ class TestScene(unittest.TestCase):
 
 class TestScenes(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        """ Configure testing class """
+        config.DATADIR = testpath
+
     def load_scenes(self):
         return Scenes.load(os.path.join(testpath, 'scenes.json'))
 
