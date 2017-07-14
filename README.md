@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/sat-utils/sat-search.svg?style=svg&circle-token=a66861b5cbba7acd4abd7975f804ab061a365e1b)](https://circleci.com/gh/sat-utils/sat-search)
 
-A python3 library and a command line tool for searching publicly available satellite imagery using a conformant API, such as [sat-api](https://github.com/sat-utils/sat-api).
+A python3 library and a command line tool for discovering and downloading publicly available satellite imagery using a conformant API, such as [sat-api](https://github.com/sat-utils/sat-api).
 
 ## Installation
 sat-search has been developed and tested using Python 3.6 and Python2 is not supported. It is recommended [pyenv](https://github.com/pyenv/pyenv) is used to control Python versions, along with a virtual environment.
@@ -32,23 +32,6 @@ The command line program, *sat-search*, allows the user to query for available
 
 
 
-
-
-Example
-=======
-
-```
-from ssearch import Search
-results = Search.query(scene_id='LC81230172016109LGN00')
-results.returned
-results.returned
-1
-results.query
-{'scene_id': 'LC81230172016109LGN00', 'limit': 100}
-results.scenes
-[LC81230172016109LGN00]
-results.scenes[0].cloud_coverage
-46.24
 
 ## Development
 
