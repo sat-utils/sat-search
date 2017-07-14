@@ -40,7 +40,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            nosetests -v -s --with-coverage --cover-package satsearch
+            nosetests -v --with-coverage --cover-package satsearch
 
       - store_artifacts:
           path: test-reports
