@@ -61,8 +61,8 @@ class Search(object):
     def __init__(self, scene_id=[], **kwargs):
         """ Initialize a Search object with parameters """
         self.queries = []
-        if scene_id is None:
-            self.queries.append(kwargs)
+        if len(scene_id) == 0:
+            self.queries.append(Query(**kwargs))
         else:
             for s in scene_id:
                 kwargs.update({'scene_id': s})
