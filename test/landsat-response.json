@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "found": 1,
+    "name": "sat-api",
+    "license": "CC0-1.0",
+    "website": "https://api.developmentseed.org/satellites/",
+    "page": 1,
+    "limit": 1
+  },
+  "results": [
+    {
+      "scene_id": "LC80070292016240LGN01",
+      "product_id": "LC08_L1TP_007029_20160827_20170321_01_T1",
+      "satellite_name": "landsat-8",
+      "cloud_coverage": 39.42,
+      "date": "2016-08-27",
+      "thumbnail": "http://earthexplorer.usgs.gov/browse/landsat_8/2016/007/029/LC08_L1TP_007029_20160827_20170321_01_T1.jpg",
+      "data_geometry": {
+        "type": "Polygon",
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:EPSG:8.9:4326"
+          }
+        },
+        "coordinates": [
+          [
+            [
+              -61.12162,
+              45.24035
+            ],
+            [
+              -63.49159,
+              45.66751
+            ],
+            [
+              -64.0666,
+              43.95637
+            ],
+            [
+              -61.76423,
+              43.53311
+            ],
+            [
+              -61.12162,
+              45.24035
+            ]
+          ]
+        ]
+      },
+      "download_links": {
+        "usgs": "https://earthexplorer.usgs.gov/download/12864/LC80070292016240LGN01/STANDARD/EE",
+        "aws_s3": [
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_ANG.txt",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B1.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B2.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B3.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B4.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B5.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B6.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B7.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B8.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B9.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B10.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_B11.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_BQA.TIF",
+          "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_MTL.txt"
+        ],
+        "google": [
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_ANG.txt",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B1.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B2.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B3.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B4.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B5.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B6.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B7.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B8.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B9.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B10.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_B11.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_BQA.TIF",
+          "https://storage.cloud.google.com/gcp-public-data-landsat/LC08/01/007/029/LC08_L1TP_007029_20160827_20170321_01_T1/LC08_L1TP_007029_20160827_20170321_01_T1_MTL.txt"
+        ]
+      },
+      "aws_thumbnail": "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/LC80070292016240LGN01_thumb_large.jpg",
+      "aws_index": "http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN01/index.html",
+      "google_index": "https://console.cloud.google.com/storage/browser/gcp-public-data-landsat/LC08/007/029/LC08_L1TP_007029_20160827_20170321_01_T1",
+      "browseAvailable": "Y",
+      "browseURL": "http://earthexplorer.usgs.gov/browse/landsat_8/2016/007/029/LC08_L1TP_007029_20160827_20170321_01_T1.jpg",
+      "sceneID": "LC80070292016240LGN01",
+      "LANDSAT_PRODUCT_ID": "LC08_L1TP_007029_20160827_20170321_01_T1",
+      "sensor": "OLI_TIRS",
+      "acquisitionDate": "2016-08-27",
+      "dateUpdated": "2017-03-22",
+      "path": 7,
+      "row": 29,
+      "upperLeftCornerLatitude": 45.66751,
+      "upperLeftCornerLongitude": -63.49159,
+      "upperRightCornerLatitude": 45.24035,
+      "upperRightCornerLongitude": -61.12162,
+      "lowerLeftCornerLatitude": 43.95637,
+      "lowerLeftCornerLongitude": -64.0666,
+      "lowerRightCornerLatitude": 43.53311,
+      "lowerRightCornerLongitude": -61.76423,
+      "sceneCenterLatitude": 44.60831,
+      "sceneCenterLongitude": -62.60915,
+      "cloudCover": 3,
+      "cloudCoverFull": 39.42,
+      "dayOrNight": "DAY",
+      "sunElevation": 51.47102987,
+      "sunAzimuth": 148.91188021,
+      "receivingStation": null,
+      "sceneStartTime": "2016:240:14:55:18.5160730",
+      "sceneStopTime": "2016:240:14:55:50.2860700",
+      "imageQuality1": 9,
+      "DATA_TYPE_L1": "L1TP",
+      "cartURL": "http://earthexplorer.usgs.gov/order/process?dataset_name=LANDSAT_8_C1&ordered=LC80070292016240LGN01",
+      "ROLL_ANGLE": -0.001,
+      "GEOMETRIC_RMSE_MODEL": 7.791,
+      "GEOMETRIC_RMSE_MODEL_X": 5.602,
+      "GEOMETRIC_RMSE_MODEL_Y": 5.414,
+      "FULL_PARTIAL_SCENE": "FULL",
+      "NADIR_OFFNADIR": "NADIR",
+      "PROCESSING_SOFTWARE_VERSION": "LPGS_2.7.0",
+      "CPF_NAME": "LC08CPF_20160701_20160930_01.01",
+      "RLUT_FILE_NAME": "LC08RLUT_20150303_20431231_01_12.h5",
+      "BPF_NAME_OLI": "LO8BPF20160827144323_20160827151602.01",
+      "BPF_NAME_TIRS": "LT8BPF20160818225656_20160902083306.01",
+      "GROUND_CONTROL_POINTS_MODEL": "100",
+      "GROUND_CONTROL_POINTS_VERSION": "4",
+      "DATE_L1_GENERATED": "2017-03-21 17:34:13",
+      "TIRS_SSM_MODEL": "FINAL",
+      "COLLECTION_NUMBER": 1,
+      "COLLECTION_CATEGORY": "T1",
+      "CLOUD_COVER_LAND": 68.6
+    }
+  ]
+}
