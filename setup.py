@@ -6,10 +6,6 @@ __version__ = load_source('satsearch.version', 'satsearch/version.py').__version
 
 here = path.abspath(path.dirname(__file__))
 
-# Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
-
 # get the dependencies and installs
 with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
     all_reqs = f.read().split('\n')
@@ -20,9 +16,9 @@ dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' no
 setup(
     name='satsearch',
     author='Matthew Hanson (matthewhanson)',
+    author_email='matt.a.hanson@gmail.com',
     version=__version__,
     description='A python client for sat-api',
-    long_description=long_description,
     url='https://github.com/sat-utils/sat-search',
     license='MIT',
     classifiers=[
