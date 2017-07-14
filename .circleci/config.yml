@@ -1,7 +1,7 @@
 # Python CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
-#
+
 version: 2
 jobs:
   build:
@@ -45,3 +45,9 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+deployment:
+  deploy_to_pypi:
+    tag: /.*/
+    commands:
+      - echo "cause tags to build https://discuss.circleci.com/t/git-tag-deploys-in-2-0/9493/10"
