@@ -7,6 +7,8 @@ from .version import __version__
 from satsearch import Search, Scenes
 import satsearch.config as config
 
+
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
 
