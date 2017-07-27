@@ -61,6 +61,11 @@ class Scene(object):
         url = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
         return self.download_file(url, path=path, nosubdirs=nosubdirs)
 
+    def get_older_landsat_collection_links(self, link):
+        """ From a link string, generate links for previous versions """
+        sid = os.path.basename(link).split('_')[0]
+        return [link.replace(sid, sid[0:-1] + str(s)) for s in reversed(range(0, int(sid[-1]) + 1))]
+
     def download(self, key=None, source=_DEFAULT_SOURCE, path=None, nosubdirs=None):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         links = self.links(source=source)
@@ -73,7 +78,21 @@ class Scene(object):
         filenames = {}
         for k in keys:
             if k in links:
-                filenames[k] = self.download_file(links[k], path=path, nosubdirs=nosubdirs)
+                # work around because aws landsat not up to collection 1
+                # so try to download older collection data if data not available
+                if self.platform == 'landsat-8' and source == 'aws_s3':
+
+                    link = self.get_older_landsat_collection_links(links[k])
+                else:
+                    link = [links[k]]
+                for l in link:
+                    try:
+                        filenames[k] = self.download_file(l, path=path, nosubdirs=nosubdirs)
+                        break
+                    except Exception:
+                        logger.error('Unable to download %s' % l)
+                if k in filenames:
+                    logger.info('Downloaded %s as %s' % (l, filenames[k]))
         return filenames
 
     def download_file(self, url, path=None, nosubdirs=None):
