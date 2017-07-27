@@ -52,8 +52,8 @@ def parse_args(args):
                        default=False, action='store_true')
 
     group = parser.add_argument_group('Download')
-    group.add_argument('--dlthumbs', help='Download thumbnails', default=False, action='store_true')
-    group.add_argument('--dlfiles', help='Download files', default=None, nargs='*')
+    group.add_argument('--download', help='Download files', default=None, nargs='*')
+    group.add_argument('--source', help='Download source', default='aws_s3')
 
     args = vars(parser.parse_args(args))
     args = {k: v for k, v in args.items() if v is not None}
@@ -67,7 +67,7 @@ def parse_args(args):
 
 
 def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, printcal=False,
-         save=None, dlthumbs=None, dlfiles=None, **kwargs):
+         save=None, download=None, source='aws_s3', **kwargs):
     """ Main function for performing a search """
     config.DATADIR = datadir
     config.NOSUBDIRS = nosubdirs
@@ -95,14 +95,13 @@ def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, pri
     if save is not None:
         scenes.save(filename=save)
 
-    # download all thumbnails
-    if dlthumbs:
-        scenes.download_thumbnails(path=datadir, nosubdirs=nosubdirs)
-
     # download files given keys
-    if dlfiles is not None:
-        for key in dlfiles:
-            scenes.download(key=key, path=datadir, nosubdirs=nosubdirs)
+    if download is not None:
+        if 'thumb' in download:
+            scenes.download_thumbnails(path=datadir, nosubdirs=nosubdirs)
+            download.remvoe('thumb')
+        for key in download:
+            scenes.download(key=key, source=source, path=datadir, nosubdirs=nosubdirs)
 
     return scenes
 
