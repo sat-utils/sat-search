@@ -56,6 +56,14 @@ class Scene(object):
         keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
         return dict(zip(keys, files))
 
+    def geojson(self):
+        """ Return metadata as GeoJSON """
+        return {
+            'type': 'Feature',
+            'geometry': self.metadata['data_geometry'],
+            'properties': self.metadata
+        }
+
     def download_thumbnail(self, path=None, nosubdirs=None):
         """ Download thumbnail(s) for this scene """
         url = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
@@ -172,11 +180,22 @@ class Scenes(object):
         for m in cals:
             print(cals[m])
 
-    def save(self, filename):
+    def save(self, filename, geojson=False):
         """ Save scene metadata """
-        scenes = [s.metadata for s in self.scenes]
+        if geojson:
+            md = self.geojson()
+        else:
+            md = {'scenes': [s.metadata for s in self.scenes]}
         with open(filename, 'w') as f:
-            f.write(json.dumps({'scenes': scenes}))
+            f.write(json.dumps(md))
+
+    def geojson(self):
+        """ Get all metadata as GeoJSON """
+        features = [s.geojson() for s in self.scenes]
+        return {
+            'type': 'FeatureCollection',
+            'features': features
+        }
 
     @classmethod
     def load(cls, filename):
