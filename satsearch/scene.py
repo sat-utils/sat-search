@@ -93,9 +93,11 @@ class Scene(object):
         filename = os.path.join(path, os.path.basename(url))
         # download file
         logger.info('Downloading %s as %s' % (url, filename))
-        r = requests.get(url, stream=True)
+        resp = requests.get(url, stream=True)
+        if resp.status_code != 200:
+            raise Exception("Unable to download file %s" % url)
         with open(filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
+            for chunk in resp.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
         return filename
