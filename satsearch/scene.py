@@ -24,6 +24,7 @@ class Scene(object):
         required = ['scene_id', 'date', 'data_geometry', 'download_links']
         if not set(required).issubset(kwargs.keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
+        self.filenames = {}
         # TODO - check validity of date and geometry, at least one download link
 
     def __repr__(self):
@@ -83,7 +84,6 @@ class Scene(object):
         else:
             keys = [key]
         # loop through keys and get files
-        filenames = {}
         for k in keys:
             if k in links:
                 # work around because aws landsat not up to collection 1
@@ -94,14 +94,14 @@ class Scene(object):
                     link = [links[k]]
                 for l in link:
                     try:
-                        filenames[k] = self.download_file(l, path=path, nosubdirs=nosubdirs)
+                        self.filenames[k] = self.download_file(l, path=path, nosubdirs=nosubdirs)
                         break
                     except Exception:
                         logger.error('Unable to download %s' % l)
-                if k in filenames:
+                if k in self.filenames:
                     #self.metadata['download_links'][source][k] = l
-                    logger.info('Downloaded %s as %s' % (l, filenames[k]))
-        return filenames
+                    logger.info('Downloaded %s as %s' % (l, self.filenames[k]))
+        return self.filenames
 
     def download_file(self, url, path=None, nosubdirs=None):
         """ Download a file """

@@ -10,7 +10,7 @@ import satsearch.main as main
 testpath = os.path.dirname(__file__)
 
 
-class TestMain(unittest.TestCase):
+class Test(unittest.TestCase):
     """ Test main module """
 
     args = '--date 2017-01-01 --satellite_name Landsat-8'.split(' ')
@@ -65,8 +65,6 @@ class TestMain(unittest.TestCase):
 
         self.assertEqual(len(scenes), 2)
         for scene in scenes.scenes:
-            path = os.path.join(testpath, scene.platform, scene.scene_id)
-            from nose.tools import set_trace; set_trace()
-            self.assertTrue(os.path.exists(os.path.join(path, os.path.basename(scene.metadata['aws_thumbnail']))))
-            self.assertTrue(os.path.exists(os.path.join(path, os.path.basename(scene.links()['MTL']))))
+            self.assertTrue(os.path.exists(scene.filenames['thumb']))
+            self.assertTrue(os.path.exists(scene.filenames['MTL']))
         shutil.rmtree(os.path.join(testpath, scene.platform))
