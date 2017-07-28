@@ -103,9 +103,6 @@ def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, pri
 
     # download files given keys
     if download is not None:
-        if 'thumb' in download:
-            scenes.download_thumbnails(path=datadir, nosubdirs=nosubdirs)
-            download.remvoe('thumb')
         for key in download:
             scenes.download(key=key, source=source, path=datadir, nosubdirs=nosubdirs)
 

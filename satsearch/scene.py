@@ -54,7 +54,12 @@ class Scene(object):
         files = self.metadata['download_links'][source]
         prefix = os.path.commonprefix(files)
         keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
-        return dict(zip(keys, files))
+        links = dict(zip(keys, files))
+        if source == 'aws_s3' and 'aws_thumbnail' in self.metadata:
+            links['thumb'] = self.metadata['aws_thumbnail']
+        else:
+            links['thumb'] = self.metadata['thumbnail']
+        return links
 
     def geojson(self):
         """ Return metadata as GeoJSON """
@@ -63,11 +68,6 @@ class Scene(object):
             'geometry': self.metadata['data_geometry'],
             'properties': self.metadata
         }
-
-    def download_thumbnail(self, path=None, nosubdirs=None):
-        """ Download thumbnail(s) for this scene """
-        url = self.metadata['thumbnail'] if 'aws_thumbnail' not in self.metadata else self.metadata['aws_thumbnail']
-        return self.download_file(url, path=path, nosubdirs=nosubdirs)
 
     def get_older_landsat_collection_links(self, link):
         """ From a link string, generate links for previous versions """
@@ -89,7 +89,6 @@ class Scene(object):
                 # work around because aws landsat not up to collection 1
                 # so try to download older collection data if data not available
                 if self.platform == 'landsat-8' and source == 'aws_s3':
-
                     link = self.get_older_landsat_collection_links(links[k])
                 else:
                     link = [links[k]]
@@ -100,6 +99,7 @@ class Scene(object):
                     except Exception:
                         logger.error('Unable to download %s' % l)
                 if k in filenames:
+                    #self.metadata['download_links'][source][k] = l
                     logger.info('Downloaded %s as %s' % (l, filenames[k]))
         return filenames
 
@@ -204,9 +204,6 @@ class Scenes(object):
             metadata = json.loads(f.read())['scenes']
         scenes = [Scene(**md) for md in metadata]
         return Scenes(scenes)
-
-    def download_thumbnails(self, **kwargs):
-        return [s.download_thumbnail(**kwargs) for s in self.scenes]
 
     def download(self, **kwargs):
         return [s.download(**kwargs) for s in self.scenes]

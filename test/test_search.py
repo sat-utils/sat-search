@@ -95,7 +95,7 @@ class TestSearch(unittest.TestCase):
 
     def test_search(self):
         """ Perform simple query """
-        with open(os.path.join(testpath, 'aoi.json')) as f:
+        with open(os.path.join(testpath, 'aoi1.geojson')) as f:
             aoi = json.dumps(json.load(f))
         search = Search(date='2017-01-05', satellite_name='Landsat-8', intersects=aoi)
         self.assertEqual(search.found(), 1)

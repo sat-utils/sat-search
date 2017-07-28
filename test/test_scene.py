@@ -72,7 +72,7 @@ class TestScene(unittest.TestCase):
     def test_download_thumbnail(self):
         """ Get thumbnail for scene """
         scene = self.get_test_scene()
-        fname = scene.download_thumbnail()
+        fname = scene.download(key='thumb')['thumb']
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
@@ -129,6 +129,7 @@ class TestScenes(unittest.TestCase):
         self.assertFalse(os.path.exists(fname))
 
     def test_print_summary(self):
+        """ Print summary of scenes """
         scenes = self.load_scenes()
         scenes.print_summary()
 
@@ -144,15 +145,17 @@ class TestScenes(unittest.TestCase):
         scenes.print_calendar()
 
     def test_download_thumbnails(self):
+        """ Download all thumbnails """
         scenes = self.load_scenes()
-        fnames = scenes.download_thumbnails()
-        for f in fnames:
+        fnames = scenes.download(key='thumb')
+        for f in fnames[0].values():
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
         shutil.rmtree(os.path.join(testpath, 'landsat-8'))
 
     def test_download(self):
+        """ Download a data file from all scenes """
         scenes = self.load_scenes()
         dls = scenes.download(key='MTL')
         for s in dls:
