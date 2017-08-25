@@ -103,6 +103,13 @@ class Scene(object):
                     logger.info('Downloaded %s as %s' % (l, self.filenames[k]))
         return self.filenames
 
+    @classmethod
+    def mkdirp(cls, path):
+        """ Recursively make directory """
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        return path
+
     def download_file(self, url, path=None, nosubdirs=None):
         """ Download a file """
         if path is None:
@@ -114,8 +121,9 @@ class Scene(object):
         if not nosubdirs:
             path = os.path.join(path, self.platform, self.scene_id)
         # make output path if it does not exist
-        if not os.path.exists(path):
-            os.makedirs(path, exist_ok=True)
+        self.mkdirp(path)
+        #if not os.path.exists(path):
+        #    os.makedirs(path, exist_ok=True)
         # if basename not provided use basename of url
         filename = os.path.join(path, os.path.basename(url))
         # download file
