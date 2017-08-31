@@ -188,14 +188,10 @@ class Scenes(object):
         for m in cals:
             print(cals[m])
 
-    def save(self, filename, geojson=False):
+    def save(self, filename):
         """ Save scene metadata """
-        if geojson:
-            md = self.geojson()
-        else:
-            md = {'scenes': [s.metadata for s in self.scenes]}
         with open(filename, 'w') as f:
-            f.write(json.dumps(md))
+            f.write(json.dumps(self.geojson()))
 
     def geojson(self):
         """ Get all metadata as GeoJSON """
@@ -209,8 +205,8 @@ class Scenes(object):
     def load(cls, filename):
         """ Load a collections class from a file of metadata """
         with open(filename) as f:
-            metadata = json.loads(f.read())['scenes']
-        scenes = [Scene(**md) for md in metadata]
+            metadata = json.loads(f.read())['features']
+        scenes = [Scene(**(md['properties'])) for md in metadata]
         return Scenes(scenes)
 
     def download(self, **kwargs):

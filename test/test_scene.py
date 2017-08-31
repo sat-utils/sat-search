@@ -111,7 +111,7 @@ class TestScenes(unittest.TestCase):
         config.DATADIR = testpath
 
     def load_scenes(self):
-        return Scenes.load(os.path.join(testpath, 'scenes.json'))
+        return Scenes.load(os.path.join(testpath, 'scenes.geojson'))
 
     def test_load(self):
         """ Initialize Scenes with list of Scene objects """
