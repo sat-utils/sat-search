@@ -91,7 +91,7 @@ def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, pri
 
     # print calendar
     if printcal:
-        scenes.print_calendar()
+        print(scenes.text_calendar())
 
     # save all metadata in JSON file
     if save is not None:

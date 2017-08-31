@@ -155,38 +155,72 @@ class Scenes(object):
 
     def dates(self):
         """ Get sorted list of dates for all scenes """
-        return sorted([datetime.strptime(s.date, '%Y-%m-%d') for s in self.scenes])
+        return sorted([datetime.strptime(s.date, '%Y-%m-%d').date() for s in self.scenes])
 
     def print_summary(self):
         """ Print summary of all scenes """
         [s.print_summary() for s in self.scenes]
 
-    def print_calendar(self):
-        """ Print a calendar in terminal indicating which days there are scenes for """
+    def text_calendar(self):
+        """ Get calendar for dates """
+        # start and end dates
         dates = self.dates()
+        year1 = dates[0].year
+        year2 = dates[-1].year
 
-        if len(dates) < 1:
-            return
+        # start and end rows
+        cols = 3
+        row1 = dates[0].month % cols - 1
+        row2 = dates[-1].month % cols
 
-        # create strings for printed calendar
-        total_months = lambda dt: dt.month + 12 * dt.year
-        cals = {}
-        for tot_m in range(total_months(dates[0])-1, total_months(dates[-1])):
-            y, m = divmod(tot_m, 12)
-            cals['%s-%s' % (y, m+1)] = calendar.month(y, m+1)
+        # generate base calendar array
+        cal = calendar.Calendar()
+        years = []
+        for yr in range(year1, year2+1):
+            ycal = cal.yeardatescalendar(yr, width=cols)
+            if yr == year1 and yr == year2:
+                ycal = ycal[row1:row2]
+            elif yr == year1:
+                ycal = ycal[row1:]
+            elif yr == year2:
+                ycal = ycal[:row2]
+            years.append(ycal)
+        return years
 
-        # color dates in calendar
-        for d in dates:
-            key = '%s-%s' % (d.year, d.month)
-            if cals[key].find(' %s ' % d.day) != -1:
-                cals[key] = cals[key].replace(' %s ' % d.day, ' \033[1;31m%s\033[0m ' % d.day)
-            elif cals[key].find(' %s\n' % d.day) != -1:
-                cals[key] = cals[key].replace(' %s\n' % d.day, ' \033[1;31m%s\033[0m\n' % d.day)
-            elif cals[key].find('%s ' % d.day) != -1:
-                cals[key] = cals[key].replace('%s ' % d.day, '\033[1;31m%s\033[0m ' % d.day)
+        # month and day headers
+        months = calendar.month_name
+        days = 'Mo Tu We Th Fr Sa Su'
+        hformat = '{:^20}  {:^20}  {:^20}\n'
+        rformat = ' '.join(['{:>2}'] * 7) + '  '
 
-        for m in cals:
-            print(cals[m])
+        # create output
+        out = ''
+        for iy, yrcal in enumerate(years):
+            out += '{:^64}\n\n'.format(year1 + iy)
+            for im, mrow in enumerate(yrcal):
+                names = [months[im*cols+1], months[im*cols+2], months[im*cols+3]]
+                out += hformat.format(names[0], names[1], names[2])
+                out += hformat.format(days, days, days)
+                for r in range(0, len(mrow[0])):
+                    for c in range(0, cols):
+                        if len(mrow[c]) == 4:
+                            mrow[c].append([''] * 7)
+                        if len(mrow[c]) == 5:
+                            mrow[c].append([''] * 7)
+                        wk = []
+                        for d in mrow[c][r]:
+                            if d == '' or d.month != im * cols + c + 1:
+                                wk.append('')
+                            else:
+                                if d in dates:
+                                    wk.append('\033[31m%s\033[0m' % str(d.day).rjust(2, ' '))
+                                else:
+                                    wk.append(d.day)
+                        out += rformat.format(*wk)
+
+                    out += '\n'
+                out += '\n'
+        return out
 
     def save(self, filename):
         """ Save scene metadata """

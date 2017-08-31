@@ -139,10 +139,11 @@ class TestScenes(unittest.TestCase):
         dates = scenes.dates()
         self.assertEqual(len(dates), 10)
 
-    def test_print_calendar(self):
-        """ Print calendar showing dates """
+    def test_text_calendar(self):
+        """ Get calendar """
         scenes = self.load_scenes()
-        scenes.print_calendar()
+        cal = scenes.text_calendar()
+        self.assertTrue(len(cal) > 500)
 
     def test_download_thumbnails(self):
         """ Download all thumbnails """
