@@ -185,7 +185,6 @@ class Scenes(object):
             elif yr == year2:
                 ycal = ycal[:row2]
             years.append(ycal)
-        return years
 
         # month and day headers
         months = calendar.month_name

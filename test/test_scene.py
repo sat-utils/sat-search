@@ -143,7 +143,7 @@ class TestScenes(unittest.TestCase):
         """ Get calendar """
         scenes = self.load_scenes()
         cal = scenes.text_calendar()
-        self.assertTrue(len(cal) > 500)
+        self.assertTrue(len(cal) > 250)
 
     def test_download_thumbnails(self):
         """ Download all thumbnails """
