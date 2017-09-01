@@ -58,7 +58,7 @@ class TestScene(unittest.TestCase):
     def test_init(self):
         """ Initialize a scene """
         scene = self.get_test_scene()
-        self.assertEqual(scene.date, self.md['date'])
+        self.assertEqual(scene.date, str(self.md['date']))
         self.assertEqual(scene.scene_id, self.md['scene_id'])
         self.assertEqual(scene.geometry, self.md['data_geometry'])
         self.assertEqual(scene.sources, self.md['download_links'].keys())

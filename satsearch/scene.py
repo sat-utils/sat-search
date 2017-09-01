@@ -4,6 +4,7 @@ import requests
 import json
 from datetime import datetime
 import calendar
+import satsearch.utils as utils
 import satsearch.config as config
 
 
@@ -40,7 +41,7 @@ class Scene(object):
 
     @property
     def date(self):
-        return self.metadata['date']
+        return datetime.strptime(self.metadata['date'], '%Y-%m-%d').date()
 
     @property
     def geometry(self):
@@ -155,7 +156,14 @@ class Scenes(object):
 
     def dates(self):
         """ Get sorted list of dates for all scenes """
-        return sorted([datetime.strptime(s.date, '%Y-%m-%d').date() for s in self.scenes])
+        return sorted([s.date for s in self.scenes])
+
+    def sensors(self, date=None):
+        """ List of all available sensors across scenes """
+        if date is None:
+            return list(set([s.platform for s in self.scenes]))
+        else:
+            return list(set([s.platform for s in self.scenes if s.date == date]))
 
     def print_summary(self):
         """ Print summary of all scenes """
@@ -163,63 +171,14 @@ class Scenes(object):
 
     def text_calendar(self):
         """ Get calendar for dates """
-        # start and end dates
-        dates = self.dates()
-        year1 = dates[0].year
-        year2 = dates[-1].year
-
-        # start and end rows
-        cols = 3
-        row1 = dates[0].month % cols - 1
-        row2 = dates[-1].month % cols
-
-        # generate base calendar array
-        cal = calendar.Calendar()
-        years = []
-        for yr in range(year1, year2+1):
-            ycal = cal.yeardatescalendar(yr, width=cols)
-            if yr == year1 and yr == year2:
-                ycal = ycal[row1:row2]
-            elif yr == year1:
-                ycal = ycal[row1:]
-            elif yr == year2:
-                ycal = ycal[:row2]
-            years.append(ycal)
-
-        # month and day headers
-        months = calendar.month_name
-        days = 'Mo Tu We Th Fr Sa Su'
-        hformat = '{:^20}  {:^20}  {:^20}\n'
-        rformat = ' '.join(['{:>2}'] * 7) + '  '
-
-        # create output
-        out = ''
-        for iy, yrcal in enumerate(years):
-            out += '{:^64}\n\n'.format(year1 + iy)
-            for im, mrow in enumerate(yrcal):
-                names = [months[im*cols+1], months[im*cols+2], months[im*cols+3]]
-                out += hformat.format(names[0], names[1], names[2])
-                out += hformat.format(days, days, days)
-                for r in range(0, len(mrow[0])):
-                    for c in range(0, cols):
-                        if len(mrow[c]) == 4:
-                            mrow[c].append([''] * 7)
-                        if len(mrow[c]) == 5:
-                            mrow[c].append([''] * 7)
-                        wk = []
-                        for d in mrow[c][r]:
-                            if d == '' or d.month != im * cols + c + 1:
-                                wk.append('')
-                            else:
-                                if d in dates:
-                                    wk.append('\033[31m%s\033[0m' % str(d.day).rjust(2, ' '))
-                                else:
-                                    wk.append(d.day)
-                        out += rformat.format(*wk)
-
-                    out += '\n'
-                out += '\n'
-        return out
+        date_labels = {}
+        for d in self.dates():
+            sensors = self.sensors(d)
+            if len(sensors) > 1:
+                date_labels[d] = 'Multiple'
+            else:
+                date_labels[d] = sensors[0]
+        return utils.get_text_calendar(date_labels)
 
     def save(self, filename):
         """ Save scene metadata """
