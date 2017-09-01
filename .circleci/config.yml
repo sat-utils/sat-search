@@ -2,50 +2,97 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 
+defaults: &defaults
+  working_directory: /tmp
+  docker:
+    - image: circleci/python:3.6.1
+
+
 version: 2
 jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/python:3.6.1
-
-    working_directory: ~/repo
-
+  checkout_code:
+    <<: *defaults
     steps:
       - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - save_cache:
+          key: v1-repo-{{ checksum ".circle-sha" }}
+          paths:
+            - ~/circleci
 
-      # Download and cache dependencies
+  install_dependencies:
+    <<: *defaults
+    steps:
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha      
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
-
-      - run:
-          name: install dependencies
-          command: |
+            - v1-repo-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+      - run: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
-
       - save_cache:
+          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
           paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
-        
+            - ~/circleci
+  test:
+    <<: *defaults
+    steps:
       - run:
-          name: run tests
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-repo-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Run tests
           command: |
             . venv/bin/activate
             nosetests -v --with-coverage --cover-package satsearch
 
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
+  deploy:
+    <<: *defaults
+    steps:
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-repo-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            pip install twine
+            python setup.py dist
+            twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist
 
-deployment:
-  deploy_to_pypi:
-    tag: /.*/
-    commands:
-      - pip install twine
-      - python setup.py sdist
-      - twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - checkout_code
+      - install_dependencies:
+          requires: checkout_code
+      - test:
+          requires: install_dependencies
+      - deploy:
+          requires: test
+          filters:
+            tags:
+              only: /^[0-9]\.[0-9]\.[0-9]/
