@@ -31,14 +31,14 @@ jobs:
             - v1-repo-{{ checksum ".circle-sha" }}
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+            - v1-dependencies-{{ checksum ".circle-sha" }}
       - run: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
       - save_cache:
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+          key: v1-dependencies-{{ checksum ".circle-sha" }}
           paths:
             - ~/circleci
   test:
@@ -54,7 +54,7 @@ jobs:
             - v1-repo-{{ checksum ".circle-sha" }}
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+            - v1-dependencies-{{ checksum ".circle-sha" }}
       - run:
           name: Run tests
           command: |
@@ -74,7 +74,7 @@ jobs:
             - v1-repo-{{ checksum ".circle-sha" }}
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+            - v1-dependencies-{{ checksum ".circle-sha" }}
       - run:
           name: Run tests
           command: |
