@@ -81,7 +81,7 @@ jobs:
           command: |
             . venv/bin/activate
             pip install twine
-            python setup.py dist
+            python setup.py sdist
             VERSION=`awk -F\' '{print $2,$4}' satsearch/version.py`
             git tag $VERSION
             git push origin $VERSION
