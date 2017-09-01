@@ -90,14 +90,17 @@ workflows:
     jobs:
       - checkout_code
       - install_dependencies:
-          requires: checkout_code
+          requires:
+            - checkout_code
       - test:
-          requires: install_dependencies
+          requires:
+            - install_dependencies
           filters:
             tags:
               only: /.*/
       - deploy:
-          requires: test
+          requires:
+            - test
           filters:
             tags:
               only: /^[0-9]\.[0-9]\.[0-9]/
