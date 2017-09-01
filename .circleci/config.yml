@@ -76,7 +76,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum ".circle-sha" }}
       - run:
-          name: Run tests
+          name: Deploy
           command: |
             . venv/bin/activate
             pip install twine
