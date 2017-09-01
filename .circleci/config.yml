@@ -94,8 +94,6 @@ workflows:
       - test:
           requires: install_dependencies
           filters:
-            branch:
-              only: develop
             tags:
               only: /.*/
       - deploy:
