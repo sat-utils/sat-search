@@ -82,7 +82,10 @@ jobs:
             . venv/bin/activate
             pip install twine
             python setup.py dist
-            twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist
+            VERSION=`awk -F\' '{print $2,$4}' satsearch/version.py`
+            git tag $VERSION
+            git push origin $VERSION
+            #twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
 
 
 workflows:
@@ -96,10 +99,9 @@ workflows:
       - test:
           requires:
             - install_dependencies
-
-#      - deploy:
-#          requires:
-#            - test
-#          filters:
-#            tags:
-#              only: /^[0-9]\.[0-9]\.[0-9]/
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
