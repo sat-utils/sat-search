@@ -15,8 +15,8 @@ def get_text_calendar_dates(date1, date2, cols=3):
     year2 = date2.year
 
     # start and end rows
-    row1 = (date1.month - 1) / cols
-    row2 = (date2.month - 1) / cols + 1
+    row1 = int((date1.month - 1) / cols)
+    row2 = int((date2.month - 1) / cols) + 1
 
     # generate base calendar array
     Calendar = calendar.Calendar()
