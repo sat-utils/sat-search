@@ -3,11 +3,15 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 version: 2
 
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/python:3.6.2
+    - image: circleci/python:2.7.13
+
 jobs:
   checkout_code:
-    working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.6.1
+    <<: *defaults
     steps:
       - checkout
       - run:
@@ -19,9 +23,7 @@ jobs:
             - ~/repo
 
   install_dependencies:
-    working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.6.1
+    <<: *defaults
     steps:
       - run:
           name: save SHA to a file
@@ -43,9 +45,7 @@ jobs:
             - ~/repo
 
   test:
-    working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.6.1
+    <<: *defaults
     steps:
       - run:
           name: save SHA to a file
@@ -63,9 +63,7 @@ jobs:
             nosetests -v --with-coverage --cover-package satsearch
 
   deploy:
-    working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.6.1
+    <<: *defaults
     steps:
       - run:
           name: save SHA to a file
