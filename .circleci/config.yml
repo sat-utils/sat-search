@@ -85,7 +85,7 @@ jobs:
             VERSION=`awk -F\' '{print $2,$4}' satsearch/version.py`
             git tag $VERSION
             git push origin $VERSION
-            #twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
+            twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
 
 
 workflows:
