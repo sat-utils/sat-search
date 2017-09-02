@@ -19,14 +19,14 @@ references:
   restore_repo: &restore_repo
     restore_cache:
       keys:
-        - v1-repo-{{ .Branch }}-{{ .Revision }}
-        - v1-repo-{{ .Branch }}
-        - v1-repo
+        - v2-repo-{{ .Branch }}-{{ .Revision }}
+        - v2-repo-{{ .Branch }}
+        - v2-repo
 
   dependencies_key: &dependencies_key
-    v1-dependencies-{{ checksum "requirements.txt"}}
+    v2-dependencies-{{ checksum "requirements.txt"}}
   dependencies_backup_key: &dependencies_backup_key
-    v1-dependencies
+    v2-dependencies
 
   restore_dependencies: &restore_dependencies
     restore_cache:
@@ -43,7 +43,7 @@ jobs:
       - *restore_repo
       - checkout
       - save_cache:
-          key: v1-repo-{{ .Branch }}-{{ .Revision }}
+          key: v2-repo-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/project
 
@@ -53,7 +53,7 @@ jobs:
       - *restore_repo
       - checkout
       - save_cache:
-          key: v1-repo-{{ .Branch }}-{{ .Revision }}
+          key: v2-repo-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/project
 
