@@ -35,6 +35,16 @@ references:
 jobs:
 
   checkout_code:
+    <<: *container_python27
+    steps:
+      - *restore_repo
+      - checkout
+      - save_cache:
+          key: v1-repo-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/
+
+  checkout_code:
     <<: *container_python36
     steps:
       - *restore_repo
@@ -134,7 +144,7 @@ workflows:
               only: master
   build_test_27:
     jobs:
-      - checkout_code
+      - checkout_code_27
       - install_dependencies_27:
           requires:
             - checkout_code
