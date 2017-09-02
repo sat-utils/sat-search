@@ -8,6 +8,7 @@ defaults: &defaults
   docker:
     - image: circleci/python:3.6.2
 
+
 jobs:
   checkout_code:
     <<: *defaults
@@ -73,10 +74,11 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum ".circle-sha" }}
-      - run:
-          name: Deploy
+      - add_ssh_keys:
           fingerprints:
             - "16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48"
+      - run:
+          name: Deploy
           command: |
             . venv/bin/activate
             pip install twine
