@@ -14,6 +14,7 @@ references:
   container_python36: &container_python36
     docker:
       - image: circleci/python:3.6.2
+      - image: circleci/python:2.7.13
     working_dir: ~/project
 
   restore_repo: &restore_repo
@@ -22,18 +23,6 @@ references:
         - v2-repo-{{ .Branch }}-{{ .Revision }}
         - v2-repo-{{ .Branch }}
         - v2-repo
-
-  dependencies_key: &dependencies_key
-    v2-dependencies-{{ checksum "requirements.txt"}}
-  dependencies_backup_key: &dependencies_backup_key
-    v2-dependencies
-
-  restore_dependencies: &restore_dependencies
-    restore_cache:
-      keys:
-        - *dependencies_key
-        - *dependencies_backup_key
-
 
 jobs:
 
@@ -47,59 +36,45 @@ jobs:
           paths:
             - ~/project
 
-  install_dependencies_27:
+  install_and_test_27:
     <<: *container_python27
     steps:  
       - *restore_repo
-      - *restore_dependencies
+      - restore_cache:
+          keys: 
+            - v2-dependencies27-{{ checksum "requirements.txt"}}
+            - v2-dependencies27
       - run: |
             pip install virtualenv
             virtualenv ~/venv27
             . ~/venv27/bin/activate
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
+            nosetests -v --with-coverage --cover-package satsearch
       - save_cache:
-          key: *dependencies_key
+          key: v2-dependencies27-{{ checksum "requirements.txt"}}
           paths:
-            - ~/venv27
+            - ~/venv
 
-  install_dependencies:
+  install_and_test_36:
     <<: *container_python36
     steps:  
       - *restore_repo
-      - *restore_dependencies
+      - restore_cache:
+          keys: 
+            - v2-dependencies36-{{ checksum "requirements.txt"}}
+            - v2-dependencies36
       - run: |
             python3 -m venv ~/venv
             . ~/venv/bin/activate
             pwd
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
+            nosetests -v --with-coverage --cover-package satsearch
       - save_cache:
-          key: *dependencies_key
+          key: v2-dependencies36-{{ checksum "requirements.txt"}}
           paths:
             - ~/venv
-
-  test_27:
-    <<: *container_python27
-    steps:
-      - *restore_repo
-      - *restore_dependencies
-      - run:
-          name: Run tests
-          command: |
-            . ~/venv/bin/activate
-            nosetests -v --with-coverage --cover-package satsearch
-
-  test:
-    <<: *container_python36
-    steps:
-      - *restore_repo
-      - *restore_dependencies
-      - run:
-          name: Run tests
-          command: |
-            . ~/venv/bin/activate
-            nosetests -v --with-coverage --cover-package satsearch
 
   deploy:
     <<: *container_python36
@@ -125,25 +100,18 @@ workflows:
   build_test_deploy:
     jobs:
       - checkout_code
-      - install_dependencies:
+      - install_and_test_36:
           requires:
             - checkout_code
-      - test:
-          requires:
-            - install_dependencies
       - deploy:
           requires:
-            - test
+            - install_and_test_36
           filters:
             branches:
               only: master
   build_test_27:
     jobs:
       - checkout_code
-      - install_dependencies_27:
+      - install_and_test_27:
           requires:
             - checkout_code
-      - test_27:
-          requires:
-            - install_dependencies_27
-
