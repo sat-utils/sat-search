@@ -74,13 +74,11 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum ".circle-sha" }}
-      - add_ssh_keys:
-          fingerprints:
-            - "16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48"
       - run:
           name: Deploy
           command: |
             . venv/bin/activate
+            ssh-keyscan github.com >> ~/.ssh/config
             pip install twine
             python setup.py sdist
             VERSION=`awk -F\' '{print $2,$4}' satsearch/version.py`
