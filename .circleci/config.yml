@@ -34,7 +34,7 @@ references:
 
 jobs:
 
-  checkout_code:
+  checkout_code_27:
     <<: *container_python27
     steps:
       - *restore_repo
