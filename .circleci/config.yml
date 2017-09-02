@@ -80,7 +80,10 @@ jobs:
     <<: *container_python36
     steps:
       - *restore_repo
-      - *restore_dependencies
+      - restore_cache:
+          keys: 
+            - v2-dependencies36-{{ checksum "requirements.txt"}}
+            - v2-dependencies36
       - run:
           name: Deploy
           command: |
