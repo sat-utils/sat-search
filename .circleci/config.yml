@@ -75,6 +75,8 @@ jobs:
             - v1-dependencies-{{ checksum ".circle-sha" }}
       - run:
           name: Deploy
+          fingerprints:
+
           command: |
             . venv/bin/activate
             pip install twine
@@ -83,7 +85,6 @@ jobs:
             git tag $VERSION
             git push origin $VERSION
             twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
-
 
 workflows:
   version: 2
