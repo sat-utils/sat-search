@@ -7,14 +7,14 @@ version: 2
 references:
 
   container_python27: &container_python27
-    working_dir: ~/repo
     docker:
       - image: circleci/python:2.7.13
+    working_dir: ~/repo
 
   container_python36: &container_python36
-    working_dir: ~/repo
     docker:
       - image: circleci/python:3.6.2
+    working_dir: ~/repo
 
   restore_repo: &restore_repo
     restore_cache:
