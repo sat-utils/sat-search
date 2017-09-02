@@ -42,7 +42,7 @@ jobs:
       - save_cache:
           key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ~/
+            - ~/repo
 
   checkout_code:
     <<: *container_python36
@@ -52,7 +52,7 @@ jobs:
       - save_cache:
           key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ~/
+            - ~/repo
 
   install_dependencies_27:
     <<: *container_python27
