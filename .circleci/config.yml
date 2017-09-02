@@ -60,14 +60,14 @@ jobs:
       - *restore_repo
       - *restore_dependencies
       - run: |
-            python -m venv venv
-            . venv/bin/activate
+            python -m venv ~/venv
+            . ~/venv/bin/activate
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
       - save_cache:
           key: dependencies_key
           paths:
-            - venv
+            - ~/venv
 
   install_dependencies:
     <<: *container_python36
@@ -75,14 +75,14 @@ jobs:
       - *restore_repo
       - *restore_dependencies
       - run: |
-            python3 -m venv venv
-            . venv/bin/activate
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
       - save_cache:
           key: dependencies_key
           paths:
-            - venv
+            - ~/venv
 
   test_27:
     <<: *container_python27
