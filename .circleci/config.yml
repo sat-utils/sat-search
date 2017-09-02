@@ -147,7 +147,7 @@ workflows:
       - checkout_code_27
       - install_dependencies_27:
           requires:
-            - checkout_code
+            - checkout_code_27
       - test_27:
           requires:
             - install_dependencies_27
