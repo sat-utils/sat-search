@@ -146,13 +146,13 @@ workflows:
           filters:
             branches:
               only: master
-#  build_test_27:
-#    jobs:
-#      - checkout_code_27
-#      - install_dependencies_27:
-#          requires:
-#            - checkout_code_27
-#      - test_27:
-#          requires:
-#            - install_dependencies_27
+  build_test_27:
+    jobs:
+      - checkout_code_27
+      - install_dependencies_27:
+          requires:
+            - checkout_code_27
+      - test_27:
+          requires:
+            - install_dependencies_27
 
