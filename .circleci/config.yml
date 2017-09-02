@@ -44,6 +44,21 @@ jobs:
           paths:
             - .
 
+  install_dependencies_27:
+    <<: *container_python27
+    steps:  
+      - *restore_repo
+      - *restore_dependencies
+      - run: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            pip install -r requirements-dev.txt
+      - save_cache:
+          key: dependencies_key
+          paths:
+            - ./dependencies
+
   install_dependencies:
     <<: *container_python36
     steps:  
@@ -58,6 +73,17 @@ jobs:
           key: dependencies_key
           paths:
             - ./dependencies
+
+  test_27:
+    <<: *container_python27
+    steps:
+      - *restore_repo
+      - *restore_dependencies
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            nosetests -v --with-coverage --cover-package satsearch
 
   test:
     <<: *container_python36
@@ -106,3 +132,12 @@ workflows:
           filters:
             branches:
               only: master
+  build_test_27:
+      - checkout_code
+      - install_dependencies_27:
+          requires:
+            - checkout_code
+      - test_27:
+          requires:
+            - install_dependencies_27
+
