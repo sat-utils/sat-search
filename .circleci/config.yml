@@ -54,14 +54,14 @@ jobs:
       - *restore_dependencies
       - run: |
             pip install virtualenv
-            virtualenv ~/venv
-            . ~/venv/bin/activate
+            virtualenv ~/venv27
+            . ~/venv27/bin/activate
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
       - save_cache:
           key: *dependencies_key
           paths:
-            - ~/venv
+            - ~/venv27
 
   install_dependencies:
     <<: *container_python36
