@@ -6,8 +6,13 @@ version: 2
 
 references:
 
-  defaults: &defaults
-    working_directory: ~/repo
+  container_python27: &container_python27
+    working_dir: ~/
+    docker:
+      - image: circleci/python:2.7.13
+
+  container_python36: &container_python36
+    working_dir: ~/
     docker:
       - image: circleci/python:3.6.2
 
@@ -30,7 +35,7 @@ references:
 jobs:
 
   checkout_code:
-    <<: *defaults
+    <<: *container_python36
     steps:
       - *restore_repo
       - checkout
@@ -40,7 +45,7 @@ jobs:
             - ~/
 
   install_dependencies:
-    <<: *defaults
+    <<: *container_python36
     steps:  
       - *restore_repo
       - *restore_dependencies
@@ -52,10 +57,10 @@ jobs:
       - save_cache:
           key: dependencies_key
           paths:
-            - ~/dependencies
+            - ~/
 
   test:
-    <<: *defaults
+    <<: *container_python36
     steps:
       - *restore_repo
       - *restore_dependencies
@@ -66,7 +71,7 @@ jobs:
             nosetests -v --with-coverage --cover-package satsearch
 
   deploy:
-    <<: *defaults
+    <<: *container_python36
     steps:
       - *restore_repo
       - *restore_dependencies
