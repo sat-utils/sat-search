@@ -25,11 +25,14 @@ references:
 
   dependencies_key: &dependencies_key
     v1-dependencies-{{ checksum "requirements.txt"}}
+  dependencies_backup_key: &dependencies_backup_key
+    v1-dependencies
 
   restore_dependencies: &restore_dependencies
     restore_cache:
       keys:
         - *dependencies_key
+        - *dependencies_backup_key
 
 
 jobs:
@@ -77,6 +80,7 @@ jobs:
       - run: |
             python3 -m venv ~/venv
             . ~/venv/bin/activate
+            pwd
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
       - save_cache:
@@ -92,7 +96,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            . venv/bin/activate
+            . ~/venv/bin/activate
             nosetests -v --with-coverage --cover-package satsearch
 
   test:
@@ -103,7 +107,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            . venv/bin/activate
+            . ~/venv/bin/activate
             nosetests -v --with-coverage --cover-package satsearch
 
   deploy:
@@ -114,7 +118,7 @@ jobs:
       - run:
           name: Deploy
           command: |
-            . venv/bin/activate
+            . ~/venv/bin/activate
             mkdir -p ~/.ssh
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             pip install twine
