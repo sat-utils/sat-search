@@ -84,7 +84,7 @@ jobs:
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
       - save_cache:
-          key: dependencies_key
+          key: *dependencies_key
           paths:
             - ~/venv
 
