@@ -3,59 +3,62 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 version: 2
 
-defaults: &defaults
-  working_directory: ~/repo
-  docker:
-    - image: circleci/python:3.6.2
+
+references:
+
+  defaults: &defaults
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.6.2
+
+  restore_repo: &restore_repo
+    restore_cache:
+      keys:
+        - v1-repo-{{ .Branch }}-{{ .Revision }}
+        - v1-repo-{{ .Branch }}
+        - v1-repo
+
+  dependencies_key: &dependencies_key
+    v1-dependencies-{{ checksum "requirements.txt"}}
+
+  restore_dependencies: &restore_dependencies
+    restore_cache:
+      keys:
+        - *dependencies_key
 
 
 jobs:
+
   checkout_code:
     <<: *defaults
     steps:
+      - *restore_repo
       - checkout
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
       - save_cache:
-          key: v1-repo-{{ checksum ".circle-sha" }}
+          key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ~/repo
+            - ~/
 
   install_dependencies:
     <<: *defaults
-    steps:
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha      
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum ".circle-sha" }}
+    steps:  
+      - *restore_repo
+      - *restore_dependencies
       - run: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
       - save_cache:
-          key: v1-dependencies-{{ checksum ".circle-sha" }}
+          key: dependencies_key
           paths:
-            - ~/repo
+            - ~/dependencies
 
   test:
     <<: *defaults
     steps:
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum ".circle-sha" }}
+      - *restore_repo
+      - *restore_dependencies
       - run:
           name: Run tests
           command: |
@@ -65,15 +68,8 @@ jobs:
   deploy:
     <<: *defaults
     steps:
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum ".circle-sha" }}
+      - *restore_repo
+      - *restore_dependencies
       - run:
           name: Deploy
           command: |
@@ -86,6 +82,7 @@ jobs:
             git tag $VERSION
             git push origin $VERSION
             twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
+
 
 workflows:
   version: 2
