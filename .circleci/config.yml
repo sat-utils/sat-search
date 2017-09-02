@@ -42,7 +42,7 @@ jobs:
       - save_cache:
           key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
-            - .
+            - ~/
 
   install_dependencies_27:
     <<: *container_python27
@@ -57,7 +57,7 @@ jobs:
       - save_cache:
           key: dependencies_key
           paths:
-            - ./dependencies
+            - ~/dependencies
 
   install_dependencies:
     <<: *container_python36
@@ -72,7 +72,7 @@ jobs:
       - save_cache:
           key: dependencies_key
           paths:
-            - ./dependencies
+            - ~/dependencies
 
   test_27:
     <<: *container_python27
