@@ -9,12 +9,12 @@ references:
   container_python27: &container_python27
     docker:
       - image: circleci/python:2.7.13
-    working_dir: ~/repo
+    working_dir: ~/project
 
   container_python36: &container_python36
     docker:
       - image: circleci/python:3.6.2
-    working_dir: ~/repo
+    working_dir: ~/project
 
   restore_repo: &restore_repo
     restore_cache:
@@ -45,7 +45,7 @@ jobs:
       - save_cache:
           key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ~/repo
+            - ~/project
 
   checkout_code:
     <<: *container_python36
@@ -55,7 +55,7 @@ jobs:
       - save_cache:
           key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ~/repo
+            - ~/project
 
   install_dependencies_27:
     <<: *container_python27
