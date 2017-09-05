@@ -3,6 +3,7 @@ import logging
 import requests
 import json
 from datetime import datetime
+import subprocess
 import calendar
 import satsearch.utils as utils
 import satsearch.config as config
@@ -142,6 +143,24 @@ class Scene(object):
         """ Print summary of metadata """
         print('%s: %s' % (self.date, self.scene_id))
 
+    def review_thumbnail(self):
+        """ Display image and give user prompt to keep or discard """
+        fname = self.download('thumb')['thumb']
+        imgcat = os.getenv('IMGCAT', None)
+        if imgcat is None:
+            raise Exception("Set $IMGCAT to a terminal display program")
+        cmd = '%s %s' % (imgcat, fname)
+        print(cmd)
+        os.system(cmd)
+        print("Press Y to keep, N to delete, or any key to quit")
+        while True:
+            char = getch()
+            if char.lower() == 'y':
+                return True
+            elif char.lower() == 'n':
+                return False
+            raise Exception('Cancel')
+
 
 class Scenes(object):
     """ A collection of Scene objects """
@@ -203,3 +222,30 @@ class Scenes(object):
 
     def download(self, **kwargs):
         return [s.download(**kwargs) for s in self.scenes]
+
+    def review_thumbnails(self):
+        """ Review all thumbnails in scenes """
+        new_scenes = []
+        for scene in self.scenes:
+            try:
+                keep = scene.review_thumbnail()
+                if keep:
+                    new_scenes.append(scene)
+            except Exception as e:
+                return
+        self.scenes = new_scenes
+
+
+try:
+    from msvcrt import getch
+except ImportError:
+    def getch():
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch

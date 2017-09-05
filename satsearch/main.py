@@ -48,6 +48,7 @@ def parse_args(args):
     group = parser.add_argument_group('Output')
     group.add_argument('--printsum', help='Print basic metadata for matched scenes', default=False, action='store_true')
     group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
+    group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')
     group.add_argument('--save', help='Save scenes metadata as GeoJSON', default=None)
     group.add_argument('--datadir', help='Local directory to save images', default=config.DATADIR)
     group.add_argument('--nosubdirs', help='When saving, do not create directories usng scene_id',
@@ -69,7 +70,7 @@ def parse_args(args):
 
 
 def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, printcal=False,
-         save=None, download=None, source='aws_s3', **kwargs):
+         review=False, save=None, download=None, source='aws_s3', **kwargs):
     """ Main function for performing a search """
     config.DATADIR = datadir
     config.NOSUBDIRS = nosubdirs
@@ -84,6 +85,9 @@ def main(datadir=config.DATADIR, nosubdirs=config.NOSUBDIRS, printsum=False, pri
 
     # create Scenes collection
     scenes = Scenes(search.scenes())
+
+    if review is not None:
+        scenes.review_thumbnails()
 
     # print summary
     if printsum:
