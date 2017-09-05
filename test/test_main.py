@@ -18,14 +18,14 @@ class Test(unittest.TestCase):
     def test_empty_parse_args(self):
         """ Parse arguments """
         args = main.parse_args([])
-        self.assertEqual(len(args), 5)
+        self.assertEqual(len(args), 6)
         self.assertFalse(args['printsum'])
         self.assertFalse(args['printcal'])
 
     def test_parse_args(self):
         """ Parse arguments """
         args = main.parse_args(self.args)
-        self.assertEqual(len(args), 7)
+        self.assertEqual(len(args), 8)
         self.assertEqual(args['date'], '2017-01-01')
         self.assertEqual(args['satellite_name'], 'Landsat-8')
 
