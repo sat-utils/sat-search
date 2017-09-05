@@ -112,7 +112,7 @@ class Scene(object):
             os.makedirs(path)
         return path
 
-    def download_file(self, url, path=None, nosubdirs=None):
+    def download_file(self, url, path=None, nosubdirs=None, overwrite=False):
         """ Download a file """
         if path is None:
             path = config.DATADIR
@@ -124,10 +124,12 @@ class Scene(object):
             path = os.path.join(path, self.platform, self.scene_id)
         # make output path if it does not exist
         self.mkdirp(path)
-        #if not os.path.exists(path):
-        #    os.makedirs(path, exist_ok=True)
+
         # if basename not provided use basename of url
         filename = os.path.join(path, os.path.basename(url))
+        if os.path.exists(filename) and overwrite is False:
+            return filename
+
         # download file
         logger.info('Downloading %s as %s' % (url, filename))
         resp = requests.get(url, stream=True)
@@ -214,7 +216,7 @@ class Scenes(object):
 
     @classmethod
     def load(cls, filename):
-        """ Load a collections class from a file of metadata """
+        """ Load a collections class from a GeoJSON file of metadata """
         with open(filename) as f:
             metadata = json.loads(f.read())['features']
         scenes = [Scene(**(md['properties'])) for md in metadata]
