@@ -175,6 +175,15 @@ class Scenes(object):
         """ Number of scenes """
         return len(self.scenes)
 
+    def __getitem__(self, index):
+        return self.scenes[index]
+
+    def __setitem__(self, index, value):
+        self.scenes[index] = value
+
+    def __delitem__(self, index):
+        self.scenes.delete(index)
+
     def dates(self):
         """ Get sorted list of dates for all scenes """
         return sorted([s.date for s in self.scenes])
