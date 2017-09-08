@@ -6,6 +6,7 @@ import json
 import shutil
 import satsearch.main as main
 import satsearch.config as config
+from nose.tools import raises
 
 
 testpath = os.path.dirname(__file__)
@@ -25,11 +26,16 @@ class Test(unittest.TestCase):
     def test_main_options(self):
         """ Test main program with output options """
         fname = os.path.join(testpath, 'test_main-save.json')
-        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', save=fname, printcal=True, printmd=[])
+        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', save=fname, printsearch=True, printcal=True, printmd=[])
         self.assertEqual(len(scenes.scenes), 564)
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
+
+    @raises(ValueError)
+    def test_main_review_error(self):
+        """ Run review feature without envvar set """
+        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', review=True)
 
     def test_cli(self):
         """ Run CLI program """
