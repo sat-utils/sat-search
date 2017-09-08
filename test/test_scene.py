@@ -62,6 +62,7 @@ class TestScene(unittest.TestCase):
         self.assertEqual(scene.scene_id, self.md['scene_id'])
         self.assertEqual(scene.geometry, self.md['data_geometry'])
         self.assertEqual(scene.sources, self.md['download_links'].keys())
+        self.assertEqual(str(scene), self.md['scene_id'])
 
     def test_links(self):
         """ Get links for download """
@@ -97,11 +98,6 @@ class TestScene(unittest.TestCase):
             os.remove(f)
             self.assertFalse(os.path.exists(f))
 
-    def test_print_summary(self):
-        """ Print summary metadata """
-        scene = self.get_test_scene()
-        scene.print_summary()
-
 
 class TestScenes(unittest.TestCase):
 
@@ -128,10 +124,10 @@ class TestScenes(unittest.TestCase):
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
 
-    def test_print_summary(self):
+    def test_print_scenes(self):
         """ Print summary of scenes """
         scenes = self.load_scenes()
-        scenes.print_summary()
+        scenes.print_scenes()
 
     def test_dates(self):
         """ Get dates of all scenes """

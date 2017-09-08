@@ -141,10 +141,6 @@ class Scene(object):
                     f.write(chunk)
         return filename
 
-    def print_summary(self):
-        """ Print summary of metadata """
-        print('%s: %s' % (self.date, self.scene_id))
-
     def review_thumbnail(self):
         """ Display image and give user prompt to keep or discard """
         fname = self.download('thumb')['thumb']
@@ -195,9 +191,15 @@ class Scenes(object):
         else:
             return list(set([s.platform for s in self.scenes if s.date == date]))
 
-    def print_summary(self):
+    def print_scenes(self, params=[]):
         """ Print summary of all scenes """
-        [s.print_summary() for s in self.scenes]
+        if len(params) == 0:
+            params = ['date', 'scene_id']
+        txt = 'Scenes (%s):\n' % len(self.scenes)
+        txt += ''.join(['{:^20}'.format(p) for p in params]) + '\n'
+        for s in self.scenes:
+            txt += ''.join(['{:^20}'.format(s.metadata[p]) for p in params]) + '\n'
+        print(txt)
 
     def text_calendar(self):
         """ Get calendar for dates """
