@@ -1,21 +1,25 @@
 import os
+import sys
 import glob
 import json
 import unittest
+import logging
+from nose.tools import raises
 from satsearch.scene import Scene
-from satsearch.search import Query, Search
+from satsearch.search import SatSearchError, Query, Search
 
 
-testpath = os.path.dirname(__file__)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 class TestQuery(unittest.TestCase):
 
+    path = os.path.dirname(__file__)
     results = {}
 
     @classmethod
     def setUpClass(cls):
-        fnames = glob.glob(os.path.join(testpath, '*-response.json'))
+        fnames = glob.glob(os.path.join(cls.path, '*-response.json'))
         for fname in fnames:
             with open(fname) as f:
                 cls.results[os.path.basename(fname)[:-14]] = json.load(f)
@@ -39,6 +43,12 @@ class TestQuery(unittest.TestCase):
         """ Perform search for 0 results """
         search = Query(scene_id='nosuchscene')
         self.assertEqual(search.found(), 0)
+
+    @raises(SatSearchError)
+    def test_bad_search(self):
+        """ Run a bad query """
+        q = Query(limit='a')
+        q.found()
 
     def test_simple_search(self):
         """ Perform simple query """
@@ -67,11 +77,12 @@ class TestQuery(unittest.TestCase):
 
 class TestSearch(unittest.TestCase):
 
+    path = os.path.dirname(__file__)
     results = {}
 
     @classmethod
     def setUpClass(cls):
-        fnames = glob.glob(os.path.join(testpath, '*-response.json'))
+        fnames = glob.glob(os.path.join(cls.path, '*-response.json'))
         for fname in fnames:
             with open(fname) as f:
                 cls.results[os.path.basename(fname)[:-14]] = json.load(f)
@@ -95,7 +106,7 @@ class TestSearch(unittest.TestCase):
 
     def test_search(self):
         """ Perform simple query """
-        with open(os.path.join(testpath, 'aoi1.geojson')) as f:
+        with open(os.path.join(self.path, 'aoi1.geojson')) as f:
             aoi = json.dumps(json.load(f))
         search = Search(date='2017-01-05', satellite_name='Landsat-8', intersects=aoi)
         self.assertEqual(search.found(), 1)

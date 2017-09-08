@@ -30,6 +30,8 @@ class Query(object):
         kwargs.update(self.kwargs)
         response = requests.get(config.SAT_API, kwargs)
 
+        logger.debug('Query URL: %s' % response.url)
+
         # API error
         if response.status_code != 200:
             raise SatSearchError(response.text)
