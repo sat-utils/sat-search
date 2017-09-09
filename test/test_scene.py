@@ -2,7 +2,7 @@ import os
 import unittest
 import shutil
 import satsearch.config as config
-from satsearch.scene import Scene, Scenes, SatSceneError
+from satsearch.scene import Scene
 from nose.tools import raises
 
 
@@ -50,7 +50,7 @@ class TestScene(unittest.TestCase):
         """ Get valid test scene """
         return Scene(**self.md)
 
-    @raises(SatSceneError)
+    @raises(ValueError)
     def test_invalid_init(self):
         """ Initialize a scene with insufficient metadata """
         Scene(meaninglesskwarg='meaninglessstring')
@@ -101,67 +101,3 @@ class TestScene(unittest.TestCase):
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
-
-
-class TestScenes(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        """ Configure testing class """
-        config.DATADIR = testpath
-
-    def load_scenes(self):
-        return Scenes.load(os.path.join(testpath, 'scenes.geojson'))
-
-    def test_load(self):
-        """ Initialize Scenes with list of Scene objects """
-        scenes = self.load_scenes()
-        self.assertEqual(len(scenes), 10)
-        self.assertTrue(isinstance(scenes.scenes[0], Scene))
-
-    def test_save(self):
-        """ Save scenes list """
-        scenes = self.load_scenes()
-        fname = os.path.join(testpath, 'save-test.json')
-        scenes.save(fname)
-        self.assertTrue(os.path.exists(fname))
-        os.remove(fname)
-        self.assertFalse(os.path.exists(fname))
-
-    def test_print_scenes(self):
-        """ Print summary of scenes """
-        scenes = self.load_scenes()
-        scenes.print_scenes()
-
-    def test_dates(self):
-        """ Get dates of all scenes """
-        scenes = self.load_scenes()
-        dates = scenes.dates()
-        self.assertEqual(len(dates), 10)
-
-    def test_text_calendar(self):
-        """ Get calendar """
-        scenes = self.load_scenes()
-        cal = scenes.text_calendar()
-        self.assertTrue(len(cal) > 250)
-
-    def test_download_thumbnails(self):
-        """ Download all thumbnails """
-        scenes = self.load_scenes()
-        fnames = scenes.download(key='thumb')
-        for f in fnames[0].values():
-            self.assertTrue(os.path.exists(f))
-            os.remove(f)
-            self.assertFalse(os.path.exists(f))
-        shutil.rmtree(os.path.join(testpath, 'landsat-8'))
-
-    def test_download(self):
-        """ Download a data file from all scenes """
-        scenes = self.load_scenes()
-        dls = scenes.download(key='MTL')
-        for s in dls:
-            for f in s.values():
-                self.assertTrue(os.path.exists(f))
-                os.remove(f)
-                self.assertFalse(os.path.exists(f))
-        shutil.rmtree(os.path.join(testpath, 'landsat-8'))

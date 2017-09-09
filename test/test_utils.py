@@ -1,7 +1,7 @@
 import os
 import unittest
 import satsearch.config as config
-from satsearch.scene import Scenes
+from satsearch import Scenes
 
 
 class Test(unittest.TestCase):
