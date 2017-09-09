@@ -68,7 +68,6 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('--source', help='Download source', default='aws_s3')
 
         group = parser.add_argument_group('search output')
-        group.add_argument('--printsearch', help='Print search parameters', default=False, action='store_true')
         group.add_argument('--printmd', help='Print specified metadata for matched scenes', default=None, nargs='*')
         group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
         group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')

@@ -6,22 +6,23 @@ from satsearch import Search, Scenes
 from satsearch.parser import SatUtilsParser
 
 
-def main(review=False, printsearch=False, printmd=None, printcal=False,
+def main(review=False, printmd=None, printcal=False,
          save=None, download=None, source='aws_s3', **kwargs):
     """ Main function for performing a search """
-    if printsearch:
-        txt = 'Search for scenes matching criteria:\n'
-        for kw in kwargs:
-            if kw == 'intersects':
-                geom = json.dumps(json.loads(kwargs[kw])['geometry'])
-                txt += ('{:>20}: {:<40} ...\n'.format(kw, geom[0:70]))
-            else:
-                txt += ('{:>20}: {:<40}\n'.format(kw, kwargs[kw]))
-        print(txt)
+    txt = 'Search for scenes matching criteria:\n'
+    for kw in kwargs:
+        if kw == 'intersects':
+            geom = json.dumps(json.loads(kwargs[kw])['geometry'])
+            txt += ('{:>20}: {:<40} ...\n'.format(kw, geom[0:70]))
+        else:
+            txt += ('{:>20}: {:<40}\n'.format(kw, kwargs[kw]))
+    print(txt)
 
     # get scenes from search
     search = Search(**kwargs)
     scenes = Scenes(search.scenes())
+
+    print('Found %s matching scenes' % len(scenes))
 
     if review:
         if not os.getenv('IMGCAT', None):

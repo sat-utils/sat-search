@@ -26,7 +26,7 @@ class Test(unittest.TestCase):
     def test_main_options(self):
         """ Test main program with output options """
         fname = os.path.join(testpath, 'test_main-save.json')
-        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', save=fname, printsearch=True, printcal=True, printmd=[])
+        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', save=fname, printcal=True, printmd=[])
         self.assertEqual(len(scenes.scenes), 564)
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
