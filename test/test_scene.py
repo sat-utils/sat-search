@@ -85,6 +85,10 @@ class TestScene(unittest.TestCase):
         fnames = scene.download(key='MTL')
         for f in fnames.values():
             self.assertTrue(os.path.exists(f))
+        fnames2 = scene.download(key='MTL')
+        self.assertEqual(fnames, fnames2)
+        for f in fnames2.values():
+            self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
         shutil.rmtree(os.path.join(testpath, self.md['satellite_name']))
