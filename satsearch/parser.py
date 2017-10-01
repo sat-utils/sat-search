@@ -51,7 +51,8 @@ class SatUtilsParser(argparse.ArgumentParser):
         """ Adds search arguments to a parser """
         parser = self
         group = parser.add_argument_group('search parameters')
-        group.add_argument('--satellite_name')
+        group.add_argument('--load', help='Load search results from file (ignores other search parameters)')
+        group.add_argument('--satellite_name', help='Name of satellite')
         group.add_argument('--scene_id', help='One or more scene IDs', nargs='*', default=None)
         group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
         group.add_argument('--contains', help='lon,lat points')
@@ -62,7 +63,7 @@ class SatUtilsParser(argparse.ArgumentParser):
 
         group = parser.add_argument_group('sat-utils data files')
         group.add_argument('--datadir', help='Local directory to save images', default=config.DATADIR)
-        group.add_argument('--nosubdirs', help='When saving, do not create directories usng scene_id',
+        group.add_argument('--nosubdirs', help='When saving, do not create directories "satellite_name/scene_id"',
                            default=False, action='store_true')
         group.add_argument('--download', help='Download files', default=None, nargs='*')
         group.add_argument('--source', help='Download source', default='aws_s3')
@@ -73,6 +74,8 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
         group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')
         group.add_argument('--save', help='Save scenes metadata as GeoJSON', default=None)
+        h = '0:all, 1:debug, 2:info, 3:warning, 4:error, 5:critical'
+        group.add_argument('--verbosity', help=h, default=2, type=int)
 
         return parser
 
