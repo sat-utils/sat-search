@@ -42,7 +42,8 @@ class Scene(object):
 
     @property
     def date(self):
-        return datetime.strptime(self.metadata['date'], '%Y-%m-%d').date()
+        pattern = '%Y-%m-%d' if '-' in self.metadata['date'] else '%Y/%m/%d'
+        return datetime.strptime(self.metadata['date'], pattern).date()
 
     @property
     def geometry(self):
@@ -99,10 +100,12 @@ class Scene(object):
                         self.filenames[k] = self.download_file(l, path=path, nosubdirs=nosubdirs)
                         break
                     except Exception:
-                        logger.error('Unable to download %s' % l)
+                        pass
                 if k in self.filenames:
                     #self.metadata['download_links'][source][k] = l
                     logger.info('Downloaded %s as %s' % (l, self.filenames[k]))
+                else:
+                    logger.error('Unable to download %s' % l)
         return self.filenames
 
     @classmethod
