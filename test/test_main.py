@@ -33,8 +33,9 @@ class Test(unittest.TestCase):
         self.assertFalse(os.path.exists(fname))
 
     @raises(ValueError)
-    def test_main_review_error(self):
+    def _test_main_review_error(self):
         """ Run review feature without envvar set """
+        os.setenv('IMGCAT', None)
         scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', review=True)
 
     def test_cli(self):
