@@ -78,6 +78,7 @@ def get_text_calendar(dates, cols=3):
             out += '\n'
     # print labels
     for lbl, col in labels.items():
-        out += '%s%sm%s (%s)%s\n' % (col0, col, lbl, dates.values().count(lbl), col_end)
+        vals = list(dates.values())
+        out += '%s%sm%s (%s)%s\n' % (col0, col, lbl, vals.count(lbl), col_end)
     out += '%s total dates' % len(_dates)
     return out
