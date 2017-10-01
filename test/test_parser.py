@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
         """ Parse empty arguments """
         parser = SatUtilsParser()
         args = parser.parse_args([])
-        self.assertEqual(len(args), 4)
+        self.assertEqual(len(args), 5)
         self.assertFalse(args['printsearch'])
         self.assertFalse(args['printcal'])
 
@@ -24,7 +24,7 @@ class Test(unittest.TestCase):
         parser = SatUtilsParser()
         args = '--date 2017-01-01 --cloud 0,20 --param dayOrNight=DAY --satellite_name Landsat-8'.split(' ')
         args = parser.parse_args(args)
-        self.assertEqual(len(args), 10)
+        self.assertEqual(len(args), 11)
         self.assertEqual(args['date_from'], '2017-01-01')
         self.assertEqual(args['date_to'], '2017-01-01')
         self.assertEqual(args['cloud_from'], 0)
