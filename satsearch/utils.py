@@ -37,8 +37,8 @@ def get_text_calendar(dates, cols=3):
     """ Get calendar covering all dates, with provided dates colored and labeled """
     _dates = sorted(dates.keys())
     _labels = set(dates.values())
-    labels = dict(zip(_labels, [str(31 + i) for i in range(0, len(_labels))]))
-
+    labels = dict(zip(_labels, [str(41 + i) for i in range(0, len(_labels))]))
+    #from nose.tools import set_trace; set_trace()
     cal = get_text_calendar_dates(_dates[0], _dates[-1])
 
     # month and day headers
@@ -76,6 +76,8 @@ def get_text_calendar(dates, cols=3):
                     out += rformat.format(*wk)
                 out += '\n'
             out += '\n'
+    # print labels
     for lbl, col in labels.items():
-        out += '%s%sm%s%s\n' % (col0, col, lbl, col_end)
+        out += '%s%sm%s (%s)%s\n' % (col0, col, lbl, dates.values().count(lbl), col_end)
+    out += '%s total dates' % len(_dates)
     return out
