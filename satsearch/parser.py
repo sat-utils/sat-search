@@ -74,6 +74,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
         group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')
         group.add_argument('--save', help='Save scenes metadata as GeoJSON', default=None)
+        group.add_argument('--append', help='Append scenes to GeoJSON file (specified by save)', default=False, action='store_true')
         h = '0:all, 1:debug, 2:info, 3:warning, 4:error, 5:critical'
         group.add_argument('--verbosity', help=h, default=2, type=int)
 

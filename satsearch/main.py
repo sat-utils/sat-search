@@ -12,7 +12,7 @@ logging.getLogger('requests').setLevel(logging.CRITICAL)
 
 
 def main(review=False, printsearch=False, printmd=None, printcal=False,
-         load=None, save=None, download=None, source='aws_s3', **kwargs):
+         load=None, save=None, append=False, download=None, source='aws_s3', **kwargs):
     """ Main function for performing a search """
 
     if load is None:
@@ -47,7 +47,7 @@ def main(review=False, printsearch=False, printmd=None, printcal=False,
 
     # save all metadata in JSON file
     if save is not None:
-        scenes.save(filename=save)
+        scenes.save(filename=save, append=append)
 
     print('%s scenes found' % len(scenes))
 

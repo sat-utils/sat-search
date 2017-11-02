@@ -215,10 +215,17 @@ class Scenes(object):
                 date_labels[d] = sensors[0]
         return utils.get_text_calendar(date_labels)
 
-    def save(self, filename):
+    def save(self, filename, append=False):
         """ Save scene metadata """
+        if append and os.path.exists(filename):
+            with open(filename) as f:
+                features = json.loads(f.read())['features']
+        else:
+            features = []
+        geoj = self.geojson()
+        geoj['features'] = features + geoj['features']
         with open(filename, 'w') as f:
-            f.write(json.dumps(self.geojson()))
+            f.write(json.dumps(geoj))
 
     def geojson(self):
         """ Get all metadata as GeoJSON """
