@@ -45,8 +45,8 @@ class SatUtilsParser(argparse.ArgumentParser):
         # set global configuration options
         if 'datadir' in args:
             config.DATADIR = args.pop('datadir')
-        if 'nosubdirs' in args:
-            config.NOSUBDIRS = args.pop('nosubdirs')
+        if 'subdirs' in args:
+            config.SUBDIRS = args.pop('subdirs')
 
         return args
 
@@ -65,13 +65,14 @@ class SatUtilsParser(argparse.ArgumentParser):
         group = self.add_argument_group('saving/loading parameters')
         group.add_argument('--load', help='Load search results from file (ignores other search parameters)')
         group.add_argument('--save', help='Save scenes metadata as GeoJSON', default=None)
-        group.add_argument('--append', help='Append scenes to GeoJSON file (specified by save)', default=False, action='store_true')
+        group.add_argument('--append', default=False, action='store_true',
+                           help='Append scenes to GeoJSON file (specified by save)')
 
     def add_download_args(self):
         group = self.add_argument_group('download parameters')
         group.add_argument('--datadir', help='Local directory to save images', default=config.DATADIR)
-        group.add_argument('--nosubdirs', help='When saving, do not create directories "satellite_name/scene_id"',
-                           default=False, action='store_true')
+        group.add_argument('--subdirs', default=config.SUBDIRS,
+                           help='Save in subdirs based on these metadata keys')
         group.add_argument('--download', help='Download files', default=None, nargs='*')
         group.add_argument('--source', help='Download source', default='aws_s3')
 

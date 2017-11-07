@@ -78,7 +78,7 @@ class Scene(object):
         sid = os.path.basename(link).split('_')[0]
         return [link.replace(sid, sid[0:-1] + str(s)) for s in reversed(range(0, int(sid[-1]) + 1))]
 
-    def download(self, key=None, source=_DEFAULT_SOURCE, path=None, nosubdirs=None):
+    def download(self, key=None, source=_DEFAULT_SOURCE, path=None, subdirs=None):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         links = self.links(source=source)
         # default to all files if no key provided
@@ -97,9 +97,10 @@ class Scene(object):
                     link = [links[k]]
                 for l in link:
                     try:
-                        self.filenames[k] = self.download_file(l, path=path, nosubdirs=nosubdirs)
+                        self.filenames[k] = self.download_file(l, path=path, subdirs=subdirs)
                         break
-                    except Exception:
+                    except Exception as e:
+                        print(e)
                         pass
                 if k in self.filenames:
                     #self.metadata['download_links'][source][k] = l
@@ -115,25 +116,28 @@ class Scene(object):
             os.makedirs(path)
         return path
 
-    def get_path(self, path=None, nosubdirs=None):
+    def get_path(self, path=None, subdirs=None):
         """ Get local path for this scene """
         if path is None:
             path = config.DATADIR
-        if nosubdirs is None:
-            nosubdirs = config.NOSUBDIRS
+        if subdirs is None:
+            subdirs = config.SUBDIRS
 
         # output path
-        if not nosubdirs:
-            path = os.path.join(path, self.platform, self.scene_id)
+        if subdirs != '':
+            parts = subdirs.split('/')
+            for p in parts:
+                path = os.path.join(path, self.metadata[p])
         # make output path if it does not exist
         self.mkdirp(path)
 
         return path
 
-    def download_file(self, url, path=None, nosubdirs=None, overwrite=False):
+    def download_file(self, url, path=None, subdirs=None, overwrite=False):
         """ Download a file """
-        path = self.get_path(path=path, nosubdirs=nosubdirs)
-
+        
+        path = self.get_path(path=path, subdirs=subdirs)
+        #import pdb; pdb.set_trace()
         # if basename not provided use basename of url
         filename = os.path.join(path, os.path.basename(url))
         if os.path.exists(filename) and overwrite is False:
