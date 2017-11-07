@@ -63,6 +63,12 @@ def cli():
     parser = SatUtilsParser(description='sat-search (v%s)' % __version__)
     args = parser.parse_args(sys.argv[1:])
 
+    # read the GeoJSON file
+    if 'intersects' in args:
+        if os.path.exists(args['intersects']):
+            with open(args['intersects']) as f:
+                args['intersects'] = json.dumps(json.loads(f.read()))
+
     # enable logging
     logging.basicConfig(stream=sys.stdout, level=args.pop('verbosity') * 10)
 
