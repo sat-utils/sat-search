@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
         """ Parse empty arguments """
         parser = SatUtilsParser()
         args = parser.parse_args([])
-        self.assertEqual(len(args), 5)
+        self.assertEqual(len(args), 6)
         self.assertFalse(args['printsearch'])
         self.assertFalse(args['printcal'])
 
@@ -24,7 +24,7 @@ class Test(unittest.TestCase):
         parser = SatUtilsParser()
         args = '--date 2017-01-01 --cloud 0,20 --param dayOrNight=DAY --satellite_name Landsat-8'.split(' ')
         args = parser.parse_args(args)
-        self.assertEqual(len(args), 11)
+        self.assertEqual(len(args), 12)
         self.assertEqual(args['date_from'], '2017-01-01')
         self.assertEqual(args['date_to'], '2017-01-01')
         self.assertEqual(args['cloud_from'], 0)
@@ -36,11 +36,3 @@ class Test(unittest.TestCase):
     def test_parse_args_badcloud(self):
         parser = SatUtilsParser()
         args = parser.parse_args('--date 2017-01-01 --cloud 0 --satellite_name Landsat-8'.split(' '))
-
-    def test_parse_args_with_geojson(self):
-        """ Test parsing of arguments with geojson file input """
-        parser = SatUtilsParser()
-        args = ('--intersects %s' % os.path.join(testpath, 'aoi1.geojson')).split(' ')
-        args = parser.parse_args(args)
-        aoi = json.loads(args['intersects'])
-        self.assertEqual(aoi['type'], 'Feature')

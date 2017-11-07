@@ -8,10 +8,11 @@ from satsearch.parser import SatUtilsParser
 
 
 logger = logging.getLogger(__name__)
+logging.getLogger('requests').setLevel(logging.CRITICAL)
 
 
 def main(review=False, printsearch=False, printmd=None, printcal=False,
-         load=None, save=None, download=None, source='aws_s3', **kwargs):
+         load=None, save=None, append=False, download=None, source='aws_s3', **kwargs):
     """ Main function for performing a search """
 
     if load is None:
@@ -46,7 +47,7 @@ def main(review=False, printsearch=False, printmd=None, printcal=False,
 
     # save all metadata in JSON file
     if save is not None:
-        scenes.save(filename=save)
+        scenes.save(filename=save, append=append)
 
     print('%s scenes found' % len(scenes))
 
@@ -61,6 +62,12 @@ def main(review=False, printsearch=False, printmd=None, printcal=False,
 def cli():
     parser = SatUtilsParser(description='sat-search (v%s)' % __version__)
     args = parser.parse_args(sys.argv[1:])
+
+    # read the GeoJSON file
+    if 'intersects' in args:
+        if os.path.exists(args['intersects']):
+            with open(args['intersects']) as f:
+                args['intersects'] = json.dumps(json.loads(f.read()))
 
     # enable logging
     logging.basicConfig(stream=sys.stdout, level=args.pop('verbosity') * 10)
