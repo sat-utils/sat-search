@@ -115,8 +115,8 @@ class Scene(object):
             os.makedirs(path)
         return path
 
-    def download_file(self, url, path=None, nosubdirs=None, overwrite=False):
-        """ Download a file """
+    def get_path(self, path=None, nosubdirs=None):
+        """ Get local path for this scene """
         if path is None:
             path = config.DATADIR
         if nosubdirs is None:
@@ -127,6 +127,12 @@ class Scene(object):
             path = os.path.join(path, self.platform, self.scene_id)
         # make output path if it does not exist
         self.mkdirp(path)
+
+        return path
+
+    def download_file(self, url, path=None, nosubdirs=None, overwrite=False):
+        """ Download a file """
+        path = self.get_path(path=path, nosubdirs=nosubdirs)
 
         # if basename not provided use basename of url
         filename = os.path.join(path, os.path.basename(url))
