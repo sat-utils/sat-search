@@ -7,4 +7,4 @@ SAT_API = os.getenv('SAT_API', 'https://api.developmentseed.org/satellites')
 DATADIR = os.getenv('SATUTILS_DATADIR', os.path.expanduser('~/satutils-data'))
 
 # do not create subdirectories of satellite_name/scene_id when saving imagery
-SUBDIRS = 'satellite_name/scene_id'
+SUBDIRS = '$satellite_name/$scene_id'

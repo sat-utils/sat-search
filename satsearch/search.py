@@ -51,7 +51,9 @@ class Query(object):
         page = 1
         while len(scenes) < limit:
             results = self.query(page=page, limit=page_size)['results']
-            scenes += [Scene(**r) for r in results]
+            for r in results:
+                r['geometry'] = r.pop('data_geometry')
+                scenes.append(Scene(r))
             page += 1
 
         return scenes

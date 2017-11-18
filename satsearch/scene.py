@@ -20,12 +20,15 @@ class Scene(object):
 
     _DEFAULT_SOURCE = 'aws_s3'
 
-    def __init__(self, **kwargs):
+    def __init__(self, feature):
         """ Initialize a scene object """
-        self.metadata = kwargs
-        required = ['scene_id', 'date', 'data_geometry', 'download_links']
-        if not set(required).issubset(kwargs.keys()):
+        required = ['scene_id', 'date', 'download_links']
+        if 'geometry' not in feature:
+            raise SatSceneError('No geometry supplied')
+        if not set(required).issubset(feature['properties'].keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
+        self.geometry = feature['geometry']
+        self.metadata = feature['properties']
         self.filenames = {}
         # TODO - check validity of date and geometry, at least one download link
 
@@ -44,10 +47,6 @@ class Scene(object):
     def date(self):
         pattern = '%Y-%m-%d' if '-' in self.metadata['date'] else '%Y/%m/%d'
         return datetime.strptime(self.metadata['date'], pattern).date()
-
-    @property
-    def geometry(self):
-        return self.metadata['data_geometry']
 
     @property
     def sources(self):
@@ -69,7 +68,7 @@ class Scene(object):
         """ Return metadata as GeoJSON """
         return {
             'type': 'Feature',
-            'geometry': self.metadata['data_geometry'],
+            'geometry': self.geometry,
             'properties': self.metadata
         }
 
@@ -127,19 +126,23 @@ class Scene(object):
         if subdirs != '':
             parts = subdirs.split('/')
             for p in parts:
-                path = os.path.join(path, self.metadata[p])
+                if p[0] == '$':
+                    path = os.path.join(path, self.metadata[p[1:]])
+                else:
+                    path = os.path.join(path, p)
         # make output path if it does not exist
         self.mkdirp(path)
 
         return path
 
-    def download_file(self, url, path=None, subdirs=None, overwrite=False):
+    def download_file(self, url, fout=None, path=None, subdirs=None, overwrite=False):
         """ Download a file """
-        
+
         path = self.get_path(path=path, subdirs=subdirs)
-        #import pdb; pdb.set_trace()
-        # if basename not provided use basename of url
-        filename = os.path.join(path, os.path.basename(url))
+        if fout is None:
+            filename = os.path.join(path, os.path.basename(url))
+        else:
+            filename = os.path.join(path, fout)
         if os.path.exists(filename) and overwrite is False:
             return filename
 
@@ -249,8 +252,8 @@ class Scenes(object):
     def load(cls, filename):
         """ Load a collections class from a GeoJSON file of metadata """
         with open(filename) as f:
-            metadata = json.loads(f.read())['features']
-        scenes = [Scene(**(md['properties'])) for md in metadata]
+            features = json.loads(f.read())['features']
+        scenes = [Scene(feature) for feature in features]
         return Scenes(scenes)
 
     def download(self, **kwargs):
