@@ -32,6 +32,16 @@ class Scene(object):
         self.filenames = {}
         # TODO - check validity of date and geometry, at least one download link
 
+    @classmethod
+    def create_from_satapi_v0(cls, metadata):
+        """ Create a Scene from sat-api v1 """
+        feature = {
+            'type': 'Feature',
+            'geometry': metadata.pop('data_geometry'),
+            'properties': metadata
+        }
+        return cls(feature)
+
     def __repr__(self):
         return self.scene_id
 

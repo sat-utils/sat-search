@@ -20,24 +20,27 @@ class TestScene(unittest.TestCase):
     }
 
     md = {
-        'scene_id': 'testscene',
-        'satellite_name': 'test_satellite',
-        'date': '2017-01-01',
-        'data_geometry': {},
-        'thumbnail': '%sthumb_large.jpg' % prefix['aws_s3'],
-        'download_links': {
-            'aws_s3': [
-                '%sB1.TIF' % prefix['aws_s3'],
-                '%sMTL.txt' % prefix['aws_s3']
-            ],
-            'test': [
-                '%sANG.TIF' % prefix['aws_s3'],
-                '%sMTL.txt' % prefix['aws_s3']
-            ],
-            "google": [
-                '%sANG.txt' % prefix['google'],
-                '%sMTL.txt' % prefix['google']
-            ]
+        'geometry': {},
+        'properties': {
+            'scene_id': 'testscene',
+            'satellite_name': 'test_satellite',
+            'date': '2017-01-01',
+            'data_geometry': {},
+            'thumbnail': '%sthumb_large.jpg' % prefix['aws_s3'],
+            'download_links': {
+                'aws_s3': [
+                    '%sB1.TIF' % prefix['aws_s3'],
+                    '%sMTL.txt' % prefix['aws_s3']
+                ],
+                'test': [
+                    '%sANG.TIF' % prefix['aws_s3'],
+                    '%sMTL.txt' % prefix['aws_s3']
+                ],
+                "google": [
+                    '%sANG.txt' % prefix['google'],
+                    '%sMTL.txt' % prefix['google']
+                ]
+            }
         }
     }
 
@@ -48,27 +51,27 @@ class TestScene(unittest.TestCase):
 
     def get_test_scene(self):
         """ Get valid test scene """
-        return Scene(**self.md)
+        return Scene(self.md)
 
     @raises(SatSceneError)
     def test_invalid_init(self):
         """ Initialize a scene with insufficient metadata """
-        Scene(meaninglesskwarg='meaninglessstring')
+        Scene({'meaninglesskey': 'meaninglessstring'})
 
     def test_init(self):
         """ Initialize a scene """
         scene = self.get_test_scene()
-        self.assertEqual(str(scene.date), self.md['date'])
-        self.assertEqual(scene.scene_id, self.md['scene_id'])
-        self.assertEqual(scene.geometry, self.md['data_geometry'])
-        self.assertEqual(scene.sources, self.md['download_links'].keys())
-        self.assertEqual(str(scene), self.md['scene_id'])
+        self.assertEqual(str(scene.date), self.md['properties']['date'])
+        self.assertEqual(scene.scene_id, self.md['properties']['scene_id'])
+        self.assertEqual(scene.geometry, self.md['geometry'])
+        self.assertEqual(scene.sources, self.md['properties']['download_links'].keys())
+        self.assertEqual(str(scene), self.md['properties']['scene_id'])
 
     def test_links(self):
         """ Get links for download """
         scene = self.get_test_scene()
         links = scene.links()
-        self.assertEqual(links['B1'], self.md['download_links']['aws_s3'][0])
+        self.assertEqual(links['B1'], self.md['properties']['download_links']['aws_s3'][0])
 
     def test_download_thumbnail(self):
         """ Get thumbnail for scene """
@@ -77,7 +80,7 @@ class TestScene(unittest.TestCase):
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
-        shutil.rmtree(os.path.join(testpath, self.md['satellite_name']))
+        shutil.rmtree(os.path.join(testpath, self.md['properties']['satellite_name']))
 
     def test_download(self):
         """ Retrieve a data file """
@@ -87,7 +90,7 @@ class TestScene(unittest.TestCase):
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
-        shutil.rmtree(os.path.join(testpath, self.md['satellite_name']))
+        shutil.rmtree(os.path.join(testpath, self.md['properties']['satellite_name']))
 
     def test_download_all(self):
         """ Retrieve all data files from a source """

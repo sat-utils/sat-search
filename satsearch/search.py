@@ -52,8 +52,7 @@ class Query(object):
         while len(scenes) < limit:
             results = self.query(page=page, limit=page_size)['results']
             for r in results:
-                r['geometry'] = r.pop('data_geometry')
-                scenes.append(Scene(r))
+                scenes.append(Scene.create_from_satapi_v0(r))
             page += 1
 
         return scenes
