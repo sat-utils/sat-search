@@ -1,5 +1,3 @@
-import os
-import json
 import argparse
 import satsearch.config as config
 
@@ -47,6 +45,8 @@ class SatUtilsParser(argparse.ArgumentParser):
             config.DATADIR = args.pop('datadir')
         if 'subdirs' in args:
             config.SUBDIRS = args.pop('subdirs')
+        if 'filename' in args:
+            config.FILENAME = args.pop('filename')
 
         return args
 
@@ -73,8 +73,9 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('--datadir', help='Local directory to save images', default=config.DATADIR)
         group.add_argument('--subdirs', default=config.SUBDIRS,
                            help='Save in subdirs based on these metadata keys')
+        group.add_argument('--filename', default=config.FILENAME,
+                           help='Save files with this filename pattern based on metadata keys')
         group.add_argument('--download', help='Download files', default=None, nargs='*')
-        group.add_argument('--source', help='Download source', default='aws_s3')
 
     def add_output_args(self):
         """ Add arguments for printing output """
