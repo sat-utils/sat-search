@@ -63,6 +63,7 @@ class Search(object):
 
     def __init__(self, scene_id=[], **kwargs):
         """ Initialize a Search object with parameters """
+        self.kwargs = kwargs
         self.queries = []
         if len(scene_id) == 0:
             self.queries.append(Query(**kwargs))
