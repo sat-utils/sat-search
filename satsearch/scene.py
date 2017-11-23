@@ -126,7 +126,6 @@ class Scene(object):
                 #self.metadata['download_links'][source][k] = l
                 logger.info('Downloaded %s as %s' % (l, self.filenames[key]))
             else:
-                import pdb; pdb.set_trace()
                 logger.error('Unable to download %s' % l)
         return self.filenames
 
