@@ -12,7 +12,7 @@ logging.getLogger('requests').setLevel(logging.CRITICAL)
 
 
 def main(review=False, printsearch=False, printmd=None, printcal=False,
-         load=None, save=None, append=False, download=None, source='aws_s3', **kwargs):
+         load=None, save=None, append=False, download=None, **kwargs):
     """ Main function for performing a search """
 
     if load is None:
@@ -28,8 +28,9 @@ def main(review=False, printsearch=False, printmd=None, printcal=False,
 
         # get scenes from search
         search = Search(**kwargs)
-        scenes = Scenes(search.scenes())
+        scenes = Scenes(search.scenes(), metadata={'search': kwargs})
     else:
+        search = None
         scenes = Scenes.load(load)
 
     if review:
@@ -47,14 +48,14 @@ def main(review=False, printsearch=False, printmd=None, printcal=False,
 
     # save all metadata in JSON file
     if save is not None:
-        scenes.save(filename=save, append=append)
+        scenes.save(filename=save, append=append, metadata=search)
 
     print('%s scenes found' % len(scenes))
 
     # download files given keys
     if download is not None:
         for key in download:
-            scenes.download(key=key, source=source)
+            scenes.download(key=key)
 
     return scenes
 
