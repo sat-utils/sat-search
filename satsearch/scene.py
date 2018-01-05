@@ -157,10 +157,10 @@ class Scene(object):
         fname = config.FILENAME
         subs = {}
         for key in [i[1] for i in Formatter().parse(fname) if i[1] is not None]:
-            subs[key] = self.metadata[key]
+            subs[key] = self.metadata[key].replace('/', '-')
         fname = Template(fname).substitute(**subs)
         if suffix is not None:
-            fname = fname + '_' + suffix
+            fname = fname + suffix
         return fname
 
     def download_file(self, url, fout=None):
