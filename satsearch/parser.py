@@ -41,6 +41,8 @@ class SatUtilsParser(argparse.ArgumentParser):
             args['cloud_to'] = int(cov[1])
 
         # set global configuration options
+        if 'url' in args:
+            config.API_URL = args.pop('url')
         if 'datadir' in args:
             config.DATADIR = args.pop('datadir')
         if 'subdirs' in args:
@@ -60,6 +62,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('--date', help='Single date or begin and end date (e.g., 2017-01-01,2017-02-15')
         group.add_argument('--clouds', help='Range of acceptable cloud cover (e.g., 0,20)')
         group.add_argument('--param', nargs='*', help='Additional parameters of form KEY=VALUE', action=self.KeyValuePair)
+        group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
     def add_save_args(self):
         group = self.add_argument_group('saving/loading parameters')

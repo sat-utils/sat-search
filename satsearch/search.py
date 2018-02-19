@@ -28,7 +28,7 @@ class Query(object):
     def query(self, **kwargs):
         """ Make single API call """
         kwargs.update(self.kwargs)
-        response = requests.get(config.SAT_API, kwargs)
+        response = requests.get(config.API_URL, kwargs)
 
         logger.debug('Query URL: %s' % response.url)
 
@@ -45,7 +45,7 @@ class Query(object):
         if limit is None:
             limit = self.found()
         limit = min(limit, self.found())
-        page_size = min(limit, 1000)
+        page_size = min(limit, 500)
 
         scenes = []
         page = 1
