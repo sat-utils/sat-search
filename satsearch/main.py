@@ -7,10 +7,6 @@ from satsearch import Search, Scenes
 from satsearch.parser import SatUtilsParser
 
 
-logger = logging.getLogger(__name__)
-logging.getLogger('requests').setLevel(logging.CRITICAL)
-
-
 def main(review=False, printsearch=False, printmd=None, printcal=False,
          load=None, save=None, append=False, download=None, **kwargs):
     """ Main function for performing a search """
