@@ -105,29 +105,15 @@ class Scene(object):
 
         # loop through keys and get files
         for key in [k for k in keys if k in links]:
-            # work around because aws landsat not up to collection 1
-            # so try to download older collection data if data not available
-            if self.platform == 'landsat-8' and self.source == 'aws_s3':
-                link = self.get_older_landsat_collection_links(links[key])
-            else:
-                link = [links[key]]
-            for l in link:
-                try:
-                    ext = os.path.splitext(l)[1]
-                    fout = os.path.join(path, self.get_filename(suffix=key) + ext)
-                    if os.path.exists(fout) and overwrite is False:
-                        self.filenames[key] = fout
-                    else:
-                        self.filenames[key] = self.download_file(l, fout=fout)
-                    break
-                except Exception as e:
-                    print(e)
-                    pass
-            if key in self.filenames:
-                #self.metadata['download_links'][source][k] = l
-                logger.info('Downloaded %s as %s' % (l, self.filenames[key]))
-            else:
-                logger.error('Unable to download %s' % l)
+            try:
+                ext = os.path.splitext(links[key])[1]
+                fout = os.path.join(path, self.get_filename(suffix=key) + ext)
+                if os.path.exists(fout) and overwrite is False:
+                    self.filenames[key] = fout
+                else:
+                    self.filenames[key] = self.download_file(links[key], fout=fout)
+            except Exception as e:
+                logger.error('Unable to download %s' % links[key])
         return self.filenames
 
     @classmethod
