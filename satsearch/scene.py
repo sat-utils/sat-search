@@ -26,6 +26,7 @@ class Scene(object):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
         self.geometry = feature['geometry']
         self.metadata = feature['properties']
+        self.metadata['date'] = self.metadata['date'].replace('/', '-')
         self.filenames = {}
         self.source = source
         # TODO - check validity of date and geometry, at least one download link
@@ -152,9 +153,9 @@ class Scene(object):
             self.mkdirp(_path)
         return _path
 
-    def get_filename(self, suffix=None):
+    def get_filename(self, pattern=None, suffix=None):
         """ Get local filename for this scene """
-        fname = config.FILENAME
+        fname = config.FILENAME if pattern is None else pattern
         subs = {}
         for key in [i[1] for i in Formatter().parse(fname) if i[1] is not None]:
             subs[key] = self.metadata[key].replace('/', '-')
@@ -301,9 +302,12 @@ class Scenes(object):
         metadata = geoj.get('metadata', {})
         return Scenes(scenes, metadata=metadata)
 
-    def filter(self, key, value):
+    def filter(self, key, values):
         """ Filter scenes on key matching value """
-        self.scenes = list(filter(lambda x: x.metadata[key] == value, self.scenes))
+        scenes = []
+        for val in values:
+            scenes += list(filter(lambda x: x.metadata[key] == val, self.scenes))
+        self.scenes = scenes
 
     def download(self, **kwargs):
         return [s.download(**kwargs) for s in self.scenes]
