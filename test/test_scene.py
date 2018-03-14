@@ -3,13 +3,12 @@ import unittest
 import shutil
 import satsearch.config as config
 from satsearch.scene import Scene, Scenes, SatSceneError
-from nose.tools import raises
 
 
 testpath = os.path.dirname(__file__)
 
 
-class TestScene(unittest.TestCase):
+class Test(unittest.TestCase):
 
     path = os.path.dirname(__file__)
 
@@ -53,10 +52,10 @@ class TestScene(unittest.TestCase):
         """ Get valid test scene """
         return Scene(self.md)
 
-    @raises(SatSceneError)
     def test_invalid_init(self):
         """ Initialize a scene with insufficient metadata """
-        Scene({'meaninglesskey': 'meaninglessstring'})
+        with self.assertRaises(SatSceneError):
+            Scene({'meaninglesskey': 'meaninglessstring'})
 
     def test_init(self):
         """ Initialize a scene """
@@ -95,7 +94,7 @@ class TestScene(unittest.TestCase):
     def test_download_all(self):
         """ Retrieve all data files from a source """
         scene = self.get_test_scene()
-        fnames = scene.download(source='test')
+        fnames = scene.download()
         for f in fnames.values():
             self.assertTrue(os.path.exists(f))
             os.remove(f)
