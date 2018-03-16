@@ -17,7 +17,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         if output:
             self.add_output_args()
         h = '0:all, 1:debug, 2:info, 3:warning, 4:error, 5:critical'
-        self.add_argument('--verbosity', help=h, default=2, type=int)
+        self.add_argument('-v', '--verbosity', help=h, default=2, type=int)
 
     def parse_args(self, *args, **kwargs):
         """ Parse arguments """
