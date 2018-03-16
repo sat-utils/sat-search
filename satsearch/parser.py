@@ -1,5 +1,3 @@
-import os
-import json
 import argparse
 import satsearch.config as config
 
@@ -19,7 +17,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         if output:
             self.add_output_args()
         h = '0:all, 1:debug, 2:info, 3:warning, 4:error, 5:critical'
-        self.add_argument('--verbosity', help=h, default=2, type=int)
+        self.add_argument('-v', '--verbosity', help=h, default=2, type=int)
 
     def parse_args(self, *args, **kwargs):
         """ Parse arguments """
@@ -43,10 +41,14 @@ class SatUtilsParser(argparse.ArgumentParser):
             args['cloud_to'] = int(cov[1])
 
         # set global configuration options
+        if 'url' in args:
+            config.API_URL = args.pop('url')
         if 'datadir' in args:
             config.DATADIR = args.pop('datadir')
         if 'subdirs' in args:
             config.SUBDIRS = args.pop('subdirs')
+        if 'filename' in args:
+            config.FILENAME = args.pop('filename')
 
         return args
 
@@ -60,6 +62,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('--date', help='Single date or begin and end date (e.g., 2017-01-01,2017-02-15')
         group.add_argument('--clouds', help='Range of acceptable cloud cover (e.g., 0,20)')
         group.add_argument('--param', nargs='*', help='Additional parameters of form KEY=VALUE', action=self.KeyValuePair)
+        group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
     def add_save_args(self):
         group = self.add_argument_group('saving/loading parameters')
@@ -73,8 +76,9 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('--datadir', help='Local directory to save images', default=config.DATADIR)
         group.add_argument('--subdirs', default=config.SUBDIRS,
                            help='Save in subdirs based on these metadata keys')
+        group.add_argument('--filename', default=config.FILENAME,
+                           help='Save files with this filename pattern based on metadata keys')
         group.add_argument('--download', help='Download files', default=None, nargs='*')
-        group.add_argument('--source', help='Download source', default='aws_s3')
 
     def add_output_args(self):
         """ Add arguments for printing output """

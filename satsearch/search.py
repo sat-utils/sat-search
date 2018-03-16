@@ -28,7 +28,7 @@ class Query(object):
     def query(self, **kwargs):
         """ Make single API call """
         kwargs.update(self.kwargs)
-        response = requests.get(config.SAT_API, kwargs)
+        response = requests.get(config.API_URL, kwargs)
 
         logger.debug('Query URL: %s' % response.url)
 
@@ -45,13 +45,14 @@ class Query(object):
         if limit is None:
             limit = self.found()
         limit = min(limit, self.found())
-        page_size = min(limit, 1000)
+        page_size = min(limit, 500)
 
         scenes = []
         page = 1
         while len(scenes) < limit:
             results = self.query(page=page, limit=page_size)['results']
-            scenes += [Scene(**r) for r in results]
+            for r in results:
+                scenes.append(Scene.create_from_satapi_v0(r))
             page += 1
 
         return scenes
@@ -62,6 +63,7 @@ class Search(object):
 
     def __init__(self, scene_id=[], **kwargs):
         """ Initialize a Search object with parameters """
+        self.kwargs = kwargs
         self.queries = []
         if len(scene_id) == 0:
             self.queries.append(Query(**kwargs))
