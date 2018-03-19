@@ -38,7 +38,6 @@ def get_text_calendar(dates, cols=3):
     _dates = sorted(dates.keys())
     _labels = set(dates.values())
     labels = dict(zip(_labels, [str(41 + i) for i in range(0, len(_labels))]))
-    #from nose.tools import set_trace; set_trace()
     cal = get_text_calendar_dates(_dates[0], _dates[-1])
 
     # month and day headers

@@ -6,7 +6,6 @@ import json
 import shutil
 import satsearch.main as main
 import satsearch.config as config
-from nose.tools import raises
 
 
 testpath = os.path.dirname(__file__)
@@ -17,32 +16,33 @@ class Test(unittest.TestCase):
     """ Test main module """
 
     args = '--date 2017-01-01 --satellite_name Landsat-8'.split(' ')
+    num_scenes = 562
 
     def test_main(self):
         """ Run main function """
         scenes = main.main(date='2017-01-01', satellite_name='Landsat-8')
-        self.assertEqual(len(scenes.scenes), 564)
+        self.assertEqual(len(scenes.scenes), self.num_scenes)
 
     def test_main_options(self):
         """ Test main program with output options """
         fname = os.path.join(testpath, 'test_main-save.json')
         scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', save=fname, printsearch=True, printcal=True, printmd=[])
-        self.assertEqual(len(scenes.scenes), 564)
+        self.assertEqual(len(scenes.scenes), self.num_scenes)
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
 
-    @raises(ValueError)
     def _test_main_review_error(self):
         """ Run review feature without envvar set """
         os.setenv('IMGCAT', None)
-        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', review=True)
+        with self.assertRaises(ValueError):
+            scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', review=True)
 
     def test_cli(self):
         """ Run CLI program """
         with patch.object(sys, 'argv', ['testprog'] + self.args):
             n = main.cli()
-            self.assertEqual(n, 564)
+            self.assertEqual(n, self.num_scenes)
 
     def test_main_download(self):
         """ Test main program with downloading """
