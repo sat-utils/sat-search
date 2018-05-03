@@ -161,6 +161,19 @@ class Scene(object):
             for chunk in resp.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
+        bname, ext = os.path.splitext(fout)
+        #if ext == '.jpg':
+        #    wldfile = bname + '.wld'
+        #    coords = self.geometry['coordinates'][0]
+        #    lats = [c[1] for c in coords]
+        #    lons = [c[0] for c in coords]
+        #    import pdb; pdb.set_trace()
+        #    with open(wldfile, 'w') as f:
+        #        f.write('%s\n' % ((max(lons)-min(lons))/1155))
+        #        f.write('0.0\n0.0\n')
+        #        f.write('%s\n' % (-(max(lats)-min(lats))/1174))
+        #        f.write('%s\n%s\n' % (min(lons), max(lats)))
+
         return fout
 
     def review_thumbnail(self):
