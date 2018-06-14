@@ -1,3 +1,4 @@
+import os
 import logging
 import requests
 import satsearch.config as config
@@ -23,12 +24,13 @@ class Query(object):
         """ Small query to determine total number of hits """
         if self.results is None:
             self.query(limit=0)
-        return self.results['meta']['found']
+        return self.results['properties']['found']
 
     def query(self, **kwargs):
         """ Make single API call """
         kwargs.update(self.kwargs)
-        response = requests.get(config.API_URL, kwargs)
+        url = os.path.join(config.API_URL, 'search/stac')
+        response = requests.get(url, kwargs)
 
         logger.debug('Query URL: %s' % response.url)
 
@@ -37,7 +39,8 @@ class Query(object):
             raise SatSearchError(response.text)
 
         self.results = response.json()
-        logger.debug(self.results['meta'])
+        #import pdb; pdb.set_trace()
+        logger.debug(self.results['properties'])
         return self.results
 
     def scenes(self, limit=None):
@@ -46,16 +49,32 @@ class Query(object):
             limit = self.found()
         limit = min(limit, self.found())
         page_size = min(limit, 500)
-
         scenes = []
         page = 1
         while len(scenes) < limit:
-            results = self.query(page=page, limit=page_size)['results']
+            results = self.query(page=page, limit=page_size)['features']
             for r in results:
-                scenes.append(Scene.create_from_satapi_v0(r))
+                scenes.append(Scene(r))
             page += 1
 
         return scenes
+
+    def collections(self, limit=None):
+        """ Query and return up to limit results """
+        if limit is None:
+            limit = self.found()
+        limit = min(limit, self.found())
+        page_size = min(limit, 500)
+
+        collections = []
+        page = 1
+        while len(collections) < limit:
+            results = self.query(page=page, limit=page_size)['features']
+            for r in results:
+                collections.append(Scene(r))
+            page += 1
+
+        return collections    
 
 
 class Search(object):
@@ -85,3 +104,10 @@ class Search(object):
         for query in self.queries:
             scenes += query.scenes()
         return scenes
+
+    def collections(self):
+        """ Search collections """
+        collections = []
+        for query in self.queries:
+            collections += query.collections()
+        return collections

@@ -4,6 +4,7 @@ import requests
 import json
 from string import Formatter, Template
 from datetime import datetime
+from dateutil.parser import parse
 import satsearch.utils as utils
 import satsearch.config as config
 
@@ -17,69 +18,46 @@ class SatSceneError(Exception):
 
 class Scene(object):
 
-    def __init__(self, feature, source='aws_s3'):
+    def __init__(self, feature):
         """ Initialize a scene object """
-        required = ['scene_id', 'date', 'download_links']
+        required = ['id', 'datetime']
         if 'geometry' not in feature:
             raise SatSceneError('No geometry supplied')
         if not set(required).issubset(feature['properties'].keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
-        self.geometry = feature['geometry']
-        self.metadata = feature['properties']
-        self.metadata['date'] = self.metadata['date'].replace('/', '-')
-        self.filenames = {}
-        self.source = source
-        # TODO - check validity of date and geometry, at least one download link
+        self.feature = feature
 
-    @classmethod
-    def create_from_satapi_v0(cls, metadata):
-        """ Create a Scene from sat-api v1 """
-        feature = {
-            'type': 'Feature',
-            'geometry': metadata.pop('data_geometry'),
-            'properties': metadata
-        }
-        return cls(feature)
+        #self.metadata['datetime'] = self.metadata['datetime'].replace('/', '-')
+        self.filenames = {}
+        # TODO - check validity of date and geometry, at least one download link
 
     def __repr__(self):
         return self.scene_id
 
     @property
-    def scene_id(self):
-        return self.metadata['scene_id']
+    def geometry(self):
+        return self.feature['geometry']
 
     @property
-    def platform(self):
-        return self.metadata.get('satellite_name', '')
+    def metadata(self):
+        return self.feature['properties']
+
+    @property
+    def scene_id(self):
+        return self.metadata['id']
 
     @property
     def date(self):
-        pattern = '%Y-%m-%d' if '-' in self.metadata['date'] else '%Y/%m/%d'
-        return datetime.strptime(self.metadata['date'], pattern).date()
+        #pattern = "%Y-%m-%dT%H:%M:%S.%fZ" # if '-' in self.metadata['datetime'] else '%Y/%m/%d'
+        #return datetime.strptime(self.metadata['datetime'], pattern).date()
+        return parse(self.metadata['datetime']).date()
 
-    @property
-    def sources(self):
-        return self.metadata['download_links'].keys()
-
-    def links(self):
+    def assets(self):
         """ Return dictionary of file key and download link """
-        files = self.metadata['download_links'][self.source]
-        prefix = os.path.commonprefix(files)
-        keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
-        links = dict(zip(keys, files))
-        if self.source == 'aws_s3' and 'aws_thumbnail' in self.metadata:
-            links['thumb'] = self.metadata['aws_thumbnail']
-        else:
-            links['thumb'] = self.metadata['thumbnail']
-        return links
-
-    def geojson(self):
-        """ Return metadata as GeoJSON """
-        return {
-            'type': 'Feature',
-            'geometry': self.geometry,
-            'properties': self.metadata
-        }
+        return self.feature['assets']
+        #prefix = os.path.commonprefix(files)
+        #keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
+        #links = dict(zip(keys, files))
 
     def bbox(self):
         """ Get bounding box of scene """
@@ -87,33 +65,29 @@ class Scene(object):
         lons = [c[0] for c in self.geometry['coordinates'][0]]
         return [min(lons), min(lats), max(lons), max(lats)]
 
-    def get_older_landsat_collection_links(self, link):
-        """ From a link string, generate links for previous versions """
-        sid = os.path.basename(link).split('_')[0]
-        return [link.replace(sid, sid[0:-1] + str(s)) for s in reversed(range(0, int(sid[-1]) + 1))]
-
     def download(self, key=None, path=None, subdirs=None, overwrite=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
-        links = self.links()
+        assets = self.assets()
         # default to all files if no key provided
         if key is None:
-            keys = links.keys()
+            keys = assets.keys()
         else:
             keys = [key]
 
-        path = self.get_path(path=path, subdirs=subdirs)
-
+        path = self.get_path(path=path)
         # loop through keys and get files
-        for key in [k for k in keys if k in links]:
+        for key in [k for k in keys if k in assets]:
             try:
-                ext = os.path.splitext(links[key])[1]
+                href = assets[key]['href']
+                ext = os.path.splitext(href)[1]
                 fout = os.path.join(path, self.get_filename(suffix=key) + ext)
+                
                 if os.path.exists(fout) and overwrite is False:
                     self.filenames[key] = fout
                 else:
-                    self.filenames[key] = self.download_file(links[key], fout=fout)
+                    self.filenames[key] = self.download_file(href, fout=fout)
             except Exception as e:
-                logger.error('Unable to download %s' % links[key])
+                logger.error('Unable to download %s: %s' % (href, str(e)))
         return self.filenames
 
     @classmethod
@@ -123,17 +97,18 @@ class Scene(object):
             os.makedirs(path)
         return path
 
-    def get_path(self, path=None, subdirs=None, no_create=False):
+    def get_path(self, path=None, no_create=False):
         """ Get local path for this scene """
         if path is None:
             path = config.DATADIR
-        if subdirs is None:
-            subdirs = config.SUBDIRS
         # create path for this scene
         subs = {}
-        for key in [i[1] for i in Formatter().parse(subdirs.rstrip('/')) if i[1] is not None]:
-            subs[key] = self.metadata[key]
-        _path = os.path.join(path, Template(subdirs).substitute(**subs))
+        for key in [i[1] for i in Formatter().parse(path.rstrip('/')) if i[1] is not None]:
+            if key == 'date':
+                subs[key] = self.date
+            else:
+                subs[key] = self.metadata[key]
+        _path = Template(path).substitute(**subs)
         # make output path if it does not exist
         if not no_create and _path != '':
             self.mkdirp(_path)
@@ -237,7 +212,7 @@ class Scenes(object):
         else:
             return 0, 0
 
-    def sensors(self, date=None):
+    def platforms(self, date=None):
         """ List of all available sensors across scenes """
         if date is None:
             return list(set([s.platform for s in self.scenes]))
@@ -257,8 +232,11 @@ class Scenes(object):
     def text_calendar(self):
         """ Get calendar for dates """
         date_labels = {}
+        dates = self.dates()
+        if len(dates) == 0:
+            return ''
         for d in self.dates():
-            sensors = self.sensors(d)
+            sensors = self.platforms(d)
             if len(sensors) > 1:
                 date_labels[d] = 'Multiple'
             else:
@@ -276,6 +254,7 @@ class Scenes(object):
             #metadata = {}
             features = []
         geoj = self.geojson()
+
         #for key in geoj.get('metadata', {}):
         #    oldmd = metadata.get(key, [])
         #    geoj['metadata'][key] = oldmd + [geoj['metadata'][key]]
@@ -285,7 +264,7 @@ class Scenes(object):
 
     def geojson(self):
         """ Get all metadata as GeoJSON """
-        features = [s.geojson() for s in self.scenes]
+        features = [s.feature for s in self.scenes]
         return {
             'type': 'FeatureCollection',
             'features': features,

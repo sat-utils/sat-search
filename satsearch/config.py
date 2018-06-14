@@ -4,7 +4,7 @@ import os
 API_URL = os.getenv('SATUTILS_API_URL', 'https://sat-api.developmentseed.org')
 
 # data directory to store downloaded imagery
-DATADIR = os.getenv('SATUTILS_DATADIR', './${satellite_name}/${date}')
+DATADIR = os.getenv('SATUTILS_DATADIR', './${collection}/${date}')
 
 # filename pattern for saving files
 FILENAME = os.getenv('SATUTILS_FILENAME', '${id}')
