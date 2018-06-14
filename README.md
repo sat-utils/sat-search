@@ -4,7 +4,7 @@
 
 Sat-search is a Python 2/3 library and a command line tool for discovering and downloading publicly available satellite imagery using a conformant API such as [sat-api](https://github.com/sat-utils/sat-api).
 
-*Note*: This is the legacy version of sat-search (<1.0.0) which only works with the legacy version of sat-api (<1.0.0), which can also be found on the legacy branch.
+The legacy version of sat-search (<1.0.0) can be used with the legacy version of sat-api (<1.0.0), currently deployed at https://api.developmentseed.org/satellites.
 
 ## Installation
 It is recommended to use [pyenv](https://github.com/pyenv/pyenv) and [virtualenv](https://virtualenv.pypa.io/en/latest/) to to control Python versions and installed dependencies. sat-search can be conveniently installed from PyPi:
