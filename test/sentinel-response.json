@@ -1,114 +1,155 @@
 {
-  "meta": {
-    "found": 2046030,
-    "name": "sat-api",
-    "license": "CC0-1.0",
-    "website": "https://api.developmentseed.org/satellites/",
-    "page": 1,
-    "limit": 1
+  "type": "FeatureCollection",
+  "properties": {
+    "found": 4858160,
+    "limit": 1,
+    "page": 1
   },
-  "results": [
+  "features": [
     {
-      "scene_id": "S2A_tile_20170705_53KNB_0",
-      "product_id": "S2A_MSIL1C_20170705T010731_N0205_R045_T53KNB_20170705T010726",
-      "satellite_name": "Sentinel-2A",
-      "cloud_coverage": 1.519,
-      "date": "2017-07-05",
-      "thumbnail": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/preview.jpg",
-      "data_geometry": {
+      "type": "Feature",
+      "properties": {
+        "id": "L1C_T05LMJ_A011608_20170911T203735",
+        "collection": "sentinel-2",
+        "datetime": "2017-09-11T20:37:35.460Z",
+        "eo:platform": "Sentinel-2A",
+        "eo:cloud_cover": 1,
+        "eo:epsg": "3275",
+        "sentinel:product_id": "S2A_MSIL1C_20170911T203741_N0205_R028_T05LMJ_20170911T203735"
+      },
+      "bbox": [
+        -153.91552716849128,
+        -10.943910078451896,
+        -152.91068461115754,
+        -9.949629240029934
+      ],
+      "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              135.6847050597798,
-              -16.279734566912815
+              -153.91262526692105,
+              -9.949629240029934
             ],
             [
-              136.0274405842376,
-              -16.27834798090461
+              -152.91096775727257,
+              -9.950862549969758
             ],
             [
-              136.03278643834525,
-              -17.270732667819917
+              -152.91068461115754,
+              -10.943910078451896
             ],
             [
-              135.4444743144093,
-              -17.272896284056113
+              -153.91552716849128,
+              -10.942550897300457
             ],
             [
-              135.54426234023458,
-              -16.863355497133874
-            ],
-            [
-              135.6847050597798,
-              -16.279734566912815
+              -153.91262526692105,
+              -9.949629240029934
             ]
           ]
         ]
       },
-      "download_links": {
-        "aws_s3": [
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B01.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B02.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B03.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B04.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B05.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B06.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B07.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B08.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B09.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B10.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B11.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B12.jp2",
-          "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/B8A.jp2"
-        ]
-      },
-      "original_scene_id": "L1C_T53KNB_A010624_20170705T010726",
-      "data_coverage_percentage": 45.13,
-      "cloudy_pixel_percentage": 1.52,
-      "utm_zone": 53,
-      "latitude_band": "K",
-      "grid_square": "NB",
-      "product_path": "products/2017/7/5/S2A_MSIL1C_20170705T010731_N0205_R045_T53KNB_20170705T010726",
-      "timestamp": "2017-07-05T01:07:26.461Z",
-      "spacecraft_name": "Sentinel-2A",
-      "product_meta_link": "https://sentinel-s2-l1c.s3.amazonaws.com/products/2017/7/5//metadata.xml",
-      "original_tile_meta": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/K/NB/2017/7/5/0/tileInfo.json",
-      "aws_path": "tiles/53/K/NB/2017/7/5/0",
-      "tile_geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              134.99981280568244,
-              -16.280833323080394
-            ],
-            [
-              136.0274498952785,
-              -16.27833889675182
-            ],
-            [
-              136.03279589544636,
-              -17.27074165727851
-            ],
-            [
-              134.99981183146744,
-              -17.273397152001774
-            ],
-            [
-              134.99981280568244,
-              -16.280833323080394
-            ]
+      "assets": {
+        "B01": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B01.jp2",
+          "eo:bands": [
+            "B01"
           ]
-        ]
+        },
+        "B02": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B02.jp2",
+          "eo:bands": [
+            "B02"
+          ]
+        },
+        "B03": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B03.jp2",
+          "eo:bands": [
+            "B03"
+          ]
+        },
+        "B04": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B04.jp2",
+          "eo:bands": [
+            "B04"
+          ]
+        },
+        "B05": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B05.jp2",
+          "eo:bands": [
+            "B05"
+          ]
+        },
+        "B06": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B06.jp2",
+          "eo:bands": [
+            "B06"
+          ]
+        },
+        "B07": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B07.jp2",
+          "eo:bands": [
+            "B07"
+          ]
+        },
+        "B08": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B08.jp2",
+          "eo:bands": [
+            "B08"
+          ]
+        },
+        "B09": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B09.jp2",
+          "eo:bands": [
+            "B09"
+          ]
+        },
+        "B10": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B10.jp2",
+          "eo:bands": [
+            "B10"
+          ]
+        },
+        "B11": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B11.jp2",
+          "eo:bands": [
+            "B11"
+          ]
+        },
+        "B12": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B12.jp2",
+          "eo:bands": [
+            "B12"
+          ]
+        },
+        "B8A": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/B8A.jp2",
+          "eo:bands": [
+            "B8A"
+          ]
+        },
+        "thumbnail": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/preview.jpg"
+        },
+        "tki": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/TKI.jp2",
+          "description": "True Color Image"
+        },
+        "metadata": {
+          "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/5/L/MJ/2017/9/11/0/metadata.xml"
+        }
       },
-      "tileOrigin": {
-        "type": "Point",
-        "coordinates": [
-          134.99981280568244,
-          -16.280833323080394
-        ]
-      }
+      "links": [
+        {
+          "ref": "self",
+          "href": "https://sat-api.developmentseed.org/search/stac?id=L1C_T05LMJ_A011608_20170911T203735"
+        },
+        {
+          "ref": "collection",
+          "href": "https://sat-api.developmentseed.org/collections?collection=sentinel-2"
+        }
+      ]
     }
   ]
 }
