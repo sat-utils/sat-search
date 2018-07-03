@@ -6,11 +6,6 @@ from satsearch import Search, Scenes
 from satsearch.parser import SatUtilsParser
 
 
-def collections(**kwargs):
-    """ Search collections """
-    pass
-
-
 def main(scenes=None, review=False, print_md=None, print_cal=False,
          save=None, append=False, download=None, **kwargs):
     """ Main function for performing a search """
@@ -52,6 +47,7 @@ def cli():
     parser = SatUtilsParser(description='sat-search (v%s)' % __version__)
     parser.add_search_parser()
     parser.add_load_parser()
+    #parser.add_collections_parser()
     args = parser.parse_args(sys.argv[1:])
 
     # read the GeoJSON file
@@ -60,8 +56,10 @@ def cli():
             with open(args['intersects']) as f:
                 args['intersects'] = json.dumps(json.loads(f.read()))
 
-    scenes = main(**args)
-    return len(scenes)
+    if args['command'] == 'collections':
+        collections(**args)
+    else:
+        main(**args)
 
 
 if __name__ == "__main__":

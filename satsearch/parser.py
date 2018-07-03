@@ -49,11 +49,17 @@ class SatUtilsParser(argparse.ArgumentParser):
         subparser = self.subparser.add_parser(*args, parents=parents, **kwargs)
         return subparser
 
+    def add_collections_parser(self):
+        """ Add parser for collections """
+        subparser = self.add_subparser('collections', help='Collections API', download=False, output=False)
+        group = subparser.add_argument_group('collection parameters')
+        group.add_argument('-c', '--collection', help='Name of collection')
+
     def add_search_parser(self, download=True, output=True):
         subparser = self.add_subparser('search', help='Search API', download=download, output=output)
         """ Adds search arguments to a parser """
         group = subparser.add_argument_group('search parameters')
-        group.add_argument('--collection', help='Name of collection')
+        group.add_argument('-c', '--cx:id', help='Name of collection')
         group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
         #group.add_argument('--id', help='One or more scene IDs', nargs='*', default=None)
         #group.add_argument('--contains', help='lon,lat points')
