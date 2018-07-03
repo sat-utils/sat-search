@@ -27,30 +27,33 @@ class Scene(object):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
         self.feature = feature
 
-        #self.metadata['datetime'] = self.metadata['datetime'].replace('/', '-')
+        # QGIS altered date format when editing this GeoJSON file
+        #self['datetime'] = self['datetime'].replace('/', '-')
         self.filenames = {}
-        # TODO - check validity of date and geometry, at least one download link
+        # TODO - add validator
 
     def __repr__(self):
-        return self.scene_id
+        return self['id']
+
+    def __getitem__(self, key):
+        try:
+            return getattr(self, key)
+        except:
+            return self.feature['properties'][key]
+
+    @property
+    def id(self):
+        return self.feature['properties']['id']
 
     @property
     def geometry(self):
         return self.feature['geometry']
 
     @property
-    def metadata(self):
-        return self.feature['properties']
-
-    @property
-    def scene_id(self):
-        return self.metadata['id']
-
-    @property
     def date(self):
-        #pattern = "%Y-%m-%dT%H:%M:%S.%fZ" # if '-' in self.metadata['datetime'] else '%Y/%m/%d'
-        #return datetime.strptime(self.metadata['datetime'], pattern).date()
-        return parse(self.metadata['datetime']).date()
+        dt = self['datetime'].replace('/', '-')
+        pattern = "%Y-%m-%dT%H:%M:%S.%fZ"
+        return datetime.strptime(dt, pattern).date()
 
     def assets(self):
         """ Return dictionary of file key and download link """
@@ -65,30 +68,30 @@ class Scene(object):
         lons = [c[0] for c in self.geometry['coordinates'][0]]
         return [min(lons), min(lats), max(lons), max(lats)]
 
-    def download(self, key=None, path=None, subdirs=None, overwrite=False):
+    def download(self, key, overwrite=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         assets = self.assets()
-        # default to all files if no key provided
-        if key is None:
-            keys = assets.keys()
-        else:
-            keys = [key]
+ 
+        # legacy hack - this function used to download multiple keys, now just one
+        keys = [key]
 
-        path = self.get_path(path=path)
+        path = self.get_path()
         # loop through keys and get files
         for key in [k for k in keys if k in assets]:
             try:
                 href = assets[key]['href']
+                
                 ext = os.path.splitext(href)[1]
                 fout = os.path.join(path, self.get_filename(suffix=key) + ext)
-                
                 if os.path.exists(fout) and overwrite is False:
                     self.filenames[key] = fout
                 else:
                     self.filenames[key] = self.download_file(href, fout=fout)
+                import pdb; pdb.set_trace()
             except Exception as e:
                 logger.error('Unable to download %s: %s' % (href, str(e)))
-        return self.filenames
+        import pdb; pdb.set_trace()
+        return self.filenames[key]
 
     @classmethod
     def mkdirp(cls, path):
@@ -97,17 +100,16 @@ class Scene(object):
             os.makedirs(path)
         return path
 
-    def get_path(self, path=None, no_create=False):
+    def get_path(self, no_create=False):
         """ Get local path for this scene """
-        if path is None:
-            path = config.DATADIR
+        path = config.DATADIR
         # create path for this scene
         subs = {}
         for key in [i[1] for i in Formatter().parse(path.rstrip('/')) if i[1] is not None]:
             if key == 'date':
                 subs[key] = self.date
             else:
-                subs[key] = self.metadata[key]
+                subs[key] = self[key]
         _path = Template(path).substitute(**subs)
         # make output path if it does not exist
         if not no_create and _path != '':
@@ -119,7 +121,7 @@ class Scene(object):
         fname = config.FILENAME if pattern is None else pattern
         subs = {}
         for key in [i[1] for i in Formatter().parse(fname) if i[1] is not None]:
-            subs[key] = self.metadata[key].replace('/', '-')
+            subs[key] = self[key].replace('/', '-')
         fname = Template(fname).substitute(**subs)
         if suffix is not None:
             fname = fname + suffix
@@ -142,7 +144,6 @@ class Scene(object):
         #    coords = self.geometry['coordinates'][0]
         #    lats = [c[1] for c in coords]
         #    lons = [c[0] for c in coords]
-        #    import pdb; pdb.set_trace()
         #    with open(wldfile, 'w') as f:
         #        f.write('%s\n' % ((max(lons)-min(lons))/1155))
         #        f.write('0.0\n0.0\n')
@@ -177,6 +178,7 @@ class Scenes(object):
         """ Initialize with a list of Scene objects """
         self.scenes = sorted(scenes, key=lambda s: s.date)
         self.metadata = metadata
+        self.collections
 
     def __len__(self):
         """ Number of scenes """
@@ -195,6 +197,10 @@ class Scenes(object):
         """ Get sorted list of dates for all scenes """
         return sorted([s.date for s in self.scenes])
 
+    def collections(self):
+        """ Get collection records for this list of scenes """
+        return self.collections
+
     def bbox(self):
         """ Get bounding box of search """
         if 'aoi' in self.metadata:
@@ -212,21 +218,25 @@ class Scenes(object):
         else:
             return 0, 0
 
+    #def __getitem__(self, key):
+    #    return self.feature['properties'][key]
+
     def platforms(self, date=None):
         """ List of all available sensors across scenes """
         if date is None:
-            return list(set([s.platform for s in self.scenes]))
+            return list(set([s['eo:platform'] for s in self.scenes]))
         else:
-            return list(set([s.platform for s in self.scenes if s.date == date]))
+            return list(set([s['eo:platform'] for s in self.scenes if s.date == date]))
 
     def print_scenes(self, params=[]):
         """ Print summary of all scenes """
         if len(params) == 0:
-            params = ['date', 'scene_id']
+            params = ['date', 'id']
         txt = 'Scenes (%s):\n' % len(self.scenes)
-        txt += ''.join(['{:^20}'.format(p) for p in params]) + '\n'
+        txt += ''.join(['{:<20}'.format(p) for p in params]) + '\n'
         for s in self.scenes:
-            txt += ''.join(['{:^20}'.format(s.metadata[p]) for p in params]) + '\n'
+            # NOTE - the string conversion is because .date returns a datetime obj
+            txt += ''.join(['{:<20}'.format(str(s[p])) for p in params]) + '\n'
         print(txt)
 
     def text_calendar(self):
@@ -249,9 +259,11 @@ class Scenes(object):
             with open(filename) as f:
                 geoj = json.loads(f.read())
                 #metadata = geoj.get('metadata', {})
+                #collections = geoj.get('collections', [])
                 features = geoj['features']
         else:
             #metadata = {}
+            #collections = []
             features = []
         geoj = self.geojson()
 
@@ -284,11 +296,13 @@ class Scenes(object):
         """ Filter scenes on key matching value """
         scenes = []
         for val in values:
-            scenes += list(filter(lambda x: x.metadata[key] == val, self.scenes))
+            scenes += list(filter(lambda x: x[key] == val, self.scenes))
         self.scenes = scenes
 
     def download(self, **kwargs):
-        return [s.download(**kwargs) for s in self.scenes]
+        sc = [s.download(**kwargs) for s in self.scenes]
+        import pdb; pdb.set_trace()
+        return sc
 
     def review_thumbnails(self):
         """ Review all thumbnails in scenes """
