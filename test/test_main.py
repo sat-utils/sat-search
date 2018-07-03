@@ -20,7 +20,8 @@ class Test(unittest.TestCase):
 
     def test_main(self):
         """ Run main function """
-        scenes = main.main(date='2017-01-01', satellite_name='Landsat-8')
+        scenes = main.main(date='2017-01-01', collection='Landsat-8-l1')
+        import pdb; pdb.set_trace()
         self.assertEqual(len(scenes.scenes), self.num_scenes)
 
     def test_main_options(self):
@@ -34,13 +35,13 @@ class Test(unittest.TestCase):
 
     def _test_main_review_error(self):
         """ Run review feature without envvar set """
-        os.setenv('IMGCAT', None)
+        #os.setenv('IMGCAT', None)
         with self.assertRaises(ValueError):
             scenes = main.main(date='2017-01-01', satellite_name='Landsat-8', review=True)
 
     def test_cli(self):
         """ Run CLI program """
-        with patch.object(sys, 'argv', ['testprog'] + self.args):
+        with patch.object(sys, 'argv', ['search'] + self.args):
             n = main.cli()
             self.assertEqual(n, self.num_scenes)
 
@@ -49,8 +50,8 @@ class Test(unittest.TestCase):
         with open(os.path.join(testpath, 'aoi1.geojson')) as f:
             aoi = json.dumps(json.load(f))
         scenes = main.main(date_from='2017-01-05', date_to='2017-01-21', satellite_name='Landsat-8',
-                           intersects=aoi, download=['thumb', 'MTL'])
+                           intersects=aoi, download=['thumbnail', 'metadata'])
         for scene in scenes.scenes:
-            self.assertTrue(os.path.exists(scene.filenames['thumb']))
-            self.assertTrue(os.path.exists(scene.filenames['MTL']))
+            self.assertTrue(os.path.exists(scene.filenames['thumbnail']))
+            self.assertTrue(os.path.exists(scene.filenames['metadata']))
         shutil.rmtree(os.path.join(testpath, scene.platform))
