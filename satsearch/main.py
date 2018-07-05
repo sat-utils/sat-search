@@ -56,9 +56,9 @@ def cli():
             with open(args['intersects']) as f:
                 args['intersects'] = json.dumps(json.loads(f.read()))
 
-    if args['command'] == 'collections':
-        collections(**args)
-    else:
+    cmd = args.pop('command', None)
+
+    if cmd is not None:
         main(**args)
 
 

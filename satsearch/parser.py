@@ -25,8 +25,13 @@ class SatUtilsParser(argparse.ArgumentParser):
         args = vars(args)
         args = {k: v for k, v in args.items() if v is not None}
 
+        if args.get('command', None) is None:
+            self.print_help()
+            sys.exit(0)
+
         # set logging level
-        logging.basicConfig(stream=sys.stdout, level=(50-args.pop('verbosity') * 10))
+        if 'verbosity' in args:
+            logging.basicConfig(stream=sys.stdout, level=(50-args.pop('verbosity') * 10))
 
         # set global configuration options
         if 'url' in args:
@@ -59,7 +64,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         subparser = self.add_subparser('search', help='Search API', download=download, output=output)
         """ Adds search arguments to a parser """
         group = subparser.add_argument_group('search parameters')
-        group.add_argument('-c', '--cx:id', help='Name of collection')
+        group.add_argument('-c', '--c:id', help='Name of collection')
         group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
         #group.add_argument('--id', help='One or more scene IDs', nargs='*', default=None)
         #group.add_argument('--contains', help='lon,lat points')
@@ -85,7 +90,6 @@ class SatUtilsParser(argparse.ArgumentParser):
         """ Add arguments for printing output """
         parser = argparse.ArgumentParser(add_help=False)
         group = parser.add_argument_group('search output')
-        group.add_argument('--print_search', help='Print search parameters', default=False, action='store_true')
         group.add_argument('--print_md', help='Print specified metadata for matched scenes', default=None, nargs='*')
         group.add_argument('--print_cal', help='Print calendar showing dates', default=False, action='store_true')
         group.add_argument('--save', help='Save results as GeoJSON', default=None)
