@@ -67,20 +67,20 @@ class Query(object):
             self.query(limit=0)
         return self.results['properties']['found']
 
+    @classmethod
+    def _query(cls, url,**kwargs):
+        response = requests.get(url, kwargs)
+        logger.debug('Query URL: %s' % response.url)
+        # API error
+        if response.status_code != 200:
+            raise SatSearchError(response.text)
+        return response.json()
+
     def query(self, **kwargs):
         """ Make single API call """
         kwargs.update(self.kwargs)
         url = os.path.join(config.API_URL, self.endpoint)
-        response = requests.get(url, kwargs)
-
-        logger.debug('Query URL: %s' % response.url)
-
-        # API error
-        if response.status_code != 200:
-            raise SatSearchError(response.text)
-
-        self.results = response.json()
-        logger.debug(self.results['properties'])
+        self.results = self._query(url, **kwargs)
         return self.results
 
     def items(self, limit=None):
@@ -123,6 +123,12 @@ class Search(object):
             found += query.found()
         return found
 
+    @classmethod
+    def collection(cls, cid):
+        """ Get a Collection record """
+        url = os.path.join(config.API_URL, 'collections', cid, 'definition')
+        return Query._query(url)['features'][0]
+
     def scenes(self):
         """ Return all of the scenes """
         items = []
@@ -130,14 +136,12 @@ class Search(object):
             items += query.items()
         # retrieve collections
         collections = {}
-        for c in set([item['properties']['cx:id'] for item in items if 'cx:id' in item['properties']]):
-            q = Query(**{"cx:id": c}, endpoint='collections')
-            col = q.items()[0]
-            collections[col['properties']['cx:id']] = col
+        for c in set([item['properties']['c:id'] for item in items if 'c:id' in item['properties']]):
+            collections[c] = self.collection(c)
         scenes = []
         for item in items:
-            if 'cx:id' in item['properties']:
-                item = dict_merge(item, collections[item['properties']['cx:id']])
+            if 'c:id' in item['properties']:
+                item = dict_merge(item, collections[item['properties']['c:id']])
             scenes.append(Scene(item))
         return scenes
 

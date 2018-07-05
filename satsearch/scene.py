@@ -55,6 +55,7 @@ class Scene(object):
         pattern = "%Y-%m-%dT%H:%M:%S.%fZ"
         return datetime.strptime(dt, pattern).date()
 
+    @property
     def assets(self):
         """ Return dictionary of file key and download link """
         return self.feature['assets']
@@ -62,6 +63,12 @@ class Scene(object):
         #keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
         #links = dict(zip(keys, files))
 
+    @property
+    def links(self):
+        """ Return dictionary of links """
+        return self.feature['links']
+
+    @property
     def bbox(self):
         """ Get bounding box of scene """
         lats = [c[1] for c in self.geometry['coordinates'][0]]
@@ -70,28 +77,28 @@ class Scene(object):
 
     def download(self, key, overwrite=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
-        assets = self.assets()
  
         # legacy hack - this function used to download multiple keys, now just one
         keys = [key]
 
         path = self.get_path()
         # loop through keys and get files
-        for key in [k for k in keys if k in assets]:
+        for key in [k for k in keys if k in self.assets]:
             try:
-                href = assets[key]['href']
+                href = self.assets[key]['href']
                 
                 ext = os.path.splitext(href)[1]
-                fout = os.path.join(path, self.get_filename(suffix=key) + ext)
+                fout = os.path.join(path, self.get_filename(suffix='_'+key) + ext)
                 if os.path.exists(fout) and overwrite is False:
                     self.filenames[key] = fout
                 else:
                     self.filenames[key] = self.download_file(href, fout=fout)
-                import pdb; pdb.set_trace()
             except Exception as e:
                 logger.error('Unable to download %s: %s' % (href, str(e)))
-        import pdb; pdb.set_trace()
-        return self.filenames[key]
+        if key in self.filenames:
+            return self.filenames[key]
+        else:
+            return None
 
     @classmethod
     def mkdirp(cls, path):
@@ -300,9 +307,12 @@ class Scenes(object):
         self.scenes = scenes
 
     def download(self, **kwargs):
-        sc = [s.download(**kwargs) for s in self.scenes]
-        import pdb; pdb.set_trace()
-        return sc
+        dls = []
+        for s in self.scenes:
+            fname = s.download(**kwargs)
+            if fname is not None:
+                dls.append(fname)
+        return dls
 
     def review_thumbnails(self):
         """ Review all thumbnails in scenes """
