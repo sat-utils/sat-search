@@ -25,7 +25,7 @@ class TestScene(unittest.TestCase):
         'geometry': {},
         'assets': {
             'MTL': {
-                'href': '%sMTL.TIF' % prefix
+                'href': '%sMTL.txt' % prefix
             },
             'B1': {
                 'href': '%sB1.TIF' % prefix
@@ -62,8 +62,7 @@ class TestScene(unittest.TestCase):
     def test_assets(self):
         """ Get assets for download """
         scene = self.get_test_scene()
-        assets = scene.assets()
-        self.assertEqual(assets['B1']['href'], self.item['assets']['B1']['href'])
+        self.assertEqual(scene.assets['B1']['href'], self.item['assets']['B1']['href'])
 
     def test_download_thumbnail(self):
         """ Get thumbnail for scene """
@@ -85,9 +84,9 @@ class TestScene(unittest.TestCase):
 
     def test_download_all(self):
         """ Retrieve all data files from a source """
-        scene = self.get_teswt_scene()
+        scene = self.get_test_scene()
         fnames = [scene.download(a) for a in scene.assets]
-        for f in fnames.values():
+        for f in fnames:
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
@@ -139,20 +138,20 @@ class TestScenes(unittest.TestCase):
         """ Download all thumbnails """
         scenes = self.load_scenes()
         fnames = scenes.download(key='thumbnail')
-        for f in fnames[0].values():
-            import pdb; pdb.set_trace()
+        for f in fnames:
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
-        shutil.rmtree(os.path.join(testpath, 'landsat-8-l1'))
+        #shutil.rmtree(os.path.join(testpath, 'landsat-8-l1'))
 
     def test_download(self):
         """ Download a data file from all scenes """
         scenes = self.load_scenes()
-        dls = scenes.download(key='MTL')
-        for s in dls:
-            for f in s.values():
-                self.assertTrue(os.path.exists(f))
-                os.remove(f)
-                self.assertFalse(os.path.exists(f))
-        shutil.rmtree(os.path.join(testpath, 'landsat-8-l1'))
+        
+        fnames = scenes.download(key='MTL')
+        assert(len(fnames) == 1)
+        for f in fnames:
+            self.assertTrue(os.path.exists(f))
+            os.remove(f)
+            self.assertFalse(os.path.exists(f))
+        #shutil.rmtree(os.path.join(testpath, 'landsat-8-l1'))

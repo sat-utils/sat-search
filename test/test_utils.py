@@ -20,15 +20,15 @@ class Test(unittest.TestCase):
         """ Get calendar """
         scenes = self.load_scenes()
         cal = scenes.text_calendar()
-        self.assertEqual(len(cal), 1193)
-        self.assertTrue(' 2017 ' in cal)
+        self.assertEqual(len(cal), 611)
+        self.assertTrue(' 2018 ' in cal)
         self.assertTrue(' January ' in cal)
-        self.assertTrue(' April ' in cal)
+        self.assertTrue(' March ' in cal)
 
     def test_text_calendar_multiyear(self):
         scenes = self.load_scenes()
-        scenes[0].metadata['date'] = '2010-02-01'
+        scenes[0].feature['properties']['datetime'] = '2010-02-01T00:00:00.000Z'
         cal = scenes.text_calendar()
-        self.assertEqual(len(cal), 15105)
+        self.assertEqual(len(cal), 16654)
         self.assertTrue(' 2016 ' in cal)
         self.assertTrue(' 2017 ' in cal)
