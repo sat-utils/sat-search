@@ -1,7 +1,7 @@
 import os
 
 # API URL
-API_URL = os.getenv('SATUTILS_API_URL', 'https://sat-api-dev.developmentseed.org')
+API_URL = os.getenv('SATUTILS_API_URL', 'https://sat-api.developmentseed.org')
 
 # data directory to store downloaded imagery
 DATADIR = os.getenv('SATUTILS_DATADIR', './${eo:platform}/${date}')
