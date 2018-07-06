@@ -6,84 +6,58 @@ version: 2
 
 references:
 
-  container_python27: &container_python27
-    docker:
-      - image: circleci/python:2.7.13
-    working_dir: ~/project
-
-  container_python36: &container_python36
+  container_python: &container_python
     docker:
       - image: circleci/python:3.6.2
-      - image: circleci/python:2.7.13
     working_dir: ~/project
 
   restore_repo: &restore_repo
     restore_cache:
       keys:
-        - v2-repo-{{ .Branch }}-{{ .Revision }}
-        - v2-repo-{{ .Branch }}
-        - v2-repo
+        - v1-repo-{{ .Branch }}-{{ .Revision }}
+        - v1-repo-{{ .Branch }}
+        - v1-repo
 
 jobs:
 
   checkout_code:
-    <<: *container_python36
+    <<: *container_python
     steps:
       - *restore_repo
       - checkout
       - save_cache:
-          key: v2-repo-{{ .Branch }}-{{ .Revision }}
+          key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/project
 
-  install_and_test_27:
-    <<: *container_python27
+  install_and_test:
+    <<: *container_python
     steps:  
       - *restore_repo
       - restore_cache:
           keys: 
-            - v2-dependencies27-{{ checksum "requirements.txt"}}
-            - v2-dependencies27
-      - run: |
-            pip install virtualenv
-            virtualenv ~/venv27
-            . ~/venv27/bin/activate
-            pip install -r requirements.txt
-            pip install -r requirements-dev.txt
-            python -m unittest discover test -b
-      - save_cache:
-          key: v2-dependencies27-{{ checksum "requirements.txt"}}
-          paths:
-            - ~/venv
-
-  install_and_test_36:
-    <<: *container_python36
-    steps:  
-      - *restore_repo
-      - restore_cache:
-          keys: 
-            - v2-dependencies36-{{ checksum "requirements.txt"}}
-            - v2-dependencies36
+            - v1-dependencies-{{ checksum "requirements.txt"}}
+            - v1-dependencies
       - run: |
             python3 -m venv ~/venv
             . ~/venv/bin/activate
             pwd
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
-            nosetests -v --with-coverage --cover-package satsearch
+            pytest --cov satsearch test/
       - save_cache:
-          key: v2-dependencies36-{{ checksum "requirements.txt"}}
+          key: v1-dependencies-{{ checksum "requirements.txt"}}
           paths:
             - ~/venv
 
   deploy:
-    <<: *container_python36
+    <<: *container_python
     steps:
       - *restore_repo
       - restore_cache:
           keys: 
-            - v2-dependencies36-{{ checksum "requirements.txt"}}
-            - v2-dependencies36
+            - v1-dependencies-{{ checksum "requirements.txt"}}
+            - v1-dependencies
       - run:
           name: Deploy
           command: |
@@ -103,18 +77,12 @@ workflows:
   build_test_deploy:
     jobs:
       - checkout_code
-      - install_and_test_36:
+      - install_and_test:
           requires:
             - checkout_code
       - deploy:
           requires:
-            - install_and_test_36
+            - install_and_test
           filters:
             branches:
               only: master
-  build_test_27:
-    jobs:
-      - checkout_code
-      - install_and_test_27:
-          requires:
-            - checkout_code

@@ -1,92 +1,103 @@
+import os
+import sys
+import logging
 import argparse
 import satsearch.config as config
+from .version import __version__
 
 
 class SatUtilsParser(argparse.ArgumentParser):
 
-    def __init__(self, search=True, save=True, download=True, output=True, **kwargs):
+    def __init__(self, **kwargs):
         """ Initialize a SatUtilsParser """
-        dhf = argparse.ArgumentDefaultsHelpFormatter
-        super(SatUtilsParser, self).__init__(formatter_class=dhf, **kwargs)
-        if search:
-            self.add_search_args()
-        if save:
-            self.add_save_args()
-        if download:
-            self.add_download_args()
-        if output:
-            self.add_output_args()
-        h = '0:all, 1:debug, 2:info, 3:warning, 4:error, 5:critical'
-        self.add_argument('-v', '--verbosity', help=h, default=2, type=int)
+        super(SatUtilsParser, self).__init__(**kwargs)
+        self.formatter_class = argparse.ArgumentDefaultsHelpFormatter
+
+        self.pparser = argparse.ArgumentParser(add_help=False)
+        self.pparser.add_argument('--version', help='Print version and exit', action='version', version=__version__)
+        self.pparser.add_argument('-v', '--verbosity', default=2, type=int,
+                            help='0:quiet, 1:error, 2:warning, 3:info, 4:debug')
+        self.subparser = None
 
     def parse_args(self, *args, **kwargs):
         """ Parse arguments """
         args = super(SatUtilsParser, self).parse_args(*args, **kwargs)
         args = vars(args)
         args = {k: v for k, v in args.items() if v is not None}
-        if 'date' in args:
-            dt = args.pop('date').split(',')
-            if len(dt) > 2:
-                raise ValueError('Provide date range as single date or comma separated begin/end dates')
-            if len(dt) == 1:
-                dt = (dt[0], dt[0])
-            args['date_from'] = dt[0]
-            args['date_to'] = dt[1]
 
-        if 'clouds' in args:
-            cov = args.pop('clouds').split(',')
-            if len(cov) != 2:
-                raise ValueError('Provide cloud coverage range as two comma separated numbers (e.g., 0,20)')
-            args['cloud_from'] = int(cov[0])
-            args['cloud_to'] = int(cov[1])
+        if args.get('command', None) is None:
+            self.print_help()
+            sys.exit(0)
+
+        # set logging level
+        if 'verbosity' in args:
+            logging.basicConfig(stream=sys.stdout, level=(50-args.pop('verbosity') * 10))
 
         # set global configuration options
         if 'url' in args:
             config.API_URL = args.pop('url')
         if 'datadir' in args:
             config.DATADIR = args.pop('datadir')
-        if 'subdirs' in args:
-            config.SUBDIRS = args.pop('subdirs')
         if 'filename' in args:
             config.FILENAME = args.pop('filename')
 
         return args
 
-    def add_search_args(self):
+    def add_subparser(self, *args, download=True, output=True, **kwargs):
+        if not self.subparser:
+            self.subparser = self.add_subparsers(dest='command')
+        parents = [self.pparser]
+        if download:
+            parents.append(self.get_download_parser())
+        if output:
+            parents.append(self.get_output_parser())
+        subparser = self.subparser.add_parser(*args, parents=parents, **kwargs)
+        return subparser
+
+    def add_collections_parser(self):
+        """ Add parser for collections """
+        subparser = self.add_subparser('collections', help='Collections API', download=False, output=False)
+        group = subparser.add_argument_group('collection parameters')
+        group.add_argument('-c', '--collection', help='Name of collection')
+
+    def add_search_parser(self, download=True, output=True):
+        subparser = self.add_subparser('search', help='Search API', download=download, output=output)
         """ Adds search arguments to a parser """
-        group = self.add_argument_group('search parameters')
-        group.add_argument('--satellite_name', help='Name of satellite')
-        group.add_argument('--scene_id', help='One or more scene IDs', nargs='*', default=None)
+        group = subparser.add_argument_group('search parameters')
+        group.add_argument('-c', '--c:id', help='Name of collection')
         group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
-        group.add_argument('--contains', help='lon,lat points')
-        group.add_argument('--date', help='Single date or begin and end date (e.g., 2017-01-01,2017-02-15')
-        group.add_argument('--clouds', help='Range of acceptable cloud cover (e.g., 0,20)')
-        group.add_argument('--param', nargs='*', help='Additional parameters of form KEY=VALUE', action=self.KeyValuePair)
+        #group.add_argument('--id', help='One or more scene IDs', nargs='*', default=None)
+        #group.add_argument('--contains', help='lon,lat points')
+        group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15')
+        group.add_argument('--eo:cloud_cover', help='Range of acceptable cloud cover (e.g., 0/20)')
+        group.add_argument('-p', '--param', nargs='*', help='Additional parameters of form KEY=VALUE', action=SatUtilsParser.KeyValuePair)
         group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
-    def add_save_args(self):
-        group = self.add_argument_group('saving/loading parameters')
-        group.add_argument('--load', help='Load search results from file (ignores other search parameters)')
-        group.add_argument('--save', help='Save scenes metadata as GeoJSON', default=None)
-        group.add_argument('--append', default=False, action='store_true',
-                           help='Append scenes to GeoJSON file (specified by save)')
+    def add_load_parser(self, download=True, output=True):
+        subparser = self.add_subparser('load', help='Load scenes from file', download=download, output=output)
+        subparser.add_argument('scenes', help='GeoJSON file of scenes')
 
-    def add_download_args(self):
-        group = self.add_argument_group('download parameters')
-        group.add_argument('--datadir', help='Local directory to save images', default=config.DATADIR)
-        group.add_argument('--subdirs', default=config.SUBDIRS,
-                           help='Save in subdirs based on these metadata keys')
+    def get_download_parser(self):
+        parser = argparse.ArgumentParser(add_help=False)
+        group = parser.add_argument_group('download parameters')
+        group.add_argument('--datadir', help='Directory pattern to save assets', default=config.DATADIR)
         group.add_argument('--filename', default=config.FILENAME,
-                           help='Save files with this filename pattern based on metadata keys')
-        group.add_argument('--download', help='Download files', default=None, nargs='*')
+                           help='Save assets with this filename pattern based on metadata keys')
+        group.add_argument('--download', help='Download assets', default=None, nargs='*')
+        return parser
 
-    def add_output_args(self):
+    def get_output_parser(self):
         """ Add arguments for printing output """
-        group = self.add_argument_group('search output')
-        group.add_argument('--printsearch', help='Print search parameters', default=False, action='store_true')
-        group.add_argument('--printmd', help='Print specified metadata for matched scenes', default=None, nargs='*')
-        group.add_argument('--printcal', help='Print calendar showing dates', default=False, action='store_true')
-        group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')
+        parser = argparse.ArgumentParser(add_help=False)
+        group = parser.add_argument_group('search output')
+        group.add_argument('--print_md', help='Print specified metadata for matched scenes', default=None, nargs='*')
+        group.add_argument('--print_cal', help='Print calendar showing dates', default=False, action='store_true')
+        group.add_argument('--save', help='Save results as GeoJSON', default=None)
+        h = 'Append scenes to GeoJSON file (specified by save)'
+        group.add_argument('--append', default=False, action='store_true', help=h)
+        if os.getenv('IMGCAT', None):
+            group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')
+        return parser
 
     class KeyValuePair(argparse.Action):
         """ Custom action for getting arbitrary key values from argparse """

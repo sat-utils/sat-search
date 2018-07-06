@@ -17,104 +17,87 @@ class SatSceneError(Exception):
 
 class Scene(object):
 
-    def __init__(self, feature, source='aws_s3'):
+    def __init__(self, feature):
         """ Initialize a scene object """
-        required = ['scene_id', 'date', 'download_links']
+        required = ['id', 'datetime']
         if 'geometry' not in feature:
             raise SatSceneError('No geometry supplied')
         if not set(required).issubset(feature['properties'].keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
-        self.geometry = feature['geometry']
-        self.metadata = feature['properties']
-        self.metadata['date'] = self.metadata['date'].replace('/', '-')
-        self.filenames = {}
-        self.source = source
-        # TODO - check validity of date and geometry, at least one download link
+        self.feature = feature
 
-    @classmethod
-    def create_from_satapi_v0(cls, metadata):
-        """ Create a Scene from sat-api v1 """
-        feature = {
-            'type': 'Feature',
-            'geometry': metadata.pop('data_geometry'),
-            'properties': metadata
-        }
-        return cls(feature)
+        # QGIS altered date format when editing this GeoJSON file
+        #self['datetime'] = self['datetime'].replace('/', '-')
+        self.filenames = {}
+        # TODO - add validator
 
     def __repr__(self):
-        return self.scene_id
+        return self['id']
+
+    def __getitem__(self, key):
+        try:
+            return getattr(self, key)
+        except:
+            return self.feature['properties'][key]
 
     @property
-    def scene_id(self):
-        return self.metadata['scene_id']
+    def id(self):
+        return self.feature['properties']['id']
 
     @property
-    def platform(self):
-        return self.metadata.get('satellite_name', '')
+    def geometry(self):
+        return self.feature['geometry']
 
     @property
     def date(self):
-        pattern = '%Y-%m-%d' if '-' in self.metadata['date'] else '%Y/%m/%d'
-        return datetime.strptime(self.metadata['date'], pattern).date()
+        dt = self['datetime'].replace('/', '-')
+        pattern = "%Y-%m-%dT%H:%M:%S.%fZ"
+        return datetime.strptime(dt, pattern).date()
 
     @property
-    def sources(self):
-        return self.metadata['download_links'].keys()
-
-    def links(self):
+    def assets(self):
         """ Return dictionary of file key and download link """
-        files = self.metadata['download_links'][self.source]
-        prefix = os.path.commonprefix(files)
-        keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
-        links = dict(zip(keys, files))
-        if self.source == 'aws_s3' and 'aws_thumbnail' in self.metadata:
-            links['thumb'] = self.metadata['aws_thumbnail']
-        else:
-            links['thumb'] = self.metadata['thumbnail']
-        return links
+        return self.feature['assets']
+        #prefix = os.path.commonprefix(files)
+        #keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
+        #links = dict(zip(keys, files))
 
-    def geojson(self):
-        """ Return metadata as GeoJSON """
-        return {
-            'type': 'Feature',
-            'geometry': self.geometry,
-            'properties': self.metadata
-        }
+    @property
+    def links(self):
+        """ Return dictionary of links """
+        return self.feature['links']
 
+    @property
     def bbox(self):
         """ Get bounding box of scene """
         lats = [c[1] for c in self.geometry['coordinates'][0]]
         lons = [c[0] for c in self.geometry['coordinates'][0]]
         return [min(lons), min(lats), max(lons), max(lats)]
 
-    def get_older_landsat_collection_links(self, link):
-        """ From a link string, generate links for previous versions """
-        sid = os.path.basename(link).split('_')[0]
-        return [link.replace(sid, sid[0:-1] + str(s)) for s in reversed(range(0, int(sid[-1]) + 1))]
-
-    def download(self, key=None, path=None, subdirs=None, overwrite=False):
+    def download(self, key, overwrite=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
-        links = self.links()
-        # default to all files if no key provided
-        if key is None:
-            keys = links.keys()
-        else:
-            keys = [key]
+ 
+        # legacy hack - this function used to download multiple keys, now just one
+        keys = [key]
 
-        path = self.get_path(path=path, subdirs=subdirs)
-
+        path = self.get_path()
         # loop through keys and get files
-        for key in [k for k in keys if k in links]:
+        for key in [k for k in keys if k in self.assets]:
             try:
-                ext = os.path.splitext(links[key])[1]
-                fout = os.path.join(path, self.get_filename(suffix=key) + ext)
+                href = self.assets[key]['href']
+                
+                ext = os.path.splitext(href)[1]
+                fout = os.path.join(path, self.get_filename(suffix='_'+key) + ext)
                 if os.path.exists(fout) and overwrite is False:
                     self.filenames[key] = fout
                 else:
-                    self.filenames[key] = self.download_file(links[key], fout=fout)
+                    self.filenames[key] = self.download_file(href, fout=fout)
             except Exception as e:
-                logger.error('Unable to download %s' % links[key])
-        return self.filenames
+                logger.error('Unable to download %s: %s' % (href, str(e)))
+        if key in self.filenames:
+            return self.filenames[key]
+        else:
+            return None
 
     @classmethod
     def mkdirp(cls, path):
@@ -123,28 +106,29 @@ class Scene(object):
             os.makedirs(path)
         return path
 
-    def get_path(self, path=None, subdirs=None, no_create=False):
+    def get_path(self, no_create=False):
         """ Get local path for this scene """
-        if path is None:
-            path = config.DATADIR
-        if subdirs is None:
-            subdirs = config.SUBDIRS
+        path = config.DATADIR.replace(':', '_colon_')
         # create path for this scene
         subs = {}
-        for key in [i[1] for i in Formatter().parse(subdirs.rstrip('/')) if i[1] is not None]:
-            subs[key] = self.metadata[key]
-        _path = os.path.join(path, Template(subdirs).substitute(**subs))
+        for key in [i[1] for i in Formatter().parse(path.rstrip('/')) if i[1] is not None]:
+            if key == 'date':
+                subs[key] = self.date
+            else:
+                subs[key] = self[key.replace('_colon_', ':')]
+        _path = Template(path).substitute(**subs)
         # make output path if it does not exist
         if not no_create and _path != '':
             self.mkdirp(_path)
+        
         return _path
 
-    def get_filename(self, pattern=None, suffix=None):
+    def get_filename(self, suffix=None):
         """ Get local filename for this scene """
-        fname = config.FILENAME if pattern is None else pattern
+        fname = config.FILENAME.replace(':', '_colon_')
         subs = {}
         for key in [i[1] for i in Formatter().parse(fname) if i[1] is not None]:
-            subs[key] = self.metadata[key].replace('/', '-')
+            subs[key] = self[key.replace('_colon_', ':')].replace('/', '-')
         fname = Template(fname).substitute(**subs)
         if suffix is not None:
             fname = fname + suffix
@@ -161,6 +145,18 @@ class Scene(object):
             for chunk in resp.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
+        bname, ext = os.path.splitext(fout)
+        #if ext == '.jpg':
+        #    wldfile = bname + '.wld'
+        #    coords = self.geometry['coordinates'][0]
+        #    lats = [c[1] for c in coords]
+        #    lons = [c[0] for c in coords]
+        #    with open(wldfile, 'w') as f:
+        #        f.write('%s\n' % ((max(lons)-min(lons))/1155))
+        #        f.write('0.0\n0.0\n')
+        #        f.write('%s\n' % (-(max(lats)-min(lats))/1174))
+        #        f.write('%s\n%s\n' % (min(lons), max(lats)))
+
         return fout
 
     def review_thumbnail(self):
@@ -189,6 +185,7 @@ class Scenes(object):
         """ Initialize with a list of Scene objects """
         self.scenes = sorted(scenes, key=lambda s: s.date)
         self.metadata = metadata
+        self.collections
 
     def __len__(self):
         """ Number of scenes """
@@ -207,6 +204,10 @@ class Scenes(object):
         """ Get sorted list of dates for all scenes """
         return sorted([s.date for s in self.scenes])
 
+    def collections(self):
+        """ Get collection records for this list of scenes """
+        return self.collections
+
     def bbox(self):
         """ Get bounding box of search """
         if 'aoi' in self.metadata:
@@ -224,28 +225,35 @@ class Scenes(object):
         else:
             return 0, 0
 
-    def sensors(self, date=None):
+    #def __getitem__(self, key):
+    #    return self.feature['properties'][key]
+
+    def platforms(self, date=None):
         """ List of all available sensors across scenes """
         if date is None:
-            return list(set([s.platform for s in self.scenes]))
+            return list(set([s['eo:platform'] for s in self.scenes]))
         else:
-            return list(set([s.platform for s in self.scenes if s.date == date]))
+            return list(set([s['eo:platform'] for s in self.scenes if s.date == date]))
 
     def print_scenes(self, params=[]):
         """ Print summary of all scenes """
         if len(params) == 0:
-            params = ['date', 'scene_id']
+            params = ['date', 'id']
         txt = 'Scenes (%s):\n' % len(self.scenes)
-        txt += ''.join(['{:^20}'.format(p) for p in params]) + '\n'
+        txt += ''.join(['{:<20}'.format(p) for p in params]) + '\n'
         for s in self.scenes:
-            txt += ''.join(['{:^20}'.format(s.metadata[p]) for p in params]) + '\n'
+            # NOTE - the string conversion is because .date returns a datetime obj
+            txt += ''.join(['{:<20}'.format(str(s[p])) for p in params]) + '\n'
         print(txt)
 
     def text_calendar(self):
         """ Get calendar for dates """
         date_labels = {}
+        dates = self.dates()
+        if len(dates) == 0:
+            return ''
         for d in self.dates():
-            sensors = self.sensors(d)
+            sensors = self.platforms(d)
             if len(sensors) > 1:
                 date_labels[d] = 'Multiple'
             else:
@@ -258,11 +266,14 @@ class Scenes(object):
             with open(filename) as f:
                 geoj = json.loads(f.read())
                 #metadata = geoj.get('metadata', {})
+                #collections = geoj.get('collections', [])
                 features = geoj['features']
         else:
             #metadata = {}
+            #collections = []
             features = []
         geoj = self.geojson()
+
         #for key in geoj.get('metadata', {}):
         #    oldmd = metadata.get(key, [])
         #    geoj['metadata'][key] = oldmd + [geoj['metadata'][key]]
@@ -272,7 +283,7 @@ class Scenes(object):
 
     def geojson(self):
         """ Get all metadata as GeoJSON """
-        features = [s.geojson() for s in self.scenes]
+        features = [s.feature for s in self.scenes]
         return {
             'type': 'FeatureCollection',
             'features': features,
@@ -292,11 +303,16 @@ class Scenes(object):
         """ Filter scenes on key matching value """
         scenes = []
         for val in values:
-            scenes += list(filter(lambda x: x.metadata[key] == val, self.scenes))
+            scenes += list(filter(lambda x: x[key] == val, self.scenes))
         self.scenes = scenes
 
     def download(self, **kwargs):
-        return [s.download(**kwargs) for s in self.scenes]
+        dls = []
+        for s in self.scenes:
+            fname = s.download(**kwargs)
+            if fname is not None:
+                dls.append(fname)
+        return dls
 
     def review_thumbnails(self):
         """ Review all thumbnails in scenes """

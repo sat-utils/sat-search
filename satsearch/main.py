@@ -1,45 +1,32 @@
 import os
 import sys
 import json
-import logging
 from .version import __version__
 from satsearch import Search, Scenes
 from satsearch.parser import SatUtilsParser
 
 
-def main(review=False, printsearch=False, printmd=None, printcal=False,
-         load=None, save=None, append=False, download=None, **kwargs):
+def main(scenes=None, review=False, print_md=None, print_cal=False,
+         save=None, append=False, download=None, **kwargs):
     """ Main function for performing a search """
-
-    if load is None:
-        if printsearch:
-            txt = 'Search for scenes matching criteria:\n'
-            for kw in kwargs:
-                if kw == 'intersects':
-                    geom = json.dumps(json.loads(kwargs[kw])['geometry'])
-                    txt += ('{:>20}: {:<40} ...\n'.format(kw, geom[0:70]))
-                else:
-                    txt += ('{:>20}: {:<40}\n'.format(kw, kwargs[kw]))
-            print(txt)
-
+    if scenes is None:
         # get scenes from search
         search = Search(**kwargs)
         scenes = Scenes(search.scenes(), metadata={'search': kwargs})
     else:
-        search = None
-        scenes = Scenes.load(load)
+        scenes = Scenes.load(scenes)
 
     if review:
         if not os.getenv('IMGCAT', None):
             raise ValueError('Set IMGCAT envvar to terminal image display program to use review feature')
         scenes.review_thumbnails()
 
-    # print summary
-    if printmd is not None:
-        scenes.print_scenes(printmd)
+    # print metadata
+    if print_md is not None:
+        scenes.print_scenes(print_md)
 
     # print calendar
-    if printcal:
+    if print_cal:
         print(scenes.text_calendar())
 
     # save all metadata in JSON file
@@ -58,6 +45,8 @@ def main(review=False, printsearch=False, printmd=None, printcal=False,
 
 def cli():
     parser = SatUtilsParser(description='sat-search (v%s)' % __version__)
+    parser.add_search_parser()
+    parser.add_load_parser()
     args = parser.parse_args(sys.argv[1:])
 
     # read the GeoJSON file
@@ -66,11 +55,9 @@ def cli():
             with open(args['intersects']) as f:
                 args['intersects'] = json.dumps(json.loads(f.read()))
 
-    # enable logging
-    logging.basicConfig(stream=sys.stdout, level=args.pop('verbosity') * 10)
-
-    scenes = main(**args)
-    return len(scenes)
+    cmd = args.pop('command', None)
+    if cmd is not None:
+        return main(**args)
 
 
 if __name__ == "__main__":
