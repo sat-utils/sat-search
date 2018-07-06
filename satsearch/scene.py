@@ -109,26 +109,27 @@ class Scene(object):
 
     def get_path(self, no_create=False):
         """ Get local path for this scene """
-        path = config.DATADIR
+        path = config.DATADIR.replace(':', '_colon_')
         # create path for this scene
         subs = {}
         for key in [i[1] for i in Formatter().parse(path.rstrip('/')) if i[1] is not None]:
             if key == 'date':
                 subs[key] = self.date
             else:
-                subs[key] = self[key]
+                subs[key] = self[key.replace('_colon_', ':')]
         _path = Template(path).substitute(**subs)
         # make output path if it does not exist
         if not no_create and _path != '':
             self.mkdirp(_path)
+        
         return _path
 
-    def get_filename(self, pattern=None, suffix=None):
+    def get_filename(self, suffix=None):
         """ Get local filename for this scene """
-        fname = config.FILENAME if pattern is None else pattern
+        fname = config.FILENAME.replace(':', '_colon_')
         subs = {}
         for key in [i[1] for i in Formatter().parse(fname) if i[1] is not None]:
-            subs[key] = self[key].replace('/', '-')
+            subs[key] = self[key.replace('_colon_', ':')].replace('/', '-')
         fname = Template(fname).substitute(**subs)
         if suffix is not None:
             fname = fname + suffix
