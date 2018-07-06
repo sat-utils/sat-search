@@ -4,7 +4,6 @@ import requests
 import json
 from string import Formatter, Template
 from datetime import datetime
-from dateutil.parser import parse
 import satsearch.utils as utils
 import satsearch.config as config
 
