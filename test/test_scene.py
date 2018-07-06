@@ -71,7 +71,7 @@ class TestScene(unittest.TestCase):
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
-        shutil.rmtree(os.path.join(testpath, self.item['properties']['collection']))
+        #shutil.rmtree(os.path.join(testpath, self.item['properties']['collection']))
 
     def test_download(self):
         """ Retrieve a data file """
@@ -80,7 +80,7 @@ class TestScene(unittest.TestCase):
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
         self.assertFalse(os.path.exists(fname))
-        shutil.rmtree(os.path.join(testpath, self.item['properties']['collection']))
+        #shutil.rmtree(os.path.join(testpath, self.item['properties']['collection']))
 
     def test_download_all(self):
         """ Retrieve all data files from a source """
