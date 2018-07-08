@@ -43,14 +43,10 @@ class SatUtilsParser(argparse.ArgumentParser):
 
         return args
 
-    def add_subparser(self, *args, download=True, output=True, **kwargs):
+    def add_subparser(self, *args, parents=[], **kwargs):
         if not self.subparser:
             self.subparser = self.add_subparsers(dest='command')
-        parents = [self.pparser]
-        if download:
-            parents.append(self.get_download_parser())
-        if output:
-            parents.append(self.get_output_parser())
+        parents.append(self.pparser)
         subparser = self.subparser.add_parser(*args, parents=parents, **kwargs)
         return subparser
 
@@ -61,7 +57,12 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('-c', '--collection', help='Name of collection')
 
     def add_search_parser(self, download=True, output=True):
-        subparser = self.add_subparser('search', help='Search API', download=download, output=output)
+        parents = []
+        if download:
+            parents.append(self.get_download_parser())
+        if output:
+            parents.append(self.get_output_parser())
+        subparser = self.add_subparser('search', help='Search API', parents=parents)
         """ Adds search arguments to a parser """
         group = subparser.add_argument_group('search parameters')
         group.add_argument('-c', '--c:id', help='Name of collection')
@@ -74,7 +75,12 @@ class SatUtilsParser(argparse.ArgumentParser):
         group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
     def add_load_parser(self, download=True, output=True):
-        subparser = self.add_subparser('load', help='Load scenes from file', download=download, output=output)
+        parents = []
+        if download:
+            parents.append(self.get_download_parser())
+        if output:
+            parents.append(self.get_output_parser())
+        subparser = self.add_subparser('load', help='Load scenes from file')
         subparser.add_argument('scenes', help='GeoJSON file of scenes')
 
     def get_download_parser(self):
