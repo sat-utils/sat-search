@@ -1,5 +1,5 @@
 import calendar
-
+import collections
 
 # from https://gist.github.com/angstwad/bf22d1822c38a92ec0a9#gistcomment-2622319
 def dict_merge(dct, merge_dct, add_keys=True):
