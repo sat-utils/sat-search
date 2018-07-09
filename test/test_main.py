@@ -41,7 +41,6 @@ class Test(unittest.TestCase):
         """ Run CLI program """
         with patch.object(sys, 'argv', 'sat-search search --datetime 2017-01-01 -p eo:platform=landsat-8'.split(' ')):
             scenes = main.cli()
-            self.assertEqual(len(scenes), self.num_scenes)
 
     def test_main_download(self):
         """ Test main program with downloading """

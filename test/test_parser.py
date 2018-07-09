@@ -11,18 +11,17 @@ class Test(unittest.TestCase):
 
     args = 'search --datetime 2017-01-01 --eo:cloud_cover 0/20 -p eo:platform=landsat-8'
 
-    def get_test_parser(self):
+    @classmethod
+    def get_test_parser(cls):
         """ Get testing parser with search and load subcommands """
-        parser = SatUtilsParser(description='sat-search testing')
-        parser.add_search_parser()
-        parser.add_load_parser()
+        parser = SatUtilsParser.newbie(description='sat-search testing')
         return parser
 
     def test_empty_parse_args(self):
         """ Parse empty arguments """
-        parser = self.get_test_parser()
+        parser = self.get_test_parser()        #import pdb; pdb.set_trace()
         with self.assertRaises(SystemExit):
-            args = parser.parse_args([])
+            args = parser.parse_args([])   
 
     def test_empty_parse_search_args(self):
         """ Parse empty arguments """

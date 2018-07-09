@@ -40,6 +40,9 @@ class Scene(object):
         except:
             return self.feature['properties'][key]
 
+    def keys(self):
+        return self.feature['properties'].keys()
+
     @property
     def id(self):
         return self.feature['properties']['id']
@@ -111,6 +114,7 @@ class Scene(object):
         path = config.DATADIR.replace(':', '_colon_')
         # create path for this scene
         subs = {}
+        
         for key in [i[1] for i in Formatter().parse(path.rstrip('/')) if i[1] is not None]:
             if key == 'date':
                 subs[key] = self.date
@@ -181,10 +185,17 @@ class Scene(object):
 class Scenes(object):
     """ A collection of Scene objects """
 
-    def __init__(self, scenes, metadata={}):
+    def __init__(self, scenes, properties={}):
         """ Initialize with a list of Scene objects """
         self.scenes = sorted(scenes, key=lambda s: s.date)
-        self.metadata = metadata
+        self.properties = properties
+        for p in properties:
+            if isinstance(properties[p], str):
+                try:
+                    _p = json.loads(properties[p])
+                    self.properties[p] = _p
+                except:
+                    self.properties[p] = properties[p]
         self.collections
 
     def __len__(self):
@@ -210,17 +221,17 @@ class Scenes(object):
 
     def bbox(self):
         """ Get bounding box of search """
-        if 'aoi' in self.metadata:
-            lats = [c[1] for c in self.metadata['aoi']['coordinates'][0]]
-            lons = [c[0] for c in self.metadata['aoi']['coordinates'][0]]
+        if 'aoi' in self.properties:
+            lats = [c[1] for c in self.properties['intersects']['coordinates'][0]]
+            lons = [c[0] for c in self.properties['intersects']['coordinates'][0]]
             return [min(lons), min(lats), max(lons), max(lats)]
         else:
             return []
 
     def center(self):
-        if 'aoi' in self.metadata:
-            lats = [c[1] for c in self.metadata['aoi']['coordinates'][0]]
-            lons = [c[0] for c in self.metadata['aoi']['coordinates'][0]]
+        if 'aoi' in self.properties:
+            lats = [c[1] for c in self.properties['intersects']['coordinates'][0]]
+            lons = [c[0] for c in self.properties['intersects']['coordinates'][0]]
             return [(min(lats) + max(lats))/2.0, (min(lons) + max(lons))/2.0]
         else:
             return 0, 0
@@ -265,12 +276,10 @@ class Scenes(object):
         if append and os.path.exists(filename):
             with open(filename) as f:
                 geoj = json.loads(f.read())
-                #metadata = geoj.get('metadata', {})
-                #collections = geoj.get('collections', [])
                 features = geoj['features']
+                # TODO - figure out what to when new Scenes properties!
         else:
-            #metadata = {}
-            #collections = []
+            properties = {}
             features = []
         geoj = self.geojson()
 
@@ -287,7 +296,7 @@ class Scenes(object):
         return {
             'type': 'FeatureCollection',
             'features': features,
-            'metadata': self.metadata
+            'properties': self.properties
         }
 
     @classmethod
@@ -296,8 +305,7 @@ class Scenes(object):
         with open(filename) as f:
             geoj = json.loads(f.read())
         scenes = [Scene(feature) for feature in geoj['features']]
-        metadata = geoj.get('metadata', {})
-        return Scenes(scenes, metadata=metadata)
+        return Scenes(scenes, properties=geoj.get('properties', {}))
 
     def filter(self, key, values):
         """ Filter scenes on key matching value """

@@ -12,7 +12,7 @@ def main(scenes=None, review=False, print_md=None, print_cal=False,
     if scenes is None:
         # get scenes from search
         search = Search(**kwargs)
-        scenes = Scenes(search.scenes(), metadata={'search': kwargs})
+        scenes = Scenes(search.scenes(), properties=kwargs)
     else:
         scenes = Scenes.load(scenes)
 
@@ -44,9 +44,7 @@ def main(scenes=None, review=False, print_md=None, print_cal=False,
 
 
 def cli():
-    parser = SatUtilsParser(description='sat-search (v%s)' % __version__)
-    parser.add_search_parser()
-    parser.add_load_parser()
+    parser = SatUtilsParser.newbie(description='sat-search (v%s)' % __version__)
     args = parser.parse_args(sys.argv[1:])
 
     # read the GeoJSON file
@@ -57,7 +55,7 @@ def cli():
 
     cmd = args.pop('command', None)
     if cmd is not None:
-        return main(**args)
+        main(**args)
 
 
 if __name__ == "__main__":

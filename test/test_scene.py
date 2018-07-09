@@ -20,7 +20,8 @@ class TestScene(unittest.TestCase):
         'properties': {
             'id': 'testscene',
             'collection': 'test_collection',
-            'datetime': '2017-01-01T00:00:00.0000Z'
+            'datetime': '2017-01-01T00:00:00.0000Z',
+            'eo:platform': 'test_platform'
         },
         'geometry': {},
         'assets': {
