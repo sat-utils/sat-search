@@ -1,3 +1,4 @@
+import json
 import os
 import logging
 import requests
@@ -73,6 +74,9 @@ class Search(object):
     def __init__(self, id=[], **kwargs):
         """ Initialize a Search object with parameters """
         self.kwargs = kwargs
+        for k in self.kwargs:
+            if isinstance(kwargs[k], dict):
+                kwargs[k] = json.dumps(kwargs[k])
         self.queries = []
         if len(id) == 0:
             self.queries.append(Query(**kwargs))
