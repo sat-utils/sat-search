@@ -186,7 +186,6 @@ class Scenes(object):
         """ Initialize with a list of Scene objects """
         self.scenes = sorted(scenes, key=lambda s: s.date)
         self.properties = properties
-        self.properties = {}
         for p in properties:
             if isinstance(properties[p], str):
                 try:
