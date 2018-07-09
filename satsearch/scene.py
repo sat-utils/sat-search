@@ -221,17 +221,19 @@ class Scenes(object):
 
     def bbox(self):
         """ Get bounding box of search """
-        if 'aoi' in self.properties:
-            lats = [c[1] for c in self.properties['intersects']['coordinates'][0]]
-            lons = [c[0] for c in self.properties['intersects']['coordinates'][0]]
+        if 'intersects' in self.properties:
+            coords = self.properties['intersects']['geometry']['coordinates']
+            lats = [c[1] for c in coords[0]]
+            lons = [c[0] for c in coords[0]]
             return [min(lons), min(lats), max(lons), max(lats)]
         else:
             return []
 
     def center(self):
-        if 'aoi' in self.properties:
-            lats = [c[1] for c in self.properties['intersects']['coordinates'][0]]
-            lons = [c[0] for c in self.properties['intersects']['coordinates'][0]]
+        if 'intersects' in self.properties:
+            coords = self.properties['intersects']['geometry']['coordinates']
+            lats = [c[1] for c in coords[0]]
+            lons = [c[0] for c in coords[0]]
             return [(min(lats) + max(lats))/2.0, (min(lons) + max(lons))/2.0]
         else:
             return 0, 0
