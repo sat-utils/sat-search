@@ -20,21 +20,21 @@ class SatUtilsParser(argparse.ArgumentParser):
                             help='0:quiet, 1:error, 2:warning, 3:info, 4:debug')
 
         self.download_parser = argparse.ArgumentParser(add_help=False)
-        group = self.download_parser.add_argument_group('download parameters')
-        group.add_argument('--datadir', help='Directory pattern to save assets', default=config.DATADIR)
-        group.add_argument('--filename', default=config.FILENAME,
+        self.download_group = self.download_parser.add_argument_group('download parameters')
+        self.download_group.add_argument('--datadir', help='Directory pattern to save assets', default=config.DATADIR)
+        self.download_group.add_argument('--filename', default=config.FILENAME,
                            help='Save assets with this filename pattern based on metadata keys')
-        group.add_argument('--download', help='Download assets', default=None, nargs='*')
+        self.download_group.add_argument('--download', help='Download assets', default=None, nargs='*')
 
         self.output_parser = argparse.ArgumentParser(add_help=False)
-        group = self.output_parser.add_argument_group('search output')
-        group.add_argument('--print_md', help='Print specified metadata for matched scenes', default=None, nargs='*')
-        group.add_argument('--print_cal', help='Print calendar showing dates', default=False, action='store_true')
-        group.add_argument('--save', help='Save results as GeoJSON', default=None)
+        self.output_group = self.output_parser.add_argument_group('search output')
+        self.output_group.add_argument('--print_md', help='Print specified metadata for matched scenes', default=None, nargs='*')
+        self.output_group.add_argument('--print_cal', help='Print calendar showing dates', default=False, action='store_true')
+        self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
         h = 'Append scenes to GeoJSON file (specified by save)'
-        group.add_argument('--append', default=False, action='store_true', help=h)
+        self.output_group.add_argument('--append', default=False, action='store_true', help=h)
         if os.getenv('IMGCAT', None):
-            group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')
+            self.output_group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')
 
         #subparser = self.subparser.add_subparser('collections', help='Collections API', parents=[self.pparser])
         #group = subparser.add_argument_group('collection parameters')

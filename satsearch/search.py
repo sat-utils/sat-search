@@ -30,6 +30,10 @@ class Query(object):
 
     @classmethod
     def _query(cls, url,**kwargs):
+        for k in kwargs:
+            if isinstance(kwargs[k], list) and k is not "geometry":
+                kwargs[k] = '"%s"' % (','.join(kwargs[k]))
+        
         response = requests.get(url, kwargs)
         logger.debug('Query URL: %s' % response.url)
         # API error
