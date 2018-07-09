@@ -40,6 +40,9 @@ class Scene(object):
         except:
             return self.feature['properties'][key]
 
+    def keys(self):
+        return self.feature['properties'].keys()
+
     @property
     def id(self):
         return self.feature['properties']['id']
