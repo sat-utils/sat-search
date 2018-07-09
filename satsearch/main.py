@@ -44,9 +44,7 @@ def main(scenes=None, review=False, print_md=None, print_cal=False,
 
 
 def cli():
-    parser = SatUtilsParser(description='sat-search (v%s)' % __version__)
-    parser.add_search_parser()
-    parser.add_load_parser()
+    parser = SatUtilsParser.newbie(description='sat-search (v%s)' % __version__)
     args = parser.parse_args(sys.argv[1:])
 
     # read the GeoJSON file
