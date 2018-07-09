@@ -20,14 +20,14 @@ class SatUtilsParser(argparse.ArgumentParser):
                             help='0:quiet, 1:error, 2:warning, 3:info, 4:debug')
 
         self.download_parser = argparse.ArgumentParser(add_help=False)
-        self.download_group = self.download_parser.add_argument_group('download parameters')
+        self.download_group = self.download_parser.add_argument_group('download options')
         self.download_group.add_argument('--datadir', help='Directory pattern to save assets', default=config.DATADIR)
         self.download_group.add_argument('--filename', default=config.FILENAME,
                            help='Save assets with this filename pattern based on metadata keys')
         self.download_group.add_argument('--download', help='Download assets', default=None, nargs='*')
 
         self.output_parser = argparse.ArgumentParser(add_help=False)
-        self.output_group = self.output_parser.add_argument_group('search output')
+        self.output_group = self.output_parser.add_argument_group('output options')
         self.output_group.add_argument('--print_md', help='Print specified metadata for matched scenes', default=None, nargs='*')
         self.output_group.add_argument('--print_cal', help='Print calendar showing dates', default=False, action='store_true')
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
@@ -70,21 +70,22 @@ class SatUtilsParser(argparse.ArgumentParser):
         """ Create a newbie class, with all the skills needed """
         parser = cls(*args, **kwargs)
         subparser = parser.add_subparsers(dest='command')
-        parents = [parser.pparser, parser.download_parser, parser.output_parser]
+        parents = [parser.pparser, parser.output_parser]
 
-        sparser = subparser.add_parser('search', help='Search API', parents=parents)
+        sparser = subparser.add_parser('search', help='Perform new search of scenes', parents=parents)
         """ Adds search arguments to a parser """
-        group = sparser.add_argument_group('search parameters')
-        group.add_argument('-c', '--c:id', help='Name(s) of collection', nargs='*', default=None)
-        group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
+        parser.search_group = sparser.add_argument_group('search options')
+        parser.search_group.add_argument('-c', '--c:id', help='Name(s) of collection', nargs='*', default=None)
+        parser.search_group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
         #group.add_argument('--id', help='One or more scene IDs', nargs='*', default=None)
         #group.add_argument('--contains', help='lon,lat points')
-        group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15')
-        group.add_argument('--eo:cloud_cover', help='Range of acceptable cloud cover (e.g., 0/20)')
-        group.add_argument('-p', '--param', nargs='*', help='Additional parameters of form KEY=VALUE', action=SatUtilsParser.KeyValuePair)
-        group.add_argument('--url', help='URL of the API', default=config.API_URL)
+        parser.search_group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15')
+        parser.search_group.add_argument('--eo:cloud_cover', help='Range of acceptable cloud cover (e.g., 0/20)')
+        parser.search_group.add_argument('-p', '--param', nargs='*', help='Additional parameters of form KEY=VALUE', action=SatUtilsParser.KeyValuePair)
+        parser.search_group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
-        lparser = subparser.add_parser('load', help='Load scenes from file', parents=parents)
+        parents.append(parser.download_parser)
+        lparser = subparser.add_parser('load', help='Load scenes from previous search', parents=parents)
         lparser.add_argument('scenes', help='GeoJSON file of scenes')
         return parser
 
