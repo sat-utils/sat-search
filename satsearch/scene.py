@@ -144,10 +144,14 @@ class Scene(object):
             for chunk in resp.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
-        bname, ext = os.path.splitext(fout)
-        #if ext == '.jpg':
+        # TODO - this requires image x and y size, but without
+        # adding dependency to read the file we can't get this, it's not in metadata
+        #bname, ext = os.path.splitext(fout)
+        #if ext in ['.jpg', '.png']:
         #    wldfile = bname + '.wld'
-        #    coords = self.geometry['coordinates'][0]
+        #    coords = self.geometry['coordinates']
+        #    while len(coords) == 1:
+        #        coords = coords[0]
         #    lats = [c[1] for c in coords]
         #    lons = [c[0] for c in coords]
         #    with open(wldfile, 'w') as f:
