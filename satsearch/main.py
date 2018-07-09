@@ -12,7 +12,7 @@ def main(scenes=None, review=False, print_md=None, print_cal=False,
     if scenes is None:
         # get scenes from search
         search = Search(**kwargs)
-        scenes = Scenes(search.scenes(), metadata={'search': kwargs})
+        scenes = Scenes(search.scenes(), properties=kwargs)
     else:
         scenes = Scenes.load(scenes)
 
