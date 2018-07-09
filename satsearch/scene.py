@@ -111,6 +111,7 @@ class Scene(object):
         path = config.DATADIR.replace(':', '_colon_')
         # create path for this scene
         subs = {}
+        
         for key in [i[1] for i in Formatter().parse(path.rstrip('/')) if i[1] is not None]:
             if key == 'date':
                 subs[key] = self.date
