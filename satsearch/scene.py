@@ -98,7 +98,8 @@ class Scene(object):
         path = self.get_path()
         if key not in self.assets:
             if key not in self.name_to_band:
-                raise SatSceneError('No such asseet (%s)' % key)
+                logging.warning('No such asset (%s)' % key)
+                return None
             else:
                 key = self.name_to_band[key]
 
