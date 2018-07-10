@@ -26,6 +26,16 @@ class Scene(object):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
         self.feature = feature
 
+        # determine common_name to asset mapping
+        # it will map if an asset contains only a single band
+        bands = self.eobands
+        band_to_name = {b: bands[b]['common_name'] for b in bands if bands[b].get('common_name', None)}
+        self.name_to_band = {}
+        for a in self.assets:
+            _bands = self.assets[a].get('eo:bands', [])
+            if len(_bands) == 1 and _bands[0] in band_to_name:
+                self.name_to_band[band_to_name[_bands[0]]] = _bands[0]
+
         # QGIS altered date format when editing this GeoJSON file
         #self['datetime'] = self['datetime'].replace('/', '-')
         self.filenames = {}
@@ -59,7 +69,7 @@ class Scene(object):
 
     @property
     def assets(self):
-        """ Return dictionary of file key and download link """
+        """ Return dictionary of assets """
         return self.feature['assets']
         #prefix = os.path.commonprefix(files)
         #keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
@@ -71,32 +81,44 @@ class Scene(object):
         return self.feature['links']
 
     @property
+    def eobands(self):
+        """ Return dictionary of eo:bands """
+        return self.feature.get('eo:bands', {})
+
+    @property
     def bbox(self):
         """ Get bounding box of scene """
         lats = [c[1] for c in self.geometry['coordinates'][0]]
         lons = [c[0] for c in self.geometry['coordinates'][0]]
         return [min(lons), min(lats), max(lons), max(lats)]
 
+    def asset(self, key):
+        """ Get asset info for this key or common_name """
+        if key not in self.assets:
+            if key not in self.name_to_band:
+                logging.warning('No such asset (%s)' % key)
+                return None
+            else:
+                key = self.name_to_band[key]
+        return self.assets[key]
+
     def download(self, key, overwrite=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
  
-        # legacy hack - this function used to download multiple keys, now just one
-        keys = [key]
+        asset = self.asset(key)
+        if asset is None:
+            return None
 
         path = self.get_path()
-        # loop through keys and get files
-        for key in [k for k in keys if k in self.assets]:
-            try:
-                href = self.assets[key]['href']
-                
-                ext = os.path.splitext(href)[1]
-                fout = os.path.join(path, self.get_filename(suffix='_'+key) + ext)
-                if os.path.exists(fout) and overwrite is False:
-                    self.filenames[key] = fout
-                else:
-                    self.filenames[key] = self.download_file(href, fout=fout)
-            except Exception as e:
-                logger.error('Unable to download %s: %s' % (href, str(e)))
+        try:
+            ext = os.path.splitext(asset['href'])[1]
+            fout = os.path.join(path, self.get_filename(suffix='_'+key) + ext)
+            if os.path.exists(fout) and overwrite is False:
+                self.filenames[key] = fout
+            else:
+                self.filenames[key] = self.download_file(asset['href'], fout=fout)
+        except Exception as e:
+            logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
         if key in self.filenames:
             return self.filenames[key]
         else:
@@ -133,7 +155,8 @@ class Scene(object):
             fname = fname + suffix
         return fname
 
-    def download_file(self, url, fout=None):
+    @staticmethod
+    def download_file(url, fout=None):
         """ Download a file """
         fout = os.path.basename(url) if fout is None else fout
         logger.info('Downloading %s as %s' % (url, fout))
@@ -144,22 +167,6 @@ class Scene(object):
             for chunk in resp.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
-        # TODO - this requires image x and y size, but without
-        # adding dependency to read the file we can't get this, it's not in metadata
-        #bname, ext = os.path.splitext(fout)
-        #if ext in ['.jpg', '.png']:
-        #    wldfile = bname + '.wld'
-        #    coords = self.geometry['coordinates']
-        #    while len(coords) == 1:
-        #        coords = coords[0]
-        #    lats = [c[1] for c in coords]
-        #    lons = [c[0] for c in coords]
-        #    with open(wldfile, 'w') as f:
-        #        f.write('%s\n' % ((max(lons)-min(lons))/1155))
-        #        f.write('0.0\n0.0\n')
-        #        f.write('%s\n' % (-(max(lats)-min(lats))/1174))
-        #        f.write('%s\n%s\n' % (min(lons), max(lats)))
-
         return fout
 
     def review_thumbnail(self):

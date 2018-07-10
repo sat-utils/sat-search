@@ -9,9 +9,9 @@ from .version import __version__
 
 class SatUtilsParser(argparse.ArgumentParser):
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         """ Initialize a SatUtilsParser """
-        super(SatUtilsParser, self).__init__(**kwargs)
+        super(SatUtilsParser, self).__init__(*args, **kwargs)
         self.formatter_class = argparse.ArgumentDefaultsHelpFormatter
 
         self.pparser = argparse.ArgumentParser(add_help=False)
