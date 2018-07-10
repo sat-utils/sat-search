@@ -69,7 +69,7 @@ class Scene(object):
 
     @property
     def assets(self):
-        """ Return dictionary of file key and download link """
+        """ Return dictionary of assets """
         return self.feature['assets']
         #prefix = os.path.commonprefix(files)
         #keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
@@ -92,27 +92,33 @@ class Scene(object):
         lons = [c[0] for c in self.geometry['coordinates'][0]]
         return [min(lons), min(lats), max(lons), max(lats)]
 
-    def download(self, key, overwrite=False):
-        """ Download this key (e.g., a band, or metadata file) from the scene """
- 
-        path = self.get_path()
+    def asset(self, key):
+        """ Get asset info for this key or common_name """
         if key not in self.assets:
             if key not in self.name_to_band:
                 logging.warning('No such asset (%s)' % key)
                 return None
             else:
                 key = self.name_to_band[key]
+        return self.assets[key]
 
+    def download(self, key, overwrite=False):
+        """ Download this key (e.g., a band, or metadata file) from the scene """
+ 
+        asset = self.asset(key)
+        if asset is None:
+            return None
+
+        path = self.get_path()
         try:
-            href = self.assets[key]['href']            
-            ext = os.path.splitext(href)[1]
+            ext = os.path.splitext(asset['href'])[1]
             fout = os.path.join(path, self.get_filename(suffix='_'+key) + ext)
             if os.path.exists(fout) and overwrite is False:
                 self.filenames[key] = fout
             else:
-                self.filenames[key] = self.download_file(href, fout=fout)
+                self.filenames[key] = self.download_file(asset['href'], fout=fout)
         except Exception as e:
-            logger.error('Unable to download %s: %s' % (href, str(e)))
+            logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
         if key in self.filenames:
             return self.filenames[key]
         else:
@@ -149,7 +155,8 @@ class Scene(object):
             fname = fname + suffix
         return fname
 
-    def download_file(self, url, fout=None):
+    @staticmethod
+    def download_file(url, fout=None):
         """ Download a file """
         fout = os.path.basename(url) if fout is None else fout
         logger.info('Downloading %s as %s' % (url, fout))
@@ -160,22 +167,6 @@ class Scene(object):
             for chunk in resp.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
-        # TODO - this requires image x and y size, but without
-        # adding dependency to read the file we can't get this, it's not in metadata
-        #bname, ext = os.path.splitext(fout)
-        #if ext in ['.jpg', '.png']:
-        #    wldfile = bname + '.wld'
-        #    coords = self.geometry['coordinates']
-        #    while len(coords) == 1:
-        #        coords = coords[0]
-        #    lats = [c[1] for c in coords]
-        #    lons = [c[0] for c in coords]
-        #    with open(wldfile, 'w') as f:
-        #        f.write('%s\n' % ((max(lons)-min(lons))/1155))
-        #        f.write('0.0\n0.0\n')
-        #        f.write('%s\n' % (-(max(lats)-min(lats))/1174))
-        #        f.write('%s\n%s\n' % (min(lons), max(lats)))
-
         return fout
 
     def review_thumbnail(self):
