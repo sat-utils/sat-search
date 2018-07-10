@@ -83,7 +83,7 @@ class Scene(object):
     @property
     def eobands(self):
         """ Return dictionary of eo:bands """
-        return self.feature['eo:bands']
+        return self.feature.get('eo:bands', {})
 
     @property
     def bbox(self):
