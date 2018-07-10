@@ -26,6 +26,16 @@ class Scene(object):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
         self.feature = feature
 
+        # determine common_name to asset mapping
+        # it will map if an asset contains only a single band
+        bands = self.eobands
+        band_to_name = {b: bands[b]['common_name'] for b in bands if bands[b].get('common_name', None)}
+        self.name_to_band = {}
+        for a in self.assets:
+            _bands = self.assets[a].get('eo:bands', [])
+            if len(_bands) == 1 and _bands[0] in band_to_name:
+                self.name_to_band[band_to_name[_bands[0]]] = _bands[0]
+
         # QGIS altered date format when editing this GeoJSON file
         #self['datetime'] = self['datetime'].replace('/', '-')
         self.filenames = {}
@@ -71,6 +81,11 @@ class Scene(object):
         return self.feature['links']
 
     @property
+    def eobands(self):
+        """ Return dictionary of eo:bands """
+        return self.feature['eo:bands']
+
+    @property
     def bbox(self):
         """ Get bounding box of scene """
         lats = [c[1] for c in self.geometry['coordinates'][0]]
@@ -80,23 +95,23 @@ class Scene(object):
     def download(self, key, overwrite=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
  
-        # legacy hack - this function used to download multiple keys, now just one
-        keys = [key]
-
         path = self.get_path()
-        # loop through keys and get files
-        for key in [k for k in keys if k in self.assets]:
-            try:
-                href = self.assets[key]['href']
-                
-                ext = os.path.splitext(href)[1]
-                fout = os.path.join(path, self.get_filename(suffix='_'+key) + ext)
-                if os.path.exists(fout) and overwrite is False:
-                    self.filenames[key] = fout
-                else:
-                    self.filenames[key] = self.download_file(href, fout=fout)
-            except Exception as e:
-                logger.error('Unable to download %s: %s' % (href, str(e)))
+        if key not in self.assets:
+            if key not in self.name_to_band:
+                raise SatSceneError('No such asseet (%s)' % key)
+            else:
+                key = self.name_to_band[key]
+
+        try:
+            href = self.assets[key]['href']            
+            ext = os.path.splitext(href)[1]
+            fout = os.path.join(path, self.get_filename(suffix='_'+key) + ext)
+            if os.path.exists(fout) and overwrite is False:
+                self.filenames[key] = fout
+            else:
+                self.filenames[key] = self.download_file(href, fout=fout)
+        except Exception as e:
+            logger.error('Unable to download %s: %s' % (href, str(e)))
         if key in self.filenames:
             return self.filenames[key]
         else:
