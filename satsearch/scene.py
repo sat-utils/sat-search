@@ -202,6 +202,10 @@ class Scenes(object):
                     self.properties[p] = _p
                 except:
                     self.properties[p] = properties[p]
+            # check if FeatureCollection and get just first Feature
+            if p == 'intersects':
+                if self.properties[p]['type'] == 'FeatureCollection':
+                    self.properties[p] = self.properties[p]['features'][0]
         self.collections
 
     def __len__(self):
