@@ -66,9 +66,9 @@ jobs:
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             pip install twine
             python setup.py sdist
-            VERSION=`awk -F\' '{print $2,$4}' satsearch/version.py`
-            git tag $VERSION
-            git push origin $VERSION
+            #VERSION=`awk -F\' '{print $2,$4}' satsearch/version.py`
+            #git tag $VERSION
+            #git push origin $VERSION
             twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
 
 
@@ -84,5 +84,5 @@ workflows:
           requires:
             - install_and_test
           filters:
-            branches:
-              only: master
+            tags:
+              only: /.*/
