@@ -70,7 +70,7 @@ class Scene(object):
     @property
     def assets(self):
         """ Return dictionary of assets """
-        return self.feature['assets']
+        return self.feature.get('assets', {})
         #prefix = os.path.commonprefix(files)
         #keys = [os.path.splitext(f[len(prefix):])[0] for f in files]
         #links = dict(zip(keys, files))
@@ -78,7 +78,7 @@ class Scene(object):
     @property
     def links(self):
         """ Return dictionary of links """
-        return self.feature['links']
+        return self.feature.get('links', {})
 
     @property
     def eobands(self):
