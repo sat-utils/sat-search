@@ -84,5 +84,7 @@ workflows:
           requires:
             - install_and_test
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /.*/
