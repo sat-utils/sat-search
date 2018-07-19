@@ -33,8 +33,6 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
         h = 'Append scenes to GeoJSON file (specified by save)'
         self.output_group.add_argument('--append', default=False, action='store_true', help=h)
-        if os.getenv('IMGCAT', None):
-            self.output_group.add_argument('--review', help='Interactive review of thumbnails', default=False, action='store_true')
 
         #subparser = self.subparser.add_subparser('collections', help='Collections API', parents=[self.pparser])
         #group = subparser.add_argument_group('collection parameters')

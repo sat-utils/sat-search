@@ -6,7 +6,7 @@ from satsearch import Search, Scenes
 from satsearch.parser import SatUtilsParser
 
 
-def main(scenes=None, review=False, print_md=None, print_cal=False,
+def main(scenes=None, print_md=None, print_cal=False,
          save=None, append=False, download=None, **kwargs):
     """ Main function for performing a search """
     if scenes is None:
@@ -15,11 +15,6 @@ def main(scenes=None, review=False, print_md=None, print_cal=False,
         scenes = Scenes(search.scenes(), properties=kwargs)
     else:
         scenes = Scenes.load(scenes)
-
-    if review:
-        if not os.getenv('IMGCAT', None):
-            raise ValueError('Set IMGCAT envvar to terminal image display program to use review feature')
-        scenes.review_thumbnails()
 
     # print metadata
     if print_md is not None:
