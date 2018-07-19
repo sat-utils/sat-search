@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
         """ Get calendar """
         scenes = self.load_scenes()
         cal = scenes.text_calendar()
-        self.assertEqual(len(cal), 611)
+        self.assertEqual(len(cal), 576)
         self.assertTrue(' 2018 ' in cal)
         self.assertTrue(' January ' in cal)
         self.assertTrue(' March ' in cal)

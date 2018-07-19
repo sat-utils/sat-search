@@ -138,12 +138,17 @@ class TestScene(unittest.TestCase):
         """ Testing of download paths and filenames """
         scene = self.get_test_scene()
         datadir = config.DATADIR
+        filename = config.FILENAME
         config.DATADIR = os.path.join(testpath, '${date}')
         config.FILENAME = '${date}_${id}'
         fname = scene.download('MTL')
         _fname = os.path.join(testpath, '2017-01-01/2017-01-01_testscene_MTL.txt')
         assert(fname == _fname)
         assert(os.path.exists(fname))
+        config.DATADIR = datadir
+        config.FILENAME = filename
+        shutil.rmtree(os.path.join(testpath, '2017-01-01'))
+        assert(os.path.exists(fname) == False)
 
     def test_download_nonexist(self):
         """ Test downloading of non-existent file """
@@ -212,6 +217,11 @@ class TestScenes(unittest.TestCase):
             os.remove(f)
             self.assertFalse(os.path.exists(f))
         #shutil.rmtree(os.path.join(testpath, 'landsat-8-l1'))
+
+    def test_filter(self):
+        scenes = self.load_scenes()
+        scenes.filter('eo:platform', ['landsat-8'])
+        assert(len(scenes) == 1)
 
     def test_download(self):
         """ Download a data file from all scenes """
