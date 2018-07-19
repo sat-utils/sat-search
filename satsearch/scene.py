@@ -22,7 +22,7 @@ class Scene(object):
         required = ['id', 'datetime']
         if 'geometry' not in feature:
             raise SatSceneError('No geometry supplied')
-        if not set(required).issubset(feature['properties'].keys()):
+        if not set(required).issubset(feature.get('properties', {}).keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
         self.feature = feature
 
@@ -168,24 +168,6 @@ class Scene(object):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
         return fout
-
-    def review_thumbnail(self):
-        """ Display image and give user prompt to keep or discard """
-        fname = self.download('thumb')['thumb']
-        imgcat = os.getenv('IMGCAT', None)
-        if imgcat is None:
-            raise Exception("Set $IMGCAT to a terminal display program")
-        cmd = '%s %s' % (imgcat, fname)
-        print(cmd)
-        os.system(cmd)
-        print("Press Y to keep, N to delete, or any key to quit")
-        while True:
-            char = getch()
-            if char.lower() == 'y':
-                return True
-            elif char.lower() == 'n':
-                return False
-            raise Exception('Cancel')
 
 
 class Scenes(object):
@@ -333,30 +315,3 @@ class Scenes(object):
             if fname is not None:
                 dls.append(fname)
         return dls
-
-    def review_thumbnails(self):
-        """ Review all thumbnails in scenes """
-        new_scenes = []
-        for scene in self.scenes:
-            try:
-                keep = scene.review_thumbnail()
-                if keep:
-                    new_scenes.append(scene)
-            except Exception as e:
-                return
-        self.scenes = new_scenes
-
-
-try:
-    from msvcrt import getch
-except ImportError:
-    def getch():
-        import sys, tty, termios
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
