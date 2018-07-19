@@ -4,13 +4,216 @@
         {
             "type": "Feature",
             "properties": {
-                "id": "L1C_T19TCH_A005428_20180321T153550",
+                "id": "LC08_L1TP_012030_20180209_20180222_01_T1",
+                "c:id": "landsat-8-l1",
+                "datetime": "2018-02-09T15:26:17.355Z",
+                "eo:cloud_cover": 69,
+                "eo:sun_azimuth": 154.76501101,
+                "eo:sun_elevation": 28.61363289,
+                "landsat:path": 12,
+                "landsat:row": 30,
+                "c:name": "Landsat 8 L1",
+                "c:description": "Landat 8 imagery radiometrically calibrated and orthorectified using gound points and Digital Elevation Model (DEM) data to correct relief displacement.",
+                "provider": "USGS",
+                "license": "PDDL-1.0",
+                "eo:gsd": 30,
+                "eo:platform": "landsat-8",
+                "eo:instrument": "OLI_TIRS",
+                "eo:off_nadir": 0
+            },
+            "bbox": [
+                -72.26075,
+                42.52862,
+                -69.39415,
+                43.82233
+            ],
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -69.39415,
+                            43.82233
+                        ],
+                        [
+                            -71.7074,
+                            44.24198
+                        ],
+                        [
+                            -72.26075,
+                            42.52862
+                        ],
+                        [
+                            -70.01061,
+                            42.11221
+                        ],
+                        [
+                            -69.39415,
+                            43.82233
+                        ]
+                    ]
+                ]
+            },
+            "assets": {
+                "ANG": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_ANG.txt"
+                },
+                "B1": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B1.TIF",
+                    "eo:bands": [
+                        "B1"
+                    ]
+                },
+                "B2": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B2.TIF",
+                    "eo:bands": [
+                        "B2"
+                    ]
+                },
+                "B3": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B3.TIF",
+                    "eo:bands": [
+                        "B3"
+                    ]
+                },
+                "B4": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B4.TIF",
+                    "eo:bands": [
+                        "B4"
+                    ]
+                },
+                "B5": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B5.TIF",
+                    "eo:bands": [
+                        "B5"
+                    ]
+                },
+                "B6": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B6.TIF",
+                    "eo:bands": [
+                        "B6"
+                    ]
+                },
+                "B7": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B7.TIF",
+                    "eo:bands": [
+                        "B7"
+                    ]
+                },
+                "B8": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B8.TIF",
+                    "eo:bands": [
+                        "B8"
+                    ]
+                },
+                "B9": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B9.TIF",
+                    "eo:bands": [
+                        "B9"
+                    ]
+                },
+                "B10": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B10.TIF",
+                    "eo:bands": [
+                        "B10"
+                    ]
+                },
+                "B11": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_B11.TIF",
+                    "eo:bands": [
+                        "B11"
+                    ]
+                },
+                "BQA": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_BQA.TIF"
+                },
+                "MTL": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_MTL.txt"
+                },
+                "thumbnail": {
+                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180209_20180222_01_T1/LC08_L1TP_012030_20180209_20180222_01_T1_thumb_large.jpg"
+                }
+            },
+            "links": [],
+            "eo:bands": {
+                "B1": {
+                    "common_name": "coastal",
+                    "gsd": 30,
+                    "center_wavelength": 0.44,
+                    "full_width_half_max": 0.02
+                },
+                "B2": {
+                    "common_name": "blue",
+                    "gsd": 30,
+                    "center_wavelength": 0.48,
+                    "full_width_half_max": 0.06
+                },
+                "B3": {
+                    "common_name": "green",
+                    "gsd": 30,
+                    "center_wavelength": 0.56,
+                    "full_width_half_max": 0.06
+                },
+                "B4": {
+                    "common_name": "red",
+                    "gsd": 30,
+                    "center_wavelength": 0.65,
+                    "full_width_half_max": 0.04
+                },
+                "B5": {
+                    "common_name": "nir",
+                    "gsd": 30,
+                    "center_wavelength": 0.86,
+                    "full_width_half_max": 0.03
+                },
+                "B6": {
+                    "common_name": "swir16",
+                    "gsd": 30,
+                    "center_wavelength": 1.6,
+                    "full_width_half_max": 0.08
+                },
+                "B7": {
+                    "common_name": "swir22",
+                    "gsd": 30,
+                    "center_wavelength": 2.2,
+                    "full_width_half_max": 0.2
+                },
+                "B8": {
+                    "common_name": "pan",
+                    "gsd": 15,
+                    "center_wavelength": 0.59,
+                    "full_width_half_max": 0.18
+                },
+                "B9": {
+                    "common_name": "cirrus",
+                    "gsd": 30,
+                    "center_wavelength": 1.37,
+                    "full_width_half_max": 0.02
+                },
+                "B10": {
+                    "common_name": "lwir11",
+                    "gsd": 100,
+                    "center_wavelength": 10.9,
+                    "full_width_half_max": 0.8
+                },
+                "B11": {
+                    "common_name": "lwir12",
+                    "gsd": 100,
+                    "center_wavelength": 12,
+                    "full_width_half_max": 1
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": "L1C_T19TCH_A004856_20180209T153549",
                 "c:id": "sentinel-2-l1c",
-                "datetime": "2018-03-21T15:35:50.460Z",
+                "datetime": "2018-02-09T15:35:49.460Z",
                 "eo:platform": "Sentinel-2B",
-                "eo:cloud_cover": 100,
+                "eo:cloud_cover": 63,
                 "eo:epsg": "32619",
-                "sentinel:product_id": "S2B_MSIL1C_20180321T153549_N0206_R111_T19TCH_20180321T185548",
+                "sentinel:product_id": "S2B_MSIL1C_20180209T153549_N0206_R111_T19TCH_20180209T173152",
                 "c:name": "Sentinel 2 L1C",
                 "c:description": "Sentinel-2a and Sentinel-2b imagery",
                 "provider": "ESA",
@@ -54,92 +257,92 @@
             },
             "assets": {
                 "B01": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B01.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B01.jp2",
                     "eo:bands": [
                         "B01"
                     ]
                 },
                 "B02": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B02.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B02.jp2",
                     "eo:bands": [
                         "B02"
                     ]
                 },
                 "B03": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B03.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B03.jp2",
                     "eo:bands": [
                         "B03"
                     ]
                 },
                 "B04": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B04.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B04.jp2",
                     "eo:bands": [
                         "B04"
                     ]
                 },
                 "B05": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B05.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B05.jp2",
                     "eo:bands": [
                         "B05"
                     ]
                 },
                 "B06": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B06.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B06.jp2",
                     "eo:bands": [
                         "B06"
                     ]
                 },
                 "B07": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B07.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B07.jp2",
                     "eo:bands": [
                         "B07"
                     ]
                 },
                 "B08": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B08.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B08.jp2",
                     "eo:bands": [
                         "B08"
                     ]
                 },
                 "B09": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B09.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B09.jp2",
                     "eo:bands": [
                         "B09"
                     ]
                 },
                 "B10": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B10.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B10.jp2",
                     "eo:bands": [
                         "B10"
                     ]
                 },
                 "B11": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B11.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B11.jp2",
                     "eo:bands": [
                         "B11"
                     ]
                 },
                 "B12": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B12.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B12.jp2",
                     "eo:bands": [
                         "B12"
                     ]
                 },
                 "B8A": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/B8A.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/B8A.jp2",
                     "eo:bands": [
                         "B8A"
                     ]
                 },
                 "thumbnail": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/preview.jpg"
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/preview.jpg"
                 },
                 "tki": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/TKI.jp2",
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/TKI.jp2",
                     "description": "True Color Image"
                 },
                 "metadata": {
-                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/3/21/0/metadata.xml"
+                    "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/19/T/CH/2018/2/9/0/metadata.xml"
                 }
             },
             "links": [],
@@ -218,215 +421,40 @@
                     "full_width_half_max": 0.242
                 }
             }
-        },
-        {
+        }
+    ],
+    "properties": {
+        "intersects": {
             "type": "Feature",
-            "properties": {
-                "id": "LC08_L1TP_012030_20180329_20180405_01_T1",
-                "c:id": "landsat-8-l1",
-                "datetime": "2018-03-29T15:25:55.160Z",
-                "eo:cloud_cover": 94,
-                "eo:sun_azimuth": 149.58162111,
-                "eo:sun_elevation": 46.36487683,
-                "landsat:path": 12,
-                "landsat:row": 30,
-                "c:name": "Landsat 8 L1",
-                "c:description": "Landat 8 imagery radiometrically calibrated and orthorectified using gound points and Digital Elevation Model (DEM) data to correct relief displacement.",
-                "provider": "USGS",
-                "license": "PDDL-1.0",
-                "eo:gsd": 30,
-                "eo:platform": "landsat-8",
-                "eo:instrument": "OLI_TIRS",
-                "eo:off_nadir": 0
-            },
-            "bbox": [
-                -72.27464,
-                42.52809,
-                -69.40822,
-                43.8221
-            ],
+            "properties": {},
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
                     [
                         [
-                            -69.40822,
-                            43.8221
+                            -70.9503936767578,
+                            43.0287452513488
                         ],
                         [
-                            -71.72179,
-                            44.24147
+                            -70.78010559082031,
+                            43.0287452513488
                         ],
                         [
-                            -72.27464,
-                            42.52809
+                            -70.78010559082031,
+                            43.14258116631987
                         ],
                         [
-                            -70.02421,
-                            42.11196
+                            -70.9503936767578,
+                            43.14258116631987
                         ],
                         [
-                            -69.40822,
-                            43.8221
+                            -70.9503936767578,
+                            43.0287452513488
                         ]
                     ]
                 ]
-            },
-            "assets": {
-                "ANG": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_ANG.txt"
-                },
-                "B1": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B1.TIF",
-                    "eo:bands": [
-                        "B1"
-                    ]
-                },
-                "B2": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B2.TIF",
-                    "eo:bands": [
-                        "B2"
-                    ]
-                },
-                "B3": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B3.TIF",
-                    "eo:bands": [
-                        "B3"
-                    ]
-                },
-                "B4": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B4.TIF",
-                    "eo:bands": [
-                        "B4"
-                    ]
-                },
-                "B5": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B5.TIF",
-                    "eo:bands": [
-                        "B5"
-                    ]
-                },
-                "B6": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B6.TIF",
-                    "eo:bands": [
-                        "B6"
-                    ]
-                },
-                "B7": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B7.TIF",
-                    "eo:bands": [
-                        "B7"
-                    ]
-                },
-                "B8": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B8.TIF",
-                    "eo:bands": [
-                        "B8"
-                    ]
-                },
-                "B9": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B9.TIF",
-                    "eo:bands": [
-                        "B9"
-                    ]
-                },
-                "B10": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B10.TIF",
-                    "eo:bands": [
-                        "B10"
-                    ]
-                },
-                "B11": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_B11.TIF",
-                    "eo:bands": [
-                        "B11"
-                    ]
-                },
-                "BQA": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_BQA.TIF"
-                },
-                "MTL": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_MTL.txt"
-                },
-                "thumbnail": {
-                    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/012/030/LC08_L1TP_012030_20180329_20180405_01_T1/LC08_L1TP_012030_20180329_20180405_01_T1_thumb_large.jpg"
-                }
-            },
-            "links": [],
-            "eo:bands": {
-                "B1": {
-                    "common_name": "coastal",
-                    "gsd": 30,
-                    "center_wavelength": 0.44,
-                    "full_width_half_max": 0.02
-                },
-                "B2": {
-                    "common_name": "blue",
-                    "gsd": 30,
-                    "center_wavelength": 0.48,
-                    "full_width_half_max": 0.06
-                },
-                "B3": {
-                    "common_name": "green",
-                    "gsd": 30,
-                    "center_wavelength": 0.56,
-                    "full_width_half_max": 0.06
-                },
-                "B4": {
-                    "common_name": "red",
-                    "gsd": 30,
-                    "center_wavelength": 0.65,
-                    "full_width_half_max": 0.04
-                },
-                "B5": {
-                    "common_name": "nir",
-                    "gsd": 30,
-                    "center_wavelength": 0.86,
-                    "full_width_half_max": 0.03
-                },
-                "B6": {
-                    "common_name": "swir16",
-                    "gsd": 30,
-                    "center_wavelength": 1.6,
-                    "full_width_half_max": 0.08
-                },
-                "B7": {
-                    "common_name": "swir22",
-                    "gsd": 30,
-                    "center_wavelength": 2.2,
-                    "full_width_half_max": 0.2
-                },
-                "B8": {
-                    "common_name": "pan",
-                    "gsd": 15,
-                    "center_wavelength": 0.59,
-                    "full_width_half_max": 0.18
-                },
-                "B9": {
-                    "common_name": "cirrus",
-                    "gsd": 30,
-                    "center_wavelength": 1.37,
-                    "full_width_half_max": 0.02
-                },
-                "B10": {
-                    "common_name": "lwir11",
-                    "gsd": 100,
-                    "center_wavelength": 10.9,
-                    "full_width_half_max": 0.8
-                },
-                "B11": {
-                    "common_name": "lwir12",
-                    "gsd": 100,
-                    "center_wavelength": 12,
-                    "full_width_half_max": 1
-                }
             }
-        }
-    ],
-    "metadata": {
-        "search": {
-            "intersects": "{\"type\": \"Feature\", \"properties\": {}, \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[-70.9503936767578, 43.0287452513488], [-70.78010559082031, 43.0287452513488], [-70.78010559082031, 43.14258116631987], [-70.9503936767578, 43.14258116631987], [-70.9503936767578, 43.0287452513488]]]}}",
-            "datetime": "2018-03-01/2018-03-31"
-        }
+        },
+        "datetime": "2018-02-09"
     }
 }
