@@ -22,7 +22,7 @@ class Scene(object):
         required = ['id', 'datetime']
         if 'geometry' not in feature:
             raise SatSceneError('No geometry supplied')
-        if not set(required).issubset(feature['properties'].keys()):
+        if not set(required).issubset(feature.get('properties', {}).keys()):
             raise SatSceneError('Invalid Scene (required parameters: %s' % ' '.join(required))
         self.feature = feature
 
