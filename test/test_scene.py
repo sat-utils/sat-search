@@ -71,6 +71,9 @@ class TestScene(unittest.TestCase):
                 'href': 'http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN00/LC80070292016240LGN00_thumb_small.jpg'
             }
         },
+        'links': {
+            'self': {'href': 'link/to/self'}
+        },
         'eo:bands': {
             'B1': {'common_name': 'coastal'}
         }
@@ -164,6 +167,13 @@ class TestScene(unittest.TestCase):
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
+
+    def test_create_derived(self):
+        """ Create single derived scene """
+        scenes = [self.get_test_scene(), self.get_test_scene()]
+        scene = Scene.create_derived(scenes)
+        assert(scene.date == scenes[0].date)
+        assert(scene['c:id'] == scenes[0]['c:id'])
 
 
 class TestScenes(unittest.TestCase):

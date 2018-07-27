@@ -48,7 +48,10 @@ class Scene(object):
         try:
             return getattr(self, key)
         except:
-            return self.feature['properties'][key]
+            if key in self.feature['properties']:
+                return self.feature['properties'][key]
+            else:
+                return None
 
     def keys(self):
         return self.feature['properties'].keys()
@@ -168,6 +171,34 @@ class Scene(object):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
         return fout
+
+    @classmethod
+    def create_derived(cls, scenes):
+        """ Create metadata for dervied scene from multiple input scenes """
+        # data provenance, iterate through links
+        links = {}
+        for i, scene in enumerate(scenes):
+            links['parent-%s' % i] = {
+                'rel': 'parent',
+                'href': scene.links['self']['href']
+            }
+        # calculate composite geometry and bbox
+        geom = scenes[0].geometry
+        # properties
+        props = {
+            'id': '%s_%s' % (scenes[0].date, scenes[0]['eo:platform']),
+            'datetime': scenes[0]['datetime']
+        }
+        collections = [s['c:id'] for s in scenes if s['c:id'] is not None]
+        if len(collections) == 1:
+            props['c:id'] = collections[0]
+        item = {
+            'properties': props,
+            'geometry': geom,
+            'links': links,
+            'assets': {}
+        }
+        return Scene(item)        
 
 
 class Scenes(object):
