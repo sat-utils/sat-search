@@ -108,7 +108,7 @@ class TestScene(unittest.TestCase):
     def test_class_properties(self):
         """ Test the property functions of the Scene class """
         scene = self.get_test_scene()
-        assert(scene.links == {})
+        assert(scene.links['self']['href'] == 'link/to/self')
         assert(scene.bbox == [-71.46676936182894, 42.338371079679106, -70.09532154452742, 43.347431265475954])
 
     def test_assets(self):
