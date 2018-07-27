@@ -230,9 +230,6 @@ class Scenes(object):
         else:
             return 0, 0
 
-    #def __getitem__(self, key):
-    #    return self.feature['properties'][key]
-
     def platforms(self, date=None):
         """ List of all available sensors across scenes """
         if date is None:
@@ -265,24 +262,10 @@ class Scenes(object):
                 date_labels[d] = sensors[0]
         return utils.get_text_calendar(date_labels)
 
-    def save(self, filename, append=False):
+    def save(self, filename):
         """ Save scene metadata """
-        if append and os.path.exists(filename):
-            with open(filename) as f:
-                geoj = json.loads(f.read())
-                features = geoj['features']
-                # TODO - figure out what to when new Scenes properties!
-        else:
-            properties = {}
-            features = []
-        geoj = self.geojson()
-
-        #for key in geoj.get('metadata', {}):
-        #    oldmd = metadata.get(key, [])
-        #    geoj['metadata'][key] = oldmd + [geoj['metadata'][key]]
-        geoj['features'] = features + geoj['features']
         with open(filename, 'w') as f:
-            f.write(json.dumps(geoj))
+            f.write(json.dumps(self.geojson()))
 
     def geojson(self):
         """ Get all metadata as GeoJSON """

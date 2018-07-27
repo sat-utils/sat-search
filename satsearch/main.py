@@ -7,7 +7,7 @@ from satsearch.parser import SatUtilsParser
 
 
 def main(scenes=None, review=False, print_md=None, print_cal=False,
-         save=None, append=False, download=None, **kwargs):
+         save=None, download=None, **kwargs):
     """ Main function for performing a search """
     if scenes is None:
         # get scenes from search
@@ -31,7 +31,7 @@ def main(scenes=None, review=False, print_md=None, print_cal=False,
 
     # save all metadata in JSON file
     if save is not None:
-        scenes.save(filename=save, append=append)
+        scenes.save(filename=save)
 
     print('%s scenes found' % len(scenes))
 
