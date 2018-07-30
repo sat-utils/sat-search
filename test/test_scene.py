@@ -71,6 +71,9 @@ class TestScene(unittest.TestCase):
                 'href': 'http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN00/LC80070292016240LGN00_thumb_small.jpg'
             }
         },
+        'links': {
+            'self': {'href': 'link/to/self'}
+        },
         'eo:bands': {
             'B1': {'common_name': 'coastal'}
         }
@@ -105,7 +108,7 @@ class TestScene(unittest.TestCase):
     def test_class_properties(self):
         """ Test the property functions of the Scene class """
         scene = self.get_test_scene()
-        assert(scene.links == {})
+        assert(scene.links['self']['href'] == 'link/to/self')
         assert(scene.bbox == [-71.46676936182894, 42.338371079679106, -70.09532154452742, 43.347431265475954])
 
     def test_assets(self):
@@ -164,6 +167,13 @@ class TestScene(unittest.TestCase):
             self.assertTrue(os.path.exists(f))
             os.remove(f)
             self.assertFalse(os.path.exists(f))
+
+    def test_create_derived(self):
+        """ Create single derived scene """
+        scenes = [self.get_test_scene(), self.get_test_scene()]
+        scene = Scene.create_derived(scenes)
+        assert(scene.date == scenes[0].date)
+        assert(scene['c:id'] == scenes[0]['c:id'])
 
 
 class TestScenes(unittest.TestCase):

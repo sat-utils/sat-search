@@ -31,8 +31,11 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.output_group.add_argument('--print_md', help='Print specified metadata for matched scenes', default=None, nargs='*')
         self.output_group.add_argument('--print_cal', help='Print calendar showing dates', default=False, action='store_true')
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
+<<<<<<< HEAD
         h = 'Append scenes to GeoJSON file (specified by save)'
         self.output_group.add_argument('--append', default=False, action='store_true', help=h)
+=======
+>>>>>>> master
 
         #subparser = self.subparser.add_subparser('collections', help='Collections API', parents=[self.pparser])
         #group = subparser.add_argument_group('collection parameters')
