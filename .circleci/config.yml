@@ -76,10 +76,16 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - checkout_code
+      - checkout_code:
+          filters:
+            tags:
+              only: /.*/
       - install_and_test:
           requires:
             - checkout_code
+          filters:
+            tags:
+              only: /.*/          
       - deploy:
           requires:
             - install_and_test
