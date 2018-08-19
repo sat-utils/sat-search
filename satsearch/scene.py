@@ -6,6 +6,7 @@ from string import Formatter, Template
 from datetime import datetime
 import satsearch.utils as utils
 import satsearch.config as config
+import traceback
 
 
 logger = logging.getLogger(__name__)
@@ -122,6 +123,7 @@ class Scene(object):
                 self.filenames[key] = self.download_file(asset['href'], fout=fout)
         except Exception as e:
             logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
+            logger.debug(traceback.format_exc())
         if key in self.filenames:
             return self.filenames[key]
         else:
@@ -163,9 +165,12 @@ class Scene(object):
         """ Download a file """
         fout = os.path.basename(url) if fout is None else fout
         logger.info('Downloading %s as %s' % (url, fout))
-        resp = requests.get(url, stream=True)
+        # check if on s3
+        if 's3.amazonaws.com' in url:
+            url, headers = utils.get_s3_signed_url(url)
+        resp = requests.get(url, headers=headers, stream=True)
         if resp.status_code != 200:
-            raise Exception("Unable to download file %s" % url)
+            raise Exception("Unable to download file %s: %s" % (url, resp.text))
         with open(fout, 'wb') as f:
             for chunk in resp.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
