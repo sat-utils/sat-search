@@ -181,12 +181,12 @@ class Scene(object):
     def create_derived(cls, scenes):
         """ Create metadata for dervied scene from multiple input scenes """
         # data provenance, iterate through links
-        links = {}
+        links = []
         for i, scene in enumerate(scenes):
-            links['parent-%s' % i] = {
-                'rel': 'parent',
+            links.append({
+                'rel': 'derived_from',
                 'href': scene.links['self']['href']
-            }
+            })
         # calculate composite geometry and bbox
         geom = scenes[0].geometry
         # properties
