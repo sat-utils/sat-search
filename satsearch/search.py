@@ -107,6 +107,7 @@ class Search(object):
         collections = {}
         for c in set([item['properties']['c:id'] for item in items if 'c:id' in item['properties']]):
             collections[c] = self.collection(c)
+            del collections[c]['links']
         scenes = []
         for item in items:
             if 'c:id' in item['properties']:
