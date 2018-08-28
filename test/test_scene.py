@@ -210,7 +210,7 @@ class TestScenes(unittest.TestCase):
         """ Get dates of all scenes """
         scenes = self.load_scenes()
         dates = scenes.dates()
-        self.assertEqual(len(dates), 2)
+        self.assertEqual(len(dates), 1)
 
     def test_text_calendar(self):
         """ Get calendar """
