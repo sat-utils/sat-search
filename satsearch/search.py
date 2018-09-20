@@ -45,7 +45,7 @@ class Query(object):
     def query(self, **kwargs):
         """ Make single API call """
         kwargs.update(self.kwargs)
-        url = os.path.join(config.API_URL, self.endpoint)
+        url = '/'.join([config.API_URL, self.endpoint])
         self.results = self._query(url, **kwargs)
         return self.results
 
@@ -95,7 +95,7 @@ class Search(object):
     @classmethod
     def collection(cls, cid):
         """ Get a Collection record """
-        url = os.path.join(config.API_URL, 'collections', cid, 'definition')
+        url = '/'.join([config.API_URL, 'collections', cid, 'definition'])
         return Query._query(url)['features'][0]
 
     def scenes(self):
