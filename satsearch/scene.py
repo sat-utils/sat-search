@@ -241,7 +241,7 @@ class Scenes(object):
 
     def dates(self):
         """ Get sorted list of dates for all scenes """
-        return sorted([s.date for s in self.scenes])
+        return sorted(list(set([s.date for s in self.scenes])))
 
     def collections(self):
         """ Get collection records for this list of scenes """

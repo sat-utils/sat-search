@@ -16,7 +16,7 @@ install_requires = [x.strip() for x in all_reqs if 'git+' not in x]
 dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' not in x]
 
 setup(
-    name='satsearch',
+    name='sat-search',
     author='Matthew Hanson (matthewhanson)',
     author_email='matt.a.hanson@gmail.com',
     version=__version__,
