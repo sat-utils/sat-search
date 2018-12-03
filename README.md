@@ -10,7 +10,7 @@ The legacy version of sat-search (<1.0.0) can be used with the legacy version of
 It is recommended to use [pyenv](https://github.com/pyenv/pyenv) and [virtualenv](https://virtualenv.pypa.io/en/latest/) to to control Python versions and installed dependencies. sat-search can be conveniently installed from PyPi:
 
     # install the latest release version
-    $ pip install satsearch
+    $ pip install sat-search
 
 Sat-search is a very lightweight application, with the only dependency being requests.
 
