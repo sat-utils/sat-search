@@ -2,40 +2,41 @@ import os
 import sys
 import json
 from .version import __version__
-from satsearch import Search, Scenes
+from satsearch import Search
+from satstac import Items
 from satsearch.parser import SatUtilsParser
 
 
-def main(scenes=None, print_md=None, print_cal=False,
+def main(items=None, print_md=None, print_cal=False,
          save=None, download=None, **kwargs):
     """ Main function for performing a search """
-    if scenes is None:
-        # get scenes from search
+    if items is None:
+        # get items from search
         search = Search(**kwargs)
-        scenes = Scenes(search.scenes(), properties=kwargs)
+        items = Items(search.items(), properties=kwargs)
     else:
-        scenes = Scenes.load(scenes)
+        items = Items.load(items)
 
     # print metadata
     if print_md is not None:
-        scenes.print_scenes(print_md)
+        items.print_scenes(print_md)
 
     # print calendar
     if print_cal:
-        print(scenes.text_calendar())
+        print(items.text_calendar())
 
     # save all metadata in JSON file
     if save is not None:
-        scenes.save(filename=save)
+        items.save(filename=save)
 
-    print('%s scenes found' % len(scenes))
+    print('%s items found' % len(items))
 
     # download files given keys
     if download is not None:
         for key in download:
-            scenes.download(key=key)
+            items.download(key=key)
 
-    return scenes
+    return items
 
 
 def cli():
