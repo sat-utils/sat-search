@@ -9,7 +9,7 @@ testpath = os.path.dirname(__file__)
 class Test(unittest.TestCase):
     """ Test main module """
 
-    args = 'search --datetime 2017-01-01 --eo:cloud_cover 0/20 -p eo:platform=landsat-8'
+    args = 'search --datetime 2017-01-01 -p eo:cloud_cover=0/20 eo:platform=landsat-8'
 
     @classmethod
     def get_test_parser(cls):
