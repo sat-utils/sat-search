@@ -13,13 +13,13 @@ def main(items=None, print_md=None, print_cal=False,
     if items is None:
         # get items from search
         search = Search(**kwargs)
-        items = Items(search.items(), properties=kwargs)
+        items = search.items()
     else:
         items = Items.load(items)
 
     # print metadata
     if print_md is not None:
-        items.print_scenes(print_md)
+        items.print_summary(print_md)
 
     # print calendar
     if print_cal:

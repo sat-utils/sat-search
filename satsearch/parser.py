@@ -58,7 +58,6 @@ class SatUtilsParser(argparse.ArgumentParser):
             config.DATADIR = args.pop('datadir')
         if 'filename' in args:
             config.FILENAME = args.pop('filename')
-
         return args
 
     @classmethod
@@ -74,11 +73,11 @@ class SatUtilsParser(argparse.ArgumentParser):
         parser.search_group.add_argument('-c', '--collection', help='Name(s) of collection', nargs='*', default=None)
         parser.search_group.add_argument('--bbox', help='Bounding box (min lon, min lat, max lon, max lat)', nargs=4)
         parser.search_group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
-        parser.search_group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15')
+        parser.search_group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15)')
         parser.search_group.add_argument('--sort', help='Sort by fields')
         #group.add_argument('--id', help='One or more scene IDs', nargs='*', default=None)
         #group.add_argument('--contains', help='lon,lat points')
-        parser.search_group.add_argument('-p', '--param', nargs='*', help='Properties of form KEY=VALUE (<, >, <=, >=, = supported)', action=SatUtilsParser.KeyValuePair)
+        parser.search_group.add_argument('-p', '--property', nargs='*', help='Properties of form KEY=VALUE (<, >, <=, >=, = supported)', action=SatUtilsParser.KeyValuePair)
         parser.search_group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
         parents.append(parser.download_parser)
