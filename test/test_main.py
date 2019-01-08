@@ -15,17 +15,17 @@ config.DATADIR = testpath
 class Test(unittest.TestCase):
     """ Test main module """
 
-    num_scenes = 558
+    num_scenes = 38
 
     def test_main(self):
         """ Run main function """
-        items = main.main(datetime='2019-01-01', **{'collection': 'Landsat-8-l1'})
+        items = main.main(datetime='2019-01-02', **{'collection': 'Landsat-8-l1'})
         self.assertEqual(len(items), self.num_scenes)
 
     def test_main_options(self):
         """ Test main program with output options """
         fname = os.path.join(testpath, 'test_main-save.json')
-        items = main.main(datetime='2019-01-01', save=fname, printcal=True, print_md=[], **{'eo:platform': 'landsat-8'})
+        items = main.main(datetime='2019-01-02', save=fname, printcal=True, print_md=[], **{'eo:platform': 'landsat-8'})
         self.assertEqual(len(items), self.num_scenes)
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
@@ -41,7 +41,7 @@ class Test(unittest.TestCase):
         """ Run CLI program """
         with patch.object(sys, 'argv', 'sat-search search --datetime 2017-01-01 -p eo:platform=landsat-8'.split(' ')):
             items = main.cli()
-            assert(len(items) == 111)
+            assert(len(items) == 0)
 
     def test_main_download(self):
         """ Test main program with downloading """
