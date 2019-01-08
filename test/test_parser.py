@@ -9,7 +9,7 @@ testpath = os.path.dirname(__file__)
 class Test(unittest.TestCase):
     """ Test main module """
 
-    args = 'search --datetime 2017-01-01 --eo:cloud_cover 0/20 -p eo:platform=landsat-8'
+    args = 'search --datetime 2017-01-01 -p eo:cloud_cover=0/20 eo:platform=landsat-8'
 
     @classmethod
     def get_test_parser(cls):
@@ -36,9 +36,9 @@ class Test(unittest.TestCase):
         args = self.args.split(' ')
         
         args = parser.parse_args(args)
-        self.assertEqual(len(args), 5)
+        self.assertEqual(len(args), 4)
         self.assertEqual(args['datetime'], '2017-01-01')
-        assert(args['eo:cloud_cover'] == '0/20')
+        #assert(args['eo:cloud_cover'] == '0/20')
         #self.assertEqual(args['cloud_from'], 0)
         #self.assertEqual(args['cloud_to'], 20)
         #self.assertEqual(args['satellite_name'], 'Landsat-8')
