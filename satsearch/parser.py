@@ -91,7 +91,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         sparser = subparser.add_parser('search', help='Perform new search of items', parents=parents)
         """ Adds search arguments to a parser """
         parser.search_group = sparser.add_argument_group('search options')
-        parser.search_group.add_argument('-c', '--collection', help='Name(s) of collection', nargs='*', default=None)
+        parser.search_group.add_argument('-c', '--collection', help='Name of collection', default=None)
         parser.search_group.add_argument('--bbox', help='Bounding box (min lon, min lat, max lon, max lat)', nargs=4)
         parser.search_group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
         parser.search_group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15)')
