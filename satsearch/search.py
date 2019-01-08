@@ -36,7 +36,7 @@ class Search(object):
         """ Small query to determine total number of hits """
         kwargs = {
             'page': 1,
-            'page_size': 0
+            'limit': 0
         }
         kwargs.update(self.kwargs)
         results = self.query(**kwargs)
@@ -72,7 +72,7 @@ class Search(object):
         found = self.found()
         kwargs = {
             'page': 1,
-            'page_size': min(limit, found)
+            'limit': min(limit, found)
         }
         kwargs.update(self.kwargs)
         while len(items) < found:
