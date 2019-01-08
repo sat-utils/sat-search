@@ -3,7 +3,10 @@ import os
 import sys
 import logging
 import argparse
+
 import satsearch.config as config
+
+from satstac.utils import dict_merge
 from .version import __version__
 
 
@@ -58,6 +61,24 @@ class SatUtilsParser(argparse.ArgumentParser):
             config.DATADIR = args.pop('datadir')
         if 'filename' in args:
             config.FILENAME = args.pop('filename')
+        
+        if 'property' in args:
+            queries = {}
+            for p in args['property']:
+                symbols = {
+                    '=': 'eq',
+                    '>': 'gt',
+                    '<': 'lt',
+                    '>=': 'gte',
+                    '<=': 'lte'
+                }
+                for s in symbols:
+                    parts = p.split(s)
+                    if len(parts) == 2:
+                        queries = dict_merge(queries, {parts[0]: {symbols[s]: parts[1]}})
+                        break
+            args['query'] = queries
+            del args['property']
         return args
 
     @classmethod
@@ -77,7 +98,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         parser.search_group.add_argument('--sort', help='Sort by fields')
         #group.add_argument('--id', help='One or more scene IDs', nargs='*', default=None)
         #group.add_argument('--contains', help='lon,lat points')
-        parser.search_group.add_argument('-p', '--property', nargs='*', help='Properties of form KEY=VALUE (<, >, <=, >=, = supported)', action=SatUtilsParser.KeyValuePair)
+        parser.search_group.add_argument('-p', '--property', nargs='*', help='Properties of form KEY=VALUE (<, >, <=, >=, = supported)')
         parser.search_group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
         parents.append(parser.download_parser)
@@ -90,4 +111,4 @@ class SatUtilsParser(argparse.ArgumentParser):
         def __call__(self, parser, namespace, values, option_string=None):
             for val in values:
                 n, v = val.split('=')
-                setattr(namespace, n, v)
+                setattr(namespace, n, {'eq': v})
