@@ -51,7 +51,7 @@ def cli():
 
     cmd = args.pop('command', None)
     if cmd is not None:
-        main(**args)
+        return main(**args)
 
 
 if __name__ == "__main__":
