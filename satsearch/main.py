@@ -19,11 +19,11 @@ def main(items=None, print_md=None, print_cal=False,
 
     # print metadata
     if print_md is not None:
-        items.print_summary(print_md)
+        print(items.summary(print_md))
 
     # print calendar
     if print_cal:
-        print(items.text_calendar())
+        print(items.calendar())
 
     # save all metadata in JSON file
     if save is not None:

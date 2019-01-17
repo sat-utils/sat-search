@@ -92,5 +92,12 @@ class Search(object):
         #    if 'collection' in item['properties']:
         #        item = dict_merge(item, collections[item['properties']['collection']])
         #    _items.append(Item(item))
-        
+
+        for k in self.kwargs:
+            try:
+                # try to parse JSON
+                self.kwargs[k] = json.loads(self.kwargs[k])
+            except ValueError:
+                # if not JSON it's a basic data type
+                pass
         return Items(items, collections=collections, search=self.kwargs)
