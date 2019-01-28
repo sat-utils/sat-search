@@ -15,7 +15,7 @@ config.DATADIR = testpath
 class Test(unittest.TestCase):
     """ Test main module """
 
-    num_scenes = 38
+    num_scenes = 2295
 
     def test_main(self):
         """ Run main function """
@@ -25,7 +25,7 @@ class Test(unittest.TestCase):
     def test_main_options(self):
         """ Test main program with output options """
         fname = os.path.join(testpath, 'test_main-save.json')
-        items = main.main(datetime='2019-01-02', save=fname, printcal=True, print_md=[], **{'eo:platform': 'landsat-8'})
+        items = main.main(datetime='2019-01-02', save=fname, printcal=True, printmd=[], **{'eo:platform': 'landsat-8'})
         self.assertEqual(len(items), self.num_scenes)
         self.assertTrue(os.path.exists(fname))
         os.remove(fname)
@@ -48,9 +48,11 @@ class Test(unittest.TestCase):
         with open(os.path.join(testpath, 'aoi1.geojson')) as f:
             aoi = json.dumps(json.load(f))
         config.DATADIR = os.path.join(testpath, "${eo:platform}")
-        items = main.main(datetime='2017-01-05/2017-01-21', intersects=aoi, download=['thumbnail', 'MTL'], **{'eo:platform': 'landsat-8'})
+        items = main.main(datetime='2017-01-05/2017-01-21', intersects=aoi, download=['thumbnail', 'MTL'], **{'collection': 'landsat-8-l1'})
         for item in items:
-            self.assertTrue(os.path.exists(item.filenames['thumbnail']))
-            self.assertTrue(os.path.exists(item.filenames['MTL']))
-        #shutil.rmtree(os.path.join(testpath, item['eo:platform']))
+            bname = os.path.splitext(item.get_filename(config.DATADIR))[0]
+            assert(os.path.exists(bname + '_thumbnail.jpg'))
+            assert(os.path.exists(bname + '_MTL.txt'))
+        for item in items:
+            shutil.rmtree(os.path.join(testpath, item['eo:platform']))
         config.DATADIR = testpath

@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
         parser = self.get_test_parser()
         args = parser.parse_args(['search'])
         self.assertEqual(len(args), 2)
-        self.assertFalse(args['print_cal'])
+        self.assertFalse(args['printcal'])
 
     def test_parse_args(self):
         """ Parse arguments """
