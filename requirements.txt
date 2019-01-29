@@ -1,1 +1,1 @@
-sat-stac~=0.1.0rc5
+sat-stac~=0.1.1

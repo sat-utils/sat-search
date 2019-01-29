@@ -1,24 +1,40 @@
-# SAT-SEARCH
+# sat-search
 
 [![CircleCI](https://circleci.com/gh/sat-utils/sat-search.svg?style=svg&circle-token=a66861b5cbba7acd4abd7975f804ab061a365e1b)](https://circleci.com/gh/sat-utils/sat-search)
 
-Sat-search is a Python 2/3 library and a command line tool for discovering and downloading publicly available satellite imagery using a conformant API such as [sat-api](https://github.com/sat-utils/sat-api).
-
-The STAC version supported by a given version of sat-api is shown in the table below. Additional information can be found in the [CHANGELOG](CHANGELOG.md)
-
-| sat-search | STAC  |
-| ---------- | ----  |
-| 0.1.0      | 0.5.0 |
-| 0.2.0      | 0.6.0 |
+Sat-search is a Python 3 library and a command line tool for discovering and downloading publicly available satellite imagery using a conformant API such as [sat-api](https://github.com/sat-utils/sat-api).
 
 
 ## Installation
-It is recommended to use [pyenv](https://github.com/pyenv/pyenv) and [virtualenv](https://virtualenv.pypa.io/en/latest/) to to control Python versions and installed dependencies. sat-search can be conveniently installed from PyPi:
 
-    # install the latest release version
-    $ pip install sat-search
+Sat-search is a very lightweight application, with the only dependency being [sat-stac](https://github.com/sat-utils/sat-stac), which in turn has two dependencies: `requests` and `python-dateutil`. To install sat-search from PyPi:
 
-Sat-search is a very lightweight application, with the only dependency being [sat-stac](https://github.com/sat-utils/sat-stac), which in turn has two dependencies: `requests` and `python-dateutil`.
+```bash
+$ pip install sat-search
+```
+
+From source repository:
+
+```bash
+$ git clone https://github.com/sat-utils/sat-search.git
+$ cd sat-search
+$ pip install .
+```
+
+#### Versions
+The latest version of sat-search is 0.2.0, which uses the STAC spec v0.6.0. To install other versions of sat-search, specify the version in the call to pip. 
+
+```bash
+pip install sat-search==0.2.0
+```
+
+The table below shows the corresponding versions between sat-search and STAC. Additional information can be found in the [CHANGELOG](CHANGELOG.md)
+
+| sat-search | STAC  |
+| --------   | ----  |
+| 0.1.x      | 0.5.0 |
+| 0.2.x      | 0.6.0 |
+
 
 ## Using sat-search
 
