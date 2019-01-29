@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
         with open(os.path.join(self.path, 'aoi1.geojson')) as f:
             aoi = json.dumps(json.load(f))
         search = Search(datetime='2018-09-25', intersects=aoi)
-        assert(search.found() == 1)
+        assert(search.found() == 2)
         items = search.items()
-        assert(len(items) == 1)
+        assert(len(items) == 2)
         assert(isinstance(items[0], Item))

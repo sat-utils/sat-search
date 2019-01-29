@@ -3,6 +3,7 @@ import os
 import logging
 import requests
 
+import os.path as op
 import satsearch.config as config
 
 from satstac import Collection, Item, Items
@@ -19,18 +20,40 @@ class SatSearchError(Exception):
 class Search(object):
     """ One search query (possibly multiple pages) """
 
-    search_endpoint = 'stac/search'
-    collections_endpoint = 'collections'
-
     def __init__(self, **kwargs):
         """ Initialize a Search object with parameters """
         self.kwargs = kwargs
         for k in self.kwargs:
-            if isinstance(kwargs[k], dict):
-                kwargs[k] = json.dumps(kwargs[k])
             if k == 'datetime':
                 self.kwargs['time'] = self.kwargs['datetime']
                 del self.kwargs['datetime']
+
+    @classmethod
+    def search(cls, **kwargs):
+        symbols = {'=': 'eq', '>': 'gt', '<': 'lt', '>=': 'gte', '<=': 'lte'}
+        if 'property' in kwargs and isinstance(kwargs['property'], list):
+            queries = {}
+            for prop in kwargs['property']:
+                for s in symbols:
+                    parts = prop.split(s)
+                    if len(parts) == 2:
+                        queries = dict_merge(queries, {parts[0]: {symbols[s]: parts[1]}})
+                        break
+            del kwargs['property']
+            kwargs['query'] = queries
+        directions = {'>': 'desc', '<': 'asc'}
+        if 'sort' in kwargs and isinstance(kwargs['sort'], list):
+            sorts = []
+            for a in kwargs['sort']:
+                if a[0] not in directions:
+                    a = '>' + a
+                sorts.append({
+                    'field': a[1:],
+                    'direction': directions[a[0]]
+                })
+            del kwargs['sort']
+            kwargs['sort'] = sorts
+        return Search(**kwargs)
 
     def found(self):
         """ Small query to determine total number of hits """
@@ -43,31 +66,39 @@ class Search(object):
         return results['meta']['found']
 
     @classmethod
-    def _query(cls, url, **kwargs):
+    def query(cls, url=op.join(config.API_URL, 'stac/search'), **kwargs):
         """ Get request """
-        response = requests.get(url, kwargs)
-        logger.debug('Query URL: %s' % response.url)
+        logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
+        response = requests.post(url, data=json.dumps(kwargs))
         # API error
         if response.status_code != 200:
             raise SatSearchError(response.text)
         return response.json()
 
     @classmethod
-    def query(cls, **kwargs):
-        url = os.path.join(config.API_URL, cls.search_endpoint)
-        for k in kwargs:
-            if isinstance(kwargs[k], list) and k is not "geometry":
-                kwargs[k] = '"%s"' % (','.join(kwargs[k]))
-        return cls._query(url, **kwargs)
-
-    @classmethod
     def collection(cls, cid):
         """ Get a Collection record """
-        url = os.path.join(config.API_URL, cls.collections_endpoint, cid)
-        return Collection(cls._query(url))
+        url = op.join(config.API_URL, 'collections', cid)
+        return Collection(cls.query(url=url))
+
+    @classmethod
+    def items_by_id(cls, ids, collection):
+        """ Return Items from collection with matching ids """
+        col = cls.collection(collection)
+        items = []
+        base_url = op.join(config.API_URL, 'collections', collection, 'items')
+        for id in ids:
+            items.append(Item(cls.query(op.join(base_url, id))))
+        return Items(items, collections=[col])
 
     def items(self, limit=1000):
         """ Return all of the Items and Collections for this search """
+        if 'ids' in self.kwargs:
+            col = self.kwargs.get('query', {}).get('collection', {}).get('eq', None)
+            if col is None:
+                raise SatSearchError('Collection required when searching by id')
+            return self.items_by_id(self.kwargs['ids'], col)
+
         items = []
         found = self.found()
         kwargs = {
@@ -93,11 +124,4 @@ class Search(object):
         #        item = dict_merge(item, collections[item['properties']['collection']])
         #    _items.append(Item(item))
 
-        for k in self.kwargs:
-            try:
-                # try to parse JSON
-                self.kwargs[k] = json.loads(self.kwargs[k])
-            except ValueError:
-                # if not JSON it's a basic data type
-                pass
         return Items(items, collections=collections, search=self.kwargs)

@@ -79,12 +79,14 @@ class SatUtilsParser(argparse.ArgumentParser):
         """ Adds search arguments to a parser """
         parser.search_group = sparser.add_argument_group('search options')
         parser.search_group.add_argument('-c', '--collection', help='Name of collection', default=None)
+        h = 'One or more scene IDs from provided collection (ignores other parameters)'
+        parser.search_group.add_argument('--ids', help=h, nargs='*', default=None)
         parser.search_group.add_argument('--bbox', help='Bounding box (min lon, min lat, max lon, max lat)', nargs=4)
         parser.search_group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
         parser.search_group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15)')
         parser.search_group.add_argument('--sort', help='Sort by fields', nargs='*')
-        #group.add_argument('--id', help='One or more scene IDs', nargs='*', default=None)
-        #group.add_argument('--contains', help='lon,lat points')
+        h = 'Only output how many Items found'
+        parser.search_group.add_argument('--found', help=h, action='store_true', default=False)
         parser.search_group.add_argument('-p', '--property', nargs='*', help='Properties of form KEY=VALUE (<, >, <=, >=, = supported)')
         parser.search_group.add_argument('--url', help='URL of the API', default=config.API_URL)
 

@@ -9,17 +9,22 @@ from satsearch.parser import SatUtilsParser
 import satsearch.config as config
 
 
-def main(items=None, printmd=None, printcal=False,
+def main(items=None, printmd=None, printcal=False, found=False,
          save=None, download=None, **kwargs):
     """ Main function for performing a search """
     
     if items is None:
-        ## if there are no items that perform a search
-        search = Search(**kwargs)
+        ## if there are no items then perform a search
+        search = Search.search(**kwargs)
+        if found:
+            print('%s items found' % search.found())
+            return
         items = search.items()
     else:
         # otherwise, load a search from a file
         items = Items.load(items)
+
+    print('%s items found' % len(items))
 
     # print metadata
     if printmd is not None:
@@ -32,8 +37,6 @@ def main(items=None, printmd=None, printcal=False,
     # save all metadata in JSON file
     if save is not None:
         items.save(filename=save)
-
-    print('%s items found' % len(items))
 
     # download files given `download` keys
     if download is not None:
