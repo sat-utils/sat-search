@@ -27,7 +27,7 @@ class Test(unittest.TestCase):
         """ Parse empty arguments """
         parser = self.get_test_parser()
         args = parser.parse_args(['search'])
-        self.assertEqual(len(args), 2)
+        self.assertEqual(len(args), 3)
         self.assertFalse(args['printcal'])
 
     def test_parse_args(self):
@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
         args = self.args.split(' ')
         
         args = parser.parse_args(args)
-        self.assertEqual(len(args), 4)
+        self.assertEqual(len(args), 5)
         self.assertEqual(args['datetime'], '2017-01-01')
         #assert(args['eo:cloud_cover'] == '0/20')
         #self.assertEqual(args['cloud_from'], 0)

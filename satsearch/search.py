@@ -30,6 +30,12 @@ class Search(object):
 
     @classmethod
     def search(cls, **kwargs):
+        if 'collection' in kwargs:
+            q = 'collection=%s' % kwargs['collection']
+            if 'property' not in kwargs:
+                kwargs['property'] = []
+            kwargs['property'].append(q)
+            del kwargs['collection']
         symbols = {'=': 'eq', '>': 'gt', '<': 'lt', '>=': 'gte', '<=': 'lte'}
         if 'property' in kwargs and isinstance(kwargs['property'], list):
             queries = {}

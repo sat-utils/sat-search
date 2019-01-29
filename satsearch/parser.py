@@ -59,13 +59,6 @@ class SatUtilsParser(argparse.ArgumentParser):
         if 'filename' in args:
             config.FILENAME = args.pop('filename')
 
-        if 'collection' in args:
-            q = 'collection=%s' % args['collection']
-            if 'property' not in args:
-                args['property'] = []
-            args['property'].append(q)
-            del args['collection']
-
         return args
 
     @classmethod

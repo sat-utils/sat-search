@@ -17,8 +17,9 @@ def main(items=None, printmd=None, printcal=False, found=False,
         ## if there are no items then perform a search
         search = Search.search(**kwargs)
         if found:
-            print('%s items found' % search.found())
-            return
+            num = search.found()
+            print('%s items found' % num)
+            return num
         items = search.items()
     else:
         # otherwise, load a search from a file
