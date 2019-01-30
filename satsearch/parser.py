@@ -77,10 +77,10 @@ class SatUtilsParser(argparse.ArgumentParser):
         parser.search_group.add_argument('--bbox', help='Bounding box (min lon, min lat, max lon, max lat)', nargs=4)
         parser.search_group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
         parser.search_group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15)')
+        parser.search_group.add_argument('-p', '--property', nargs='*', help='Properties of form KEY=VALUE (<, >, <=, >=, = supported)')
         parser.search_group.add_argument('--sort', help='Sort by fields', nargs='*')
         h = 'Only output how many Items found'
         parser.search_group.add_argument('--found', help=h, action='store_true', default=False)
-        parser.search_group.add_argument('-p', '--property', nargs='*', help='Properties of form KEY=VALUE (<, >, <=, >=, = supported)')
         parser.search_group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
         parents.append(parser.download_parser)
