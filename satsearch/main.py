@@ -41,6 +41,9 @@ def main(items=None, printmd=None, printcal=False, found=False,
 
     # download files given `download` keys
     if download is not None:
+        if 'ALL' in download:
+            # get complete set of assets
+            download = set([k for i in items for k in i.assets])
         for key in download:
             items.download(key=key, path=config.DATADIR, filename=config.FILENAME)
 
@@ -59,7 +62,7 @@ def cli():
 
     cmd = kwargs.pop('command', None)
     if cmd is not None:
-        return main(**kwargs)
+        main(**kwargs)
 
 
 if __name__ == "__main__":
