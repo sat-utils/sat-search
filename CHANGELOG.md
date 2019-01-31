@@ -6,10 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- update default API URL to sat-api.developmentseed.org
+- update default save path from ${eo:platform}/${date} to ${collection}/${date}
+
 
 ## [v0.2.0] - 2019-01-31
 
-## Changed
+### Changed
 - Works with version 0.2.0 of sat-api (STAC 0.6.x)
 - Major refactor, uses sat-stac library
 
