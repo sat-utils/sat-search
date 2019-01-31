@@ -118,7 +118,7 @@ search options:
 - **ids** - Fetch the Item for the provided IDs in the given collection (collection must be provided). All other search options will be ignored.
 - **intersects** - Provide a GeoJSON Feature string or the name of a GeoJSON file containing a single Feature that is a Polygon of an AOI to be searched.
 - **datetime** - Provide a single partial or full datetime (e.g., 2017, 2017-10, 2017-10-11, 2017-10-11T12:00), or two seperated by a slash that defines a range. e.g., 2017-01-01/2017-06-30 will search for scenes acquired in the first 6 months of 2017.
-- **property** - Allows searching for any other scene properties by providing the pair as a string (e.g. `-p "landsat:row=42"`, `-p "eo:cloud_cover<10"`)
+- **property** - Allows searching for any other scene properties by providing the pair as a string (e.g. `-p "landsat:row=42"`, `-p "eo:cloud_cover<10"`). Supported symbols include: =, <, >, >=, and <=
 - **sort** - Sort by specific properties in ascending or descending order. A list of properties can be provided which will be used for sorting in that order of preference. By default a property will be sorted in descending order. To specify the order the property can be preceded with '<' (ascending) or '>' (descending). e.g., `--sort ">datetime" "<eo:cloud_cover" will sort by descending date, then by ascending cloud cover
 - **found** - This will print out the total number of scenes found, then exit without fetching the actual items. 
 - **url** - The URL endpoint of a STAC compliant API, this can also be set with the environment variable SATUTILS_API_URL
@@ -127,8 +127,10 @@ search options:
 These options control what to do with the search results, multiple switches can be provided.
 
 - **print-md** - Prints a list of specific metadata fields for all the scenes. If given without any arguments it will print a list of the dates and scene IDs. Otherwise it will print a list of fields that are provided. (e.g., --print-md date eo:cloud_cover eo:platform will print a list of date, cloud cover, and the satellite platform such as WORLDVIEW03)
-- **print-cal** - Prints a text calendar with specific days colored depending on the platform of the scene (e.g. landsat-8), along with a legend.
+- **print-cal** - Prints a text calendar (see iumage below) with specific days colored depending on the platform of the scene (e.g. landsat-8), along with a legend.
 - **save** - Saves results as a FeatureCollection. The FeatureCollection 'properties' contains all of the arguments used in the search and the 'features' contain all of the individual scenes, with individual scene metadata merged with collection level metadata (metadata fields that are the same across all one collection, such as eo:platform)
+
+![](images/calendar.png)
 
 
 #### `load`
