@@ -6,10 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [v0.2.0] - 2019-01-30
 
-- STAC compliant release (works with version 1.0 of sat-api)
-- Major refactoring
+## [v0.2.0] - 2019-01-31
+
+## Changed
+- Works with version 0.2.0 of sat-api (STAC 0.6.x)
+- Major refactor, uses sat-stac library
 
 
 ## [v0.1.0] - 2018-10-25
