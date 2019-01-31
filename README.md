@@ -40,7 +40,7 @@ The table below shows the corresponding versions between sat-search and STAC. Ad
 
 With sat-search you can search a STAC compliant API with full querying support (if supported by the API). Search results can be saved as a GeoJSON file then loaded later. Assets can be downloaded by the asset key, or "color" (common_name of the band) if provided.
 
-Sat-search is a Python 3 library that can incorporated into other applications. A Jupyter notebook tutorial is included that covers all the main features of the library.
+Sat-search is a Python 3 library that can incorporated into other applications. A [Jupyter notebook tutorial](tutorial-1.ipynb) is included that covers all the main features of the library.
 
 Sat-search also comes with a Command Line Interface (CLI), which is exaplained more below.
 
