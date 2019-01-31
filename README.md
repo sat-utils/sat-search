@@ -80,13 +80,11 @@ optional arguments:
   -h, --help            show this help message and exit
   --version             Print version and exit
   -v VERBOSITY, --verbosity VERBOSITY
-                        0:quiet, 1:error, 2:warning, 3:info, 4:debug (default:
-                        2)
+                        0:quiet, 1:error, 2:warning, 3:info, 4:debug (default: 2)
 
 output options:
   --print-md [PRINTMD [PRINTMD ...]]
-                        Print specified metadata for matched scenes (default:
-                        None)
+                        Print specified metadata for matched scenes (default: None)
   --print-cal           Print calendar showing dates (default: False)
   --save SAVE           Save results as GeoJSON (default: None)
 
@@ -115,7 +113,7 @@ search options:
 
 **Search options**
 
-- **collection** - Search only a specific collection. This is a shortcut, collection can also be provided as a property (e.g., `-p "collection=landsat-8-l1")
+- **collection** - Search only a specific collection. This is a shortcut, collection can also be provided as a property (e.g., `-p "collection=landsat-8-l1"`)
 - **ids** - Fetch the Item for the provided IDs in the given collection (collection must be provided). All other search options will be ignored.
 - **intersects** - Provide a GeoJSON Feature string or the name of a GeoJSON file containing a single Feature that is a Polygon of an AOI to be searched.
 - **datetime** - Provide a single partial or full datetime (e.g., 2017, 2017-10, 2017-10-11, 2017-10-11T12:00), or two seperated by a slash that defines a range. e.g., 2017-01-01/2017-06-30 will search for scenes acquired in the first 6 months of 2017.
@@ -206,6 +204,9 @@ A shortcut to download all of the assets is available by providing "ALL" as the 
 ```
    sat-search load scenes.json --download ALL
 ```
+
+## Tutorial
+This [Jupyter notebook tutorial](tutorial-1.ipynb) covers all the main features of the library.
 
 ## About
 sat-search was created by [Development Seed](<http://developmentseed.org>) and is part of a collection of tools called [sat-utils](https://github.com/sat-utils).
