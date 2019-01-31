@@ -67,7 +67,7 @@ As can be seen there are two subcommands, `search` and `load`, each of which has
 #### `search`
 
 ```
-(satutils) mhanson@clavius:~/devseed/sat-utils/sat-search/scratch$ sat-search search -h
+$ sat-search search -h
 usage: sat-search search [-h] [--version] [-v VERBOSITY]
                          [--print-md [PRINTMD [PRINTMD ...]]] [--print-cal]
                          [--save SAVE] [-c COLLECTION] [--ids [IDS [IDS ...]]]
