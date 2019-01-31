@@ -184,7 +184,7 @@ These control the downloading of assets. Both datadir and filename can include m
 - **download** - Provide a list of keys to download these assets. More information on downloading data is provided below.
 
 **Metadata patterns**
-Metadata patterns can be used in **datadir** and **filename** in order to have custom path and filenames based on the Item metadata. For instance specifying datadir as "./${eo:platform}/${date}" will save assets for each Item under directories of the platform and the date. So a landsat-8 Item from June 20, 2018 will have it's assets saved in a directory './landsat-8/2017-06-20'. For filenames these work exactly the same way, except the filename will contain a suffix containing the assedt key and the appropriate extension.
+Metadata patterns can be used in **datadir** and **filename** in order to have custom path and filenames based on the Item metadata. For instance specifying datadir as "./${eo:platform}/${date}" will save assets for each Item under directories of the platform and the date. So a landsat-8 Item from June 20, 2018 will have it's assets saved in a directory './landsat-8/2017-06-20'. For filenames these work exactly the same way, except the filename will contain a suffix containing the asset key and the appropriate extension.
 
 ```
     sat-search load scenes.json --download thumbnail MTL
