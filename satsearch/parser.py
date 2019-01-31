@@ -31,14 +31,11 @@ class SatUtilsParser(argparse.ArgumentParser):
 
         self.output_parser = argparse.ArgumentParser(add_help=False)
         self.output_group = self.output_parser.add_argument_group('output options')
-        self.output_group.add_argument('--print_md', help='Print specified metadata for matched scenes', default=None, nargs='*')
-        self.output_group.add_argument('--print_cal', help='Print calendar showing dates', default=False, action='store_true')
+        h = 'Print specified metadata for matched scenes'
+        self.output_group.add_argument('--print-md', help=h, default=None, nargs='*', dest='printmd')
+        h = 'Print calendar showing dates'
+        self.output_group.add_argument('--print-cal', help=h, default=False, action='store_true', dest='printcal')
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
-
-        #subparser = self.subparser.add_subparser('collections', help='Collections API', parents=[self.pparser])
-        #group = subparser.add_argument_group('collection parameters')
-        #group.add_argument('-c', '--collection', help='Name of collection')
-
 
     def parse_args(self, *args, **kwargs):
         """ Parse arguments """
@@ -61,24 +58,7 @@ class SatUtilsParser(argparse.ArgumentParser):
             config.DATADIR = args.pop('datadir')
         if 'filename' in args:
             config.FILENAME = args.pop('filename')
-        
-        if 'property' in args:
-            queries = {}
-            for p in args['property']:
-                symbols = {
-                    '=': 'eq',
-                    '>': 'gt',
-                    '<': 'lt',
-                    '>=': 'gte',
-                    '<=': 'lte'
-                }
-                for s in symbols:
-                    parts = p.split(s)
-                    if len(parts) == 2:
-                        queries = dict_merge(queries, {parts[0]: {symbols[s]: parts[1]}})
-                        break
-            args['query'] = queries
-            del args['property']
+
         return args
 
     @classmethod
@@ -92,13 +72,15 @@ class SatUtilsParser(argparse.ArgumentParser):
         """ Adds search arguments to a parser """
         parser.search_group = sparser.add_argument_group('search options')
         parser.search_group.add_argument('-c', '--collection', help='Name of collection', default=None)
+        h = 'One or more scene IDs from provided collection (ignores other parameters)'
+        parser.search_group.add_argument('--ids', help=h, nargs='*', default=None)
         parser.search_group.add_argument('--bbox', help='Bounding box (min lon, min lat, max lon, max lat)', nargs=4)
         parser.search_group.add_argument('--intersects', help='GeoJSON Feature (file or string)')
         parser.search_group.add_argument('--datetime', help='Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15)')
-        parser.search_group.add_argument('--sort', help='Sort by fields')
-        #group.add_argument('--id', help='One or more scene IDs', nargs='*', default=None)
-        #group.add_argument('--contains', help='lon,lat points')
         parser.search_group.add_argument('-p', '--property', nargs='*', help='Properties of form KEY=VALUE (<, >, <=, >=, = supported)')
+        parser.search_group.add_argument('--sort', help='Sort by fields', nargs='*')
+        h = 'Only output how many Items found'
+        parser.search_group.add_argument('--found', help=h, action='store_true', default=False)
         parser.search_group.add_argument('--url', help='URL of the API', default=config.API_URL)
 
         parents.append(parser.download_parser)
