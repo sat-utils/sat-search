@@ -62,10 +62,11 @@ optional arguments:
   -h, --help     show this help message and exit
 ```
 
-As can be seen there are two subcommands, `search` and `load`, each of which has it's own help ..
+As can be seen there are two subcommands, `search` and `load`, each of which has it's own help.
 
 #### `search`
 
+```
 (satutils) mhanson@clavius:~/devseed/sat-utils/sat-search/scratch$ sat-search search -h
 usage: sat-search search [-h] [--version] [-v VERBOSITY]
                          [--print-md [PRINTMD [PRINTMD ...]]] [--print-cal]
