@@ -63,6 +63,8 @@ class Search(object):
 
     def found(self):
         """ Small query to determine total number of hits """
+        if 'ids' in self.kwargs:
+            return len(self.kwargs['ids'])
         kwargs = {
             'page': 1,
             'limit': 0
@@ -99,6 +101,7 @@ class Search(object):
 
     def items(self, limit=1000):
         """ Return all of the Items and Collections for this search """
+        _limit = 1000
         if 'ids' in self.kwargs:
             col = self.kwargs.get('query', {}).get('collection', {}).get('eq', None)
             if col is None:
@@ -107,12 +110,13 @@ class Search(object):
 
         items = []
         found = self.found()
+        maxitems = min(found, limit)
         kwargs = {
             'page': 1,
-            'limit': min(limit, found)
+            'limit': min(_limit, maxitems)
         }
         kwargs.update(self.kwargs)
-        while len(items) < found:
+        while len(items) < maxitems:
             items += [Item(i) for i in self.query(**kwargs)['features']]
             kwargs['page'] += 1
 

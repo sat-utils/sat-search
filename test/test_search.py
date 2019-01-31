@@ -3,6 +3,8 @@ import glob
 import json
 import unittest
 
+import satsearch.config as config
+
 from satstac import Item
 from satsearch.search import SatSearchError, Search
 
@@ -56,3 +58,34 @@ class Test(unittest.TestCase):
         items = search.items()
         assert(len(items) == 2)
         assert(isinstance(items[0], Item))
+
+    def test_search_sort(self):
+        """ Perform search with sort """
+        with open(os.path.join(self.path, 'aoi1.geojson')) as f:
+            aoi = json.dumps(json.load(f))
+        search = Search.search(datetime='2018-01-01/2018-01-15', intersects=aoi, sort=['<datetime'])
+        items = search.items()
+        assert(len(items) == 33)
+
+    def test_get_items_by_id(self):
+        """ Get Items by ID """
+        ids = ['LC80340332018034LGN00', 'LC80340322018034LGN00']
+        items = Search.items_by_id(ids, collection='landsat-8-l1')
+        assert(len(items) == 2)
+
+    def test_get_ids_search(self):
+        """ Get Items by ID through normal search """
+        ids = ['LC80340332018034LGN00', 'LC80340322018034LGN00']
+        search = Search.search(ids=ids, collection='landsat-8-l1')
+        items = search.items()
+        assert(search.found() == 2)
+        assert(len(items) == 2)
+
+    def test_get_ids_without_collection(self):
+        with self.assertRaises(SatSearchError):
+            search = Search.search(ids=['LC80340332018034LGN00'])
+            items = search.items()
+
+    def test_query_bad_url(self):
+        with self.assertRaises(SatSearchError):
+            Search.query(url=os.path.join(config.API_URL, 'collections/nosuchcollection'))
