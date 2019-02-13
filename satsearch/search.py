@@ -97,7 +97,10 @@ class Search(object):
         items = []
         base_url = op.join(config.API_URL, 'collections', collection, 'items')
         for id in ids:
-            items.append(Item(cls.query(op.join(base_url, id))))
+            try:
+                items.append(Item(cls.query(op.join(base_url, id))))
+            except SatSearchError as err:
+                pass
         return Items(items, collections=[col])
 
     def items(self, limit=1000):
