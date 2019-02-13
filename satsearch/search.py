@@ -64,7 +64,8 @@ class Search(object):
     def found(self):
         """ Small query to determine total number of hits """
         if 'ids' in self.kwargs:
-            return len(self.kwargs['ids'])
+            cid = self.kwargs['query']['collection']['eq']
+            return len(self.items_by_id(self.kwargs['ids'], cid))
         kwargs = {
             'page': 1,
             'limit': 0
