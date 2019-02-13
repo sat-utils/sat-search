@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- Fix number found reported when using .found() function and searching by IDs
+
 ### Changed
 - update default API URL to sat-api.developmentseed.org
 - update default save path from ${eo:platform}/${date} to ${collection}/${date}
