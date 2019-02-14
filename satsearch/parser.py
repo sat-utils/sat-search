@@ -28,6 +28,8 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.download_group.add_argument('--filename', default=config.FILENAME,
                            help='Save assets with this filename pattern based on metadata keys')
         self.download_group.add_argument('--download', help='Download assets', default=None, nargs='*')
+        h = 'Acknowledge paying egress costs for downloads (if in request pays bucket)'
+        self.download_group.add_argument('--requestor-pays', help=h, default=False, action='store_true', dest='requestor_pays')
 
         self.output_parser = argparse.ArgumentParser(add_help=False)
         self.output_group = self.output_parser.add_argument_group('output options')

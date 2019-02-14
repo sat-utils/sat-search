@@ -10,7 +10,7 @@ import satsearch.config as config
 
 
 def main(items=None, printmd=None, printcal=False, found=False,
-         save=None, download=None, **kwargs):
+         save=None, download=None, requestor_pays=False, **kwargs):
     """ Main function for performing a search """
     
     if items is None:
@@ -45,7 +45,7 @@ def main(items=None, printmd=None, printcal=False, found=False,
             # get complete set of assets
             download = set([k for i in items for k in i.assets])
         for key in download:
-            items.download(key=key, path=config.DATADIR, filename=config.FILENAME)
+            items.download(key=key, path=config.DATADIR, filename=config.FILENAME, requestor_pays=requestor_pays)
 
     return items
 
