@@ -3,11 +3,11 @@ import os
 import logging
 import requests
 
-import os.path as op
 import satsearch.config as config
 
 from satstac import Collection, Item, Items
 from satstac.utils import dict_merge
+from urllib.parse import urljoin
 
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ class Search(object):
         return results['meta']['found']
 
     @classmethod
-    def query(cls, url=op.join(config.API_URL, 'stac/search'), **kwargs):
+    def query(cls, url=urljoin(config.API_URL, 'stac/search'), **kwargs):
         """ Get request """
         logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
         response = requests.post(url, data=json.dumps(kwargs))
@@ -87,7 +87,7 @@ class Search(object):
     @classmethod
     def collection(cls, cid):
         """ Get a Collection record """
-        url = op.join(config.API_URL, 'collections', cid)
+        url = urljoin(config.API_URL, 'collections/%s' % cid)
         return Collection(cls.query(url=url))
 
     @classmethod
@@ -95,10 +95,10 @@ class Search(object):
         """ Return Items from collection with matching ids """
         col = cls.collection(collection)
         items = []
-        base_url = op.join(config.API_URL, 'collections', collection, 'items')
+        base_url = urljoin(config.API_URL, 'collections/%s/items' % collection)
         for id in ids:
             try:
-                items.append(Item(cls.query(op.join(base_url, id))))
+                items.append(Item(cls.query(urljoin(base_url, id))))
             except SatSearchError as err:
                 pass
         return Items(items, collections=[col])
