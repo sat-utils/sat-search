@@ -103,7 +103,7 @@ class Search(object):
                 pass
         return Items(items, collections=[col])
 
-    def items(self, limit=1000):
+    def items(self, limit=10000):
         """ Return all of the Items and Collections for this search """
         _limit = 500
         if 'ids' in self.kwargs:
@@ -114,6 +114,8 @@ class Search(object):
 
         items = []
         found = self.found()
+        if found > limit:
+            logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
         maxitems = min(found, limit)
         kwargs = {
             'page': 1,
