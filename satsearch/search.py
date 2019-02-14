@@ -105,7 +105,7 @@ class Search(object):
 
     def items(self, limit=1000):
         """ Return all of the Items and Collections for this search """
-        _limit = 1000
+        _limit = 500
         if 'ids' in self.kwargs:
             col = self.kwargs.get('query', {}).get('collection', {}).get('eq', None)
             if col is None:
