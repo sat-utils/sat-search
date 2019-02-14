@@ -44,7 +44,6 @@ jobs:
             pwd
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
-            export SATUTILS_API_URL=https://n34f767n91.execute-api.us-east-1.amazonaws.com/prod
             pytest --cov satsearch test/
       - save_cache:
           key: v1-dependencies-{{ checksum "requirements.txt"}}
