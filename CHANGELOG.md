@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- Parser module now handles reading JSON from file
+
 
 ## [v0.2.1] - 2019-02-14
 
