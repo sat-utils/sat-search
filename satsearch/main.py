@@ -54,12 +54,6 @@ def cli():
     parser = SatUtilsParser.newbie(description='sat-search (v%s)' % __version__)
     kwargs = parser.parse_args(sys.argv[1:])
 
-    # if a filename, read the GeoJSON file
-    if 'intersects' in kwargs:
-        if os.path.exists(kwargs['intersects']):
-            with open(kwargs['intersects']) as f:
-                kwargs['intersects'] = json.loads(f.read())
-
     cmd = kwargs.pop('command', None)
     if cmd is not None:
         main(**kwargs)

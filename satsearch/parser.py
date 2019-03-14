@@ -1,4 +1,4 @@
-from copy import deepcopy
+import json
 import os
 import sys
 import logging
@@ -60,6 +60,12 @@ class SatUtilsParser(argparse.ArgumentParser):
             config.DATADIR = args.pop('datadir')
         if 'filename' in args:
             config.FILENAME = args.pop('filename')
+
+        # if a filename, read the GeoJSON file
+        if 'intersects' in args:
+            if os.path.exists(args['intersects']):
+                with open(args['intersects']) as f:
+                    args['intersects'] = json.loads(f.read())
 
         return args
 
