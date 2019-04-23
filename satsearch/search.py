@@ -36,7 +36,7 @@ class Search(object):
                 kwargs['property'] = []
             kwargs['property'].append(q)
             del kwargs['collection']
-        symbols = {'=': 'eq', '>': 'gt', '<': 'lt', '>=': 'gte', '<=': 'lte'}
+        symbols = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
         if 'property' in kwargs and isinstance(kwargs['property'], list):
             queries = {}
             for prop in kwargs['property']:
