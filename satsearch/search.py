@@ -19,6 +19,8 @@ class SatSearchError(Exception):
 
 class Search(object):
     """ One search query (possibly multiple pages) """
+    search_op_list = ['>=', '<=', '=', '>', '<']
+    search_op_to_stac_op = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
 
     def __init__(self, **kwargs):
         """ Initialize a Search object with parameters """
@@ -36,14 +38,13 @@ class Search(object):
                 kwargs['property'] = []
             kwargs['property'].append(q)
             del kwargs['collection']
-        symbols = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
         if 'property' in kwargs and isinstance(kwargs['property'], list):
             queries = {}
             for prop in kwargs['property']:
-                for s in symbols:
+                for s in Search.search_op_list:
                     parts = prop.split(s)
                     if len(parts) == 2:
-                        queries = dict_merge(queries, {parts[0]: {symbols[s]: parts[1]}})
+                        queries = dict_merge(queries, {parts[0]: {Search.search_op_to_stac_op[s]: parts[1]}})
                         break
             del kwargs['property']
             kwargs['query'] = queries
