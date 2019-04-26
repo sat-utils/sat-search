@@ -91,8 +91,8 @@ class Test(unittest.TestCase):
             Search.query(url=os.path.join(config.API_URL, 'collections/nosuchcollection'))
 
     def test_search_property_operator(self):
-        expected = {'query': {'eo:cloud_cover': {'lte': '10'}, 'collection': {'eq': 'Sentinel-2A'}}}
-        instance = Search.search(collection='Sentinel-2A',
+        expected = {'query': {'eo:cloud_cover': {'lte': '10'}, 'collection': {'eq': 'sentinel-2-l1c'}}}
+        instance = Search.search(collection='sentinel-2-l1c',
                                  property=['eo:cloud_cover<=10'])
         actual = instance.kwargs
         assert actual == expected
