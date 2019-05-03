@@ -95,7 +95,7 @@ class Search(object):
         """ Return Items from collection with matching ids """
         col = cls.collection(collection)
         items = []
-        base_url = urljoin(config.API_URL, 'collections/%s/items' % collection)
+        base_url = urljoin(config.API_URL, 'collections/%s/items/' % collection)
         for id in ids:
             try:
                 items.append(Item(cls.query(urljoin(base_url, id))))
