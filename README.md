@@ -42,7 +42,7 @@ With sat-search you can search a STAC compliant API with full querying support (
 
 Sat-search is a Python 3 library that can incorporated into other applications. A [Jupyter notebook tutorial](tutorial-1.ipynb) is included that covers all the main features of the library.
 
-Sat-search also comes with a Command Line Interface (CLI), which is exaplained more below.
+Sat-search also comes with a Command Line Interface (CLI), which is explained more below.
 
 #### The CLI
 The sat-search CLI has an extensive online help that can be printed with the `-h` switch.
