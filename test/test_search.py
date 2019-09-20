@@ -69,13 +69,13 @@ class Test(unittest.TestCase):
 
     def test_get_items_by_id(self):
         """ Get Items by ID """
-        ids = ['LC80340332018034LGN00', 'LC80340322018034LGN00']
+        ids = ['LC81692212019263', 'LC81691102019263']
         items = Search.items_by_id(ids, collection='landsat-8-l1')
         assert(len(items) == 2)
 
     def test_get_ids_search(self):
         """ Get Items by ID through normal search """
-        ids = ['LC80340332018034LGN00', 'LC80340322018034LGN00']
+        ids = ['LC81692212019263', 'LC81691102019263']
         search = Search.search(ids=ids, collection='landsat-8-l1')
         items = search.items()
         assert(search.found() == 2)
