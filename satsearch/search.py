@@ -5,7 +5,7 @@ import requests
 
 import satsearch.config as config
 
-from satstac import Collection, Item, Items
+from satstac import Collection, Item, ItemCollection
 from satstac.utils import dict_merge
 from urllib.parse import urljoin
 
@@ -101,7 +101,7 @@ class Search(object):
                 items.append(Item(cls.query(urljoin(base_url, id))))
             except SatSearchError as err:
                 pass
-        return Items(items, collections=[col])
+        return ItemCollection(items, collections=[col])
 
     def items(self, limit=10000):
         """ Return all of the Items and Collections for this search """
@@ -140,4 +140,4 @@ class Search(object):
         #        item = dict_merge(item, collections[item['properties']['collection']])
         #    _items.append(Item(item))
 
-        return Items(items, collections=collections, search=self.kwargs)
+        return ItemCollection(items, collections=collections, search=self.kwargs)

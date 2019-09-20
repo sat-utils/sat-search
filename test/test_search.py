@@ -53,19 +53,19 @@ class Test(unittest.TestCase):
         """ Perform simple query """
         with open(os.path.join(self.path, 'aoi1.geojson')) as f:
             aoi = json.dumps(json.load(f))
-        search = Search(datetime='2018-09-25', intersects=aoi)
-        assert(search.found() == 2)
+        search = Search(datetime='2019-07-01', intersects=aoi)
+        assert(search.found() == 13)
         items = search.items()
-        assert(len(items) == 2)
+        assert(len(items) == 13)
         assert(isinstance(items[0], Item))
 
     def test_search_sort(self):
         """ Perform search with sort """
         with open(os.path.join(self.path, 'aoi1.geojson')) as f:
             aoi = json.dumps(json.load(f))
-        search = Search.search(datetime='2018-01-01/2018-01-15', intersects=aoi, sort=['<datetime'])
+        search = Search.search(datetime='2019-07-01/2019-07-07', intersects=aoi, sort=['<datetime'])
         items = search.items()
-        assert(len(items) == 33)
+        assert(len(items) == 27)
 
     def test_get_items_by_id(self):
         """ Get Items by ID """

@@ -8,7 +8,7 @@ import satsearch.config as config
 
 from .version import __version__
 from satsearch import Search
-from satstac import Items
+from satstac import ItemCollection
 from satstac.utils import dict_merge
 
 
@@ -120,7 +120,7 @@ def main(items=None, printmd=None, printcal=False, found=False,
         items = search.items()
     else:
         # otherwise, load a search from a file
-        items = Items.load(items)
+        items = ItemCollection.load(items)
 
     print('%s items found' % len(items))
 
