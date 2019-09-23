@@ -37,7 +37,7 @@ setup(
     ],
     keywords='',
     entry_points={
-        'console_scripts': ['sat-search=satsearch.main:cli'],
+        'console_scripts': ['sat-search=satsearch.cli:cli'],
     },
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
