@@ -141,4 +141,8 @@ class Search(object):
         #        item = dict_merge(item, collections[item['properties']['collection']])
         #    _items.append(Item(item))
 
-        return ItemCollection(items, collections=collections, search=self.kwargs)
+        search = {
+            'endpoint': config.API_URL,
+            'parameters': self.kwargs
+        }
+        return ItemCollection(items, collections=collections, search=search)
