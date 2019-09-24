@@ -1,13 +1,15 @@
-from copy import deepcopy
+import argparse
+import json
+import logging
 import os
 import sys
-import logging
-import argparse
 
 import satsearch.config as config
 
-from satstac.utils import dict_merge
 from .version import __version__
+from satsearch import Search
+from satstac import ItemCollection
+from satstac.utils import dict_merge
 
 
 class SatUtilsParser(argparse.ArgumentParser):
@@ -61,6 +63,12 @@ class SatUtilsParser(argparse.ArgumentParser):
         if 'filename' in args:
             config.FILENAME = args.pop('filename')
 
+        # if a filename, read the GeoJSON file
+        if 'intersects' in args:
+            if os.path.exists(args['intersects']):
+                with open(args['intersects']) as f:
+                    args['intersects'] = json.loads(f.read())
+
         return args
 
     @classmethod
@@ -96,3 +104,57 @@ class SatUtilsParser(argparse.ArgumentParser):
             for val in values:
                 n, v = val.split('=')
                 setattr(namespace, n, {'eq': v})
+
+
+def main(items=None, printmd=None, printcal=False, found=False,
+         save=None, download=None, requestor_pays=False, **kwargs):
+    """ Main function for performing a search """
+    
+    if items is None:
+        ## if there are no items then perform a search
+        search = Search.search(**kwargs)
+        if found:
+            num = search.found()
+            print('%s items found' % num)
+            return num
+        items = search.items()
+    else:
+        # otherwise, load a search from a file
+        items = ItemCollection.load(items)
+
+    print('%s items found' % len(items))
+
+    # print metadata
+    if printmd is not None:
+        print(items.summary(printmd))
+
+    # print calendar
+    if printcal:
+        print(items.calendar())
+
+    # save all metadata in JSON file
+    if save is not None:
+        items.save(filename=save)
+
+    # download files given `download` keys
+    if download is not None:
+        if 'ALL' in download:
+            # get complete set of assets
+            download = set([k for i in items for k in i.assets])
+        for key in download:
+            items.download(key=key, path=config.DATADIR, filename=config.FILENAME, requestor_pays=requestor_pays)
+
+    return items
+
+
+def cli():
+    parser = SatUtilsParser.newbie(description='sat-search (v%s)' % __version__)
+    kwargs = parser.parse_args(sys.argv[1:])
+
+    cmd = kwargs.pop('command', None)
+    if cmd is not None:
+        main(**kwargs)
+
+
+if __name__ == "__main__":
+    cli()

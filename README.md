@@ -22,7 +22,7 @@ $ pip install .
 ```
 
 #### Versions
-The latest version of sat-search is 0.2.0, which uses the STAC spec v0.6.0. To install other versions of sat-search, specify the version in the call to pip. 
+The latest version of sat-search is 0.2.2, which uses [STAC v0.7.0](https://github.com/radiantearth/stac-spec/tree/v0.7.0). To install other versions of sat-search, specify the version in the call to pip. 
 
 ```bash
 pip install sat-search==0.2.0
@@ -32,8 +32,8 @@ The table below shows the corresponding versions between sat-search and STAC. Ad
 
 | sat-search | STAC  |
 | --------   | ----  |
-| 0.1.x      | 0.5.0 |
-| 0.2.x      | 0.6.0 |
+| 0.1.x      | 0.5.x - 0.6.x |
+| 0.2.x      | 0.5.x - 0.7.x |
 
 
 ## Using sat-search
@@ -42,7 +42,7 @@ With sat-search you can search a STAC compliant API with full querying support (
 
 Sat-search is a Python 3 library that can incorporated into other applications. A [Jupyter notebook tutorial](tutorial-1.ipynb) is included that covers all the main features of the library.
 
-Sat-search also comes with a Command Line Interface (CLI), which is exaplained more below.
+Sat-search also comes with a Command Line Interface (CLI), which is explained more below.
 
 #### The CLI
 The sat-search CLI has an extensive online help that can be printed with the `-h` switch.

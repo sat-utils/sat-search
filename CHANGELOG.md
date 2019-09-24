@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v0.2.2] - 2019-09-20
+
+### Changed
+- Parser module now handles reading JSON from file
+- sat-stac dependency bumped to 0.3.0 - tests updated
+
+### Fixed
+- Fixed issue with some comparison ops not being evaluated
 
 ## [v0.2.1] - 2019-02-14
 
@@ -36,6 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 Initial Release
 
 [Unreleased]: https://github.com/sat-utils/sat-search/compare/master...develop
+[v0.2.2]: https://github.com/sat-utils/sat-search/compare/0.2.1...v0.2.2
 [v0.2.1]: https://github.com/sat-utils/sat-search/compare/0.2.0...v0.2.1
 [v0.2.0]: https://github.com/sat-utils/sat-search/compare/0.1.0...v0.2.0
 [v0.1.0]: https://github.com/sat-utils/sat-search/tree/0.1.0
