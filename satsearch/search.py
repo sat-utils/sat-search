@@ -73,7 +73,7 @@ class Search(object):
         }
         kwargs.update(self.kwargs)
         results = self.query(**kwargs)
-        return results['meta']['found']
+        return results['search:metadata']['matched']
 
     @classmethod
     def query(cls, url=urljoin(config.API_URL, 'stac/search'), **kwargs):
