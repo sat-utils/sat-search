@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Parser module now handles reading JSON from file
 - sat-stac dependency bumped to 0.3.0 - tests updated
+- requestor-pays CLI switch, and requestor_pays keyword arg now properly spelled as requester-pays and requester_pays
 
 ### Fixed
 - Fixed issue with some comparison ops not being evaluated

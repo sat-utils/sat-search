@@ -31,7 +31,7 @@ class SatUtilsParser(argparse.ArgumentParser):
                            help='Save assets with this filename pattern based on metadata keys')
         self.download_group.add_argument('--download', help='Download assets', default=None, nargs='*')
         h = 'Acknowledge paying egress costs for downloads (if in request pays bucket)'
-        self.download_group.add_argument('--requestor-pays', help=h, default=False, action='store_true', dest='requestor_pays')
+        self.download_group.add_argument('--requester-pays', help=h, default=False, action='store_true', dest='requester_pays')
 
         self.output_parser = argparse.ArgumentParser(add_help=False)
         self.output_group = self.output_parser.add_argument_group('output options')
@@ -107,7 +107,7 @@ class SatUtilsParser(argparse.ArgumentParser):
 
 
 def main(items=None, printmd=None, printcal=False, found=False,
-         save=None, download=None, requestor_pays=False, **kwargs):
+         save=None, download=None, requester_pays=False, **kwargs):
     """ Main function for performing a search """
     
     if items is None:
@@ -142,7 +142,7 @@ def main(items=None, printmd=None, printcal=False, found=False,
             # get complete set of assets
             download = set([k for i in items for k in i.assets])
         for key in download:
-            items.download(key=key, path=config.DATADIR, filename=config.FILENAME, requestor_pays=requestor_pays)
+            items.download(key=key, path=config.DATADIR, filename=config.FILENAME, requester_pays=requester_pays)
 
     return items
 
