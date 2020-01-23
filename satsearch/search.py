@@ -126,7 +126,7 @@ class Search(object):
 
         # retrieve collections
         collections = []
-        for c in set([item.properties['collection'] for item in items if 'collection' in item.properties]):
+        for c in set([item._data['collection'] for item in items if 'collection' in item._data]):
             collections.append(self.collection(c))
             #del collections[c]['links']
 
