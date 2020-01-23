@@ -25,10 +25,6 @@ class Search(object):
     def __init__(self, **kwargs):
         """ Initialize a Search object with parameters """
         self.kwargs = kwargs
-        for k in self.kwargs:
-            if k == 'datetime':
-                self.kwargs['time'] = self.kwargs['datetime']
-                del self.kwargs['datetime']
 
     @classmethod
     def search(cls, **kwargs):
