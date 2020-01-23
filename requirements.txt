@@ -1,1 +1,1 @@
-sat-stac~=0.3.2
+sat-stac~=0.3.3
