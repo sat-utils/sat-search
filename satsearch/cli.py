@@ -57,7 +57,7 @@ class SatUtilsParser(argparse.ArgumentParser):
 
         # set global configuration options
         if 'url' in args:
-            config.API_URL = args.pop('url')
+            config.API_URL = args.pop('url').rstrip('/') + '/'
         if 'datadir' in args:
             config.DATADIR = args.pop('datadir')
         if 'filename' in args:
