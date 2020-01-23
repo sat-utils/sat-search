@@ -67,7 +67,13 @@ class SatUtilsParser(argparse.ArgumentParser):
         if 'intersects' in args:
             if os.path.exists(args['intersects']):
                 with open(args['intersects']) as f:
-                    args['intersects'] = json.loads(f.read())
+                    data = json.loads(f.read())
+                    if data['type'] == 'Feature':
+                        args['intersects'] = data['geometry']
+                    elif data['type'] == 'FeatureCollection':
+                        args['intersects'] = data['features'][0]['geometry']
+                    else:
+                        args['intersects'] = data
 
         return args
 
