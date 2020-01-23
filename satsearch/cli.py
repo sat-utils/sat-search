@@ -126,7 +126,7 @@ def main(items=None, printmd=None, printcal=False, found=False,
         items = search.items()
     else:
         # otherwise, load a search from a file
-        items = ItemCollection.load(items)
+        items = ItemCollection.open(items)
 
     print('%s items found' % len(items))
 
