@@ -73,10 +73,11 @@ class Search(object):
         }
         kwargs.update(self.kwargs)
         results = self.query(**kwargs)
-        return results['search:metadata']['matched']
+        logger.debug(f"Found results: {json.dumps(results)}")
+        return results['context']['matched']
 
     @classmethod
-    def query(cls, url=urljoin(config.API_URL, 'stac/search'), **kwargs):
+    def query(cls, url=urljoin(config.API_URL, 'search'), **kwargs):
         """ Get request """
         logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
         response = requests.post(url, data=json.dumps(kwargs))
