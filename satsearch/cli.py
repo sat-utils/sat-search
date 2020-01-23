@@ -38,7 +38,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         h = 'Print specified metadata for matched scenes'
         self.output_group.add_argument('--print-md', help=h, default=None, nargs='*', dest='printmd')
         h = 'Print calendar showing dates'
-        self.output_group.add_argument('--print-cal', help=h, default=False, action='store_true', dest='printcal')
+        self.output_group.add_argument('--print-cal', help=h, dest='printcal')
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
 
     def parse_args(self, *args, **kwargs):
@@ -112,7 +112,7 @@ class SatUtilsParser(argparse.ArgumentParser):
                 setattr(namespace, n, {'eq': v})
 
 
-def main(items=None, printmd=None, printcal=False, found=False,
+def main(items=None, printmd=None, printcal=None, found=False,
          save=None, download=None, requester_pays=False, **kwargs):
     """ Main function for performing a search """
     
@@ -136,7 +136,7 @@ def main(items=None, printmd=None, printcal=False, found=False,
 
     # print calendar
     if printcal:
-        print(items.calendar())
+        print(items.calendar(printcal))
 
     # save all metadata in JSON file
     if save is not None:
