@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Changed
 - Updated to work with [STAC API v0.9.0-rc1](https://github.com/radiantearth/stac-spec/blob/master/CHANGELOG.md#v090-rc1---2020-01-06)
+- `SATUTILS_API_URL` envvar changed to `STAC_API_URL`
 
 ## [v0.2.2] - 2019-09-20
 
