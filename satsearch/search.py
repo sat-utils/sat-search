@@ -28,12 +28,6 @@ class Search(object):
 
     @classmethod
     def search(cls, **kwargs):
-        if 'collection' in kwargs:
-            q = 'collection=%s' % kwargs['collection']
-            if 'property' not in kwargs:
-                kwargs['property'] = []
-            kwargs['property'].append(q)
-            del kwargs['collection']
         if 'property' in kwargs and isinstance(kwargs['property'], list):
             queries = {}
             for prop in kwargs['property']:

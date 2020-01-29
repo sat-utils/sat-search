@@ -87,7 +87,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         sparser = subparser.add_parser('search', help='Perform new search of items', parents=parents)
         """ Adds search arguments to a parser """
         parser.search_group = sparser.add_argument_group('search options')
-        parser.search_group.add_argument('-c', '--collection', help='Name of collection', default=None)
+        parser.search_group.add_argument('-c', '--collections', help='Name of collection', nargs='*')
         h = 'One or more scene IDs from provided collection (ignores other parameters)'
         parser.search_group.add_argument('--ids', help=h, nargs='*', default=None)
         parser.search_group.add_argument('--bbox', help='Bounding box (min lon, min lat, max lon, max lat)', nargs=4)
