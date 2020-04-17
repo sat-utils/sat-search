@@ -22,10 +22,9 @@ class Search(object):
     search_op_list = ['>=', '<=', '=', '>', '<']
     search_op_to_stac_op = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
 
-    def __init__(self, headers=None, **kwargs):
+    def __init__(self, **kwargs):
         """ Initialize a Search object with parameters """
         self.kwargs = kwargs
-        self.headers = headers
 
     @classmethod
     def search(cls, headers=None, **kwargs):
@@ -53,7 +52,7 @@ class Search(object):
             kwargs['sort'] = sorts
         return Search(headers=headers, **kwargs)
 
-    def found(self):
+    def found(self, headers=None):
         """ Small query to determine total number of hits """
         if 'ids' in self.kwargs:
             cid = self.kwargs['query']['collection']['eq']
@@ -63,7 +62,7 @@ class Search(object):
             'limit': 0
         }
         kwargs.update(self.kwargs)
-        results = self.query(headers=self.headers, **kwargs)
+        results = self.query(headers=headers, **kwargs)
         logger.debug(f"Found results: {json.dumps(results)}")
         return results['context']['matched']
 
@@ -86,27 +85,27 @@ class Search(object):
     @classmethod
     def items_by_id(cls, ids, collection, headers=None):
         """ Return Items from collection with matching ids """
-        col = cls.collection(collection)
+        col = cls.collection(collection, headers=headers)
         items = []
         base_url = urljoin(config.API_URL, 'collections/%s/items/' % collection)
         for id in ids:
             try:
-                items.append(Item(cls.query(urljoin(base_url, id, headers=headers))))
+                items.append(Item(cls.query(urljoin(base_url, id), headers=headers)))
             except SatSearchError as err:
                 pass
         return ItemCollection(items, collections=[col])
 
-    def items(self, limit=10000):
+    def items(self, limit=10000, headers=None):
         """ Return all of the Items and Collections for this search """
         _limit = 500
         if 'ids' in self.kwargs:
             col = self.kwargs.get('query', {}).get('collection', {}).get('eq', None)
             if col is None:
                 raise SatSearchError('Collection required when searching by id')
-            return self.items_by_id(self.kwargs['ids'], col, headers=self.headers)
+            return self.items_by_id(self.kwargs['ids'], col, headers=headers)
 
         items = []
-        found = self.found()
+        found = self.found(headers=headers)
         if found > limit:
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
         maxitems = min(found, limit)
@@ -116,14 +115,17 @@ class Search(object):
         }
         kwargs.update(self.kwargs)
         while len(items) < maxitems:
-            items += [Item(i) for i in self.query(**kwargs, headers=self.headers)['features']]
+            items += [Item(i) for i in self.query(**kwargs, headers=headers)['features']]
             kwargs['page'] += 1
 
         # retrieve collections
         collections = []
-        for c in set([item._data['collection'] for item in items if 'collection' in item._data]):
-            collections.append(self.collection(c))
-            #del collections[c]['links']
+        try:
+            for c in set([item._data['collection'] for item in items if 'collection' in item._data]):
+                collections.append(self.collection(c, headers=headers))
+                #del collections[c]['links']
+        except:
+            pass
 
         # merge collections into items
         #_items = []
