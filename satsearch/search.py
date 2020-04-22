@@ -50,7 +50,7 @@ class Search(object):
                 })
             del kwargs['sort']
             kwargs['sort'] = sorts
-        return Search(headers=headers, **kwargs)
+        return Search(**kwargs)
 
     def found(self, headers=None):
         """ Small query to determine total number of hits """

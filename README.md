@@ -110,6 +110,8 @@ search options:
                         supported) (default: None)
   --url URL             URL of the API (default: https://n34f767n91.execute-
                         api.us-east-1.amazonaws.com/prod)
+  --headers HEADERS
+                        JSON Request Headers (file or string) (default: None)
 ```
 
 **Search options**
