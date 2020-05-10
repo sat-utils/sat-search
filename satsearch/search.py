@@ -22,8 +22,9 @@ class Search(object):
     search_op_list = ['>=', '<=', '=', '>', '<']
     search_op_to_stac_op = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
 
-    def __init__(self, **kwargs):
+    def __init__(self, api_url=config.API_URL, **kwargs):
         """ Initialize a Search object with parameters """
+        self.api_url = api_url
         self.kwargs = kwargs
 
     @classmethod
@@ -76,21 +77,19 @@ class Search(object):
             raise SatSearchError(response.text)
         return response.json()
 
-    @classmethod
-    def collection(cls, cid):
+    def collection(self, cid):
         """ Get a Collection record """
-        url = urljoin(config.API_URL, 'collections/%s' % cid)
-        return Collection(cls.query(url=url))
+        url = urljoin(self.api_url, 'collections/%s' % cid)
+        return Collection(self.query(url=url))
 
-    @classmethod
-    def items_by_id(cls, ids, collection):
+    def items_by_id(self, ids, collection):
         """ Return Items from collection with matching ids """
-        col = cls.collection(collection)
+        col = self.collection(collection)
         items = []
-        base_url = urljoin(config.API_URL, 'collections/%s/items/' % collection)
+        base_url = urljoin(self.api_url, 'collections/%s/items/' % collection)
         for id in ids:
             try:
-                items.append(Item(cls.query(urljoin(base_url, id))))
+                items.append(Item(self.query(url=urljoin(base_url, id))))
             except SatSearchError as err:
                 pass
         return ItemCollection(items, collections=[col])
@@ -124,16 +123,4 @@ class Search(object):
             collections.append(self.collection(c))
             #del collections[c]['links']
 
-        # merge collections into items
-        #_items = []
-        #for item in items:
-        #    import pdb; pdb.set_trace()
-        #    if 'collection' in item['properties']:
-        #        item = dict_merge(item, collections[item['properties']['collection']])
-        #    _items.append(Item(item))
-
-        search = {
-            'endpoint': config.API_URL,
-            'parameters': self.kwargs
-        }
-        return ItemCollection(items, collections=collections, search=search)
+        return ItemCollection(items, collections=collections)
