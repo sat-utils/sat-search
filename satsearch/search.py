@@ -63,7 +63,8 @@ class Search(object):
             'limit': 0
         }
         kwargs.update(self.kwargs)
-        results = self.query(**kwargs)
+        url = urljoin(self.api_url, 'search')
+        results = self.query(url=url, **kwargs)
         logger.debug(f"Found results: {json.dumps(results)}")
         return results['context']['matched']
 
@@ -113,8 +114,9 @@ class Search(object):
             'limit': min(_limit, maxitems)
         }
         kwargs.update(self.kwargs)
+        url = urljoin(self.api_url, 'search')
         while len(items) < maxitems:
-            items += [Item(i) for i in self.query(**kwargs)['features']]
+            items += [Item(i) for i in self.query(url=url, **kwargs)['features']]
             kwargs['page'] += 1
 
         # retrieve collections
