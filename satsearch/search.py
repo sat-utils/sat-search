@@ -24,7 +24,7 @@ class Search(object):
 
     def __init__(self, api_url=config.API_URL, **kwargs):
         """ Initialize a Search object with parameters """
-        self.api_url = api_url
+        self.api_url = api_url.rstrip("/") + "/"
         self.kwargs = kwargs
 
     @classmethod
