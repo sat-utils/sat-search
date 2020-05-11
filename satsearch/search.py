@@ -28,7 +28,7 @@ class Search(object):
         self.kwargs = kwargs
 
     @classmethod
-    def search(cls, **kwargs):
+    def search(cls, headers=None, **kwargs):
         if 'property' in kwargs and isinstance(kwargs['property'], list):
             queries = {}
             for prop in kwargs['property']:
@@ -53,7 +53,7 @@ class Search(object):
             kwargs['sort'] = sorts
         return Search(**kwargs)
 
-    def found(self):
+    def found(self, headers=None):
         """ Small query to determine total number of hits """
         if 'ids' in self.kwargs:
             cid = self.kwargs['query']['collection']['eq']
@@ -64,48 +64,48 @@ class Search(object):
         }
         kwargs.update(self.kwargs)
         url = urljoin(self.api_url, 'search')
-        results = self.query(url=url, **kwargs)
+        results = self.query(url=url, headers=headers, **kwargs)
         logger.debug(f"Found results: {json.dumps(results)}")
         return results['context']['matched']
 
     @classmethod
-    def query(cls, url=urljoin(config.API_URL, 'search'), **kwargs):
+    def query(cls, url=urljoin(config.API_URL, 'search'), headers=None, **kwargs):
         """ Get request """
         logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
-        response = requests.post(url, data=json.dumps(kwargs))
+        response = requests.post(url, data=json.dumps(kwargs), headers=headers)
         # API error
         if response.status_code != 200:
             raise SatSearchError(response.text)
         return response.json()
 
-    def collection(self, cid):
+    def collection(self, cid, headers=None):
         """ Get a Collection record """
         url = urljoin(self.api_url, 'collections/%s' % cid)
-        return Collection(self.query(url=url))
+        return Collection(self.query(url=url, headers=headers))
 
-    def items_by_id(self, ids, collection):
+    def items_by_id(self, ids, collection, headers=None):
         """ Return Items from collection with matching ids """
-        col = self.collection(collection)
+        col = self.collection(collection, headers=headers)
         items = []
         base_url = urljoin(self.api_url, 'collections/%s/items/' % collection)
         for id in ids:
             try:
-                items.append(Item(self.query(url=urljoin(base_url, id))))
+                items.append(Item(self.query(url=urljoin(base_url, id), headers=headers)))
             except SatSearchError as err:
                 pass
         return ItemCollection(items, collections=[col])
 
-    def items(self, limit=10000):
+    def items(self, limit=10000, headers=None):
         """ Return all of the Items and Collections for this search """
         _limit = 500
         if 'ids' in self.kwargs:
             col = self.kwargs.get('query', {}).get('collection', {}).get('eq', None)
             if col is None:
                 raise SatSearchError('Collection required when searching by id')
-            return self.items_by_id(self.kwargs['ids'], col)
+            return self.items_by_id(self.kwargs['ids'], col, headers=headers)
 
         items = []
-        found = self.found()
+        found = self.found(headers=headers)
         if found > limit:
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
         maxitems = min(found, limit)
@@ -116,13 +116,16 @@ class Search(object):
         kwargs.update(self.kwargs)
         url = urljoin(self.api_url, 'search')
         while len(items) < maxitems:
-            items += [Item(i) for i in self.query(url=url, **kwargs)['features']]
+            items += [Item(i) for i in self.query(url=url, headers=headers, **kwargs)['features']]
             kwargs['page'] += 1
 
         # retrieve collections
         collections = []
-        for c in set([item._data['collection'] for item in items if 'collection' in item._data]):
-            collections.append(self.collection(c))
-            #del collections[c]['links']
+        try:
+            for c in set([item._data['collection'] for item in items if 'collection' in item._data]):
+                collections.append(self.collection(c, headers=headers))
+                #del collections[c]['links']
+        except:
+            pass
 
         return ItemCollection(items, collections=collections)
