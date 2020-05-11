@@ -22,8 +22,9 @@ class Search(object):
     search_op_list = ['>=', '<=', '=', '>', '<']
     search_op_to_stac_op = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
 
-    def __init__(self, **kwargs):
+    def __init__(self, api_url=config.API_URL, **kwargs):
         """ Initialize a Search object with parameters """
+        self.api_url = api_url.rstrip("/") + "/"
         self.kwargs = kwargs
 
     @classmethod
@@ -62,7 +63,8 @@ class Search(object):
             'limit': 0
         }
         kwargs.update(self.kwargs)
-        results = self.query(headers=headers, **kwargs)
+        url = urljoin(self.api_url, 'search')
+        results = self.query(url=url, headers=headers, **kwargs)
         logger.debug(f"Found results: {json.dumps(results)}")
         return results['context']['matched']
 
@@ -76,21 +78,19 @@ class Search(object):
             raise SatSearchError(response.text)
         return response.json()
 
-    @classmethod
-    def collection(cls, cid, headers=None):
+    def collection(self, cid, headers=None):
         """ Get a Collection record """
-        url = urljoin(config.API_URL, 'collections/%s' % cid)
-        return Collection(cls.query(url=url, headers=headers))
+        url = urljoin(self.api_url, 'collections/%s' % cid)
+        return Collection(self.query(url=url, headers=headers))
 
-    @classmethod
-    def items_by_id(cls, ids, collection, headers=None):
+    def items_by_id(self, ids, collection, headers=None):
         """ Return Items from collection with matching ids """
-        col = cls.collection(collection, headers=headers)
+        col = self.collection(collection, headers=headers)
         items = []
-        base_url = urljoin(config.API_URL, 'collections/%s/items/' % collection)
+        base_url = urljoin(self.api_url, 'collections/%s/items/' % collection)
         for id in ids:
             try:
-                items.append(Item(cls.query(urljoin(base_url, id), headers=headers)))
+                items.append(Item(self.query(url=urljoin(base_url, id), headers=headers)))
             except SatSearchError as err:
                 pass
         return ItemCollection(items, collections=[col])
@@ -114,8 +114,9 @@ class Search(object):
             'limit': min(_limit, maxitems)
         }
         kwargs.update(self.kwargs)
+        url = urljoin(self.api_url, 'search')
         while len(items) < maxitems:
-            items += [Item(i) for i in self.query(**kwargs, headers=headers)['features']]
+            items += [Item(i) for i in self.query(url=url, headers=headers, **kwargs)['features']]
             kwargs['page'] += 1
 
         # retrieve collections
@@ -127,16 +128,4 @@ class Search(object):
         except:
             pass
 
-        # merge collections into items
-        #_items = []
-        #for item in items:
-        #    import pdb; pdb.set_trace()
-        #    if 'collection' in item['properties']:
-        #        item = dict_merge(item, collections[item['properties']['collection']])
-        #    _items.append(Item(item))
-
-        search = {
-            'endpoint': config.API_URL,
-            'parameters': self.kwargs
-        }
-        return ItemCollection(items, collections=collections, search=search)
+        return ItemCollection(items, collections=collections)
