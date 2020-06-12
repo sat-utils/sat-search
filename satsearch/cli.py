@@ -65,6 +65,15 @@ class SatUtilsParser(argparse.ArgumentParser):
                     else:
                         args['intersects'] = data
 
+        # If a filename, read the JSON file
+        if 'headers' in args:
+            if os.path.exists(args['headers']):
+                with open(args['headers']) as f:
+                    headers = json.loads(f.read())
+            else:
+                headers = json.loads(args['headers'])
+            args['headers'] = {k: str(v) for k,v in headers.items()}
+
         return args
 
     @classmethod
@@ -88,6 +97,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         h = 'Only output how many Items found'
         parser.search_group.add_argument('--found', help=h, action='store_true', default=False)
         parser.search_group.add_argument('--url', help='URL of the API', default=API_URL)
+        parser.search_group.add_argument('--headers', help='Additional request headers (JSON file or string)', default=None)
 
         parents.append(parser.download_parser)
         lparser = subparser.add_parser('load', help='Load items from previous search', parents=parents)
@@ -104,17 +114,17 @@ class SatUtilsParser(argparse.ArgumentParser):
 
 def main(items=None, printmd=None, printcal=None, printassets=None,
          found=False, filename_template='${collection}/${date}/${id}',
-         save=None, download=None, requester_pays=False, **kwargs):
+         save=None, download=None, requester_pays=False, headers=None, **kwargs):
     """ Main function for performing a search """
     
     if items is None:
         ## if there are no items then perform a search
-        search = Search.search(**kwargs)
+        search = Search.search(headers=headers, **kwargs)
         if found:
-            num = search.found()
+            num = search.found(headers=headers)
             print('%s items found' % num)
             return num
-        items = search.items()
+        items = search.items(headers=headers)
     else:
         # otherwise, load a search from a file
         items = ItemCollection.open(items)
