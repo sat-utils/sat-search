@@ -4,10 +4,8 @@ import logging
 import os
 import sys
 
-import satsearch.config as config
-
 from .version import __version__
-from satsearch import Search
+from satsearch import Search, API_URL
 from satstac import ItemCollection
 from satstac.utils import dict_merge
 
@@ -26,8 +24,7 @@ class SatUtilsParser(argparse.ArgumentParser):
 
         self.download_parser = argparse.ArgumentParser(add_help=False)
         self.download_group = self.download_parser.add_argument_group('download options')
-        self.download_group.add_argument('--datadir', help='Directory pattern to save assets', default=config.DATADIR)
-        self.download_group.add_argument('--filename', default=config.FILENAME,
+        self.download_group.add_argument('--filename_template', default='${collection}/${date}/${id}',
                            help='Save assets with this filename pattern based on metadata keys')
         self.download_group.add_argument('--download', help='Download assets', default=None, nargs='*')
         h = 'Acknowledge paying egress costs for downloads (if in request pays bucket)'
@@ -39,6 +36,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.output_group.add_argument('--print-md', help=h, default=None, nargs='*', dest='printmd')
         h = 'Print calendar showing dates'
         self.output_group.add_argument('--print-cal', help=h, dest='printcal')
+        self.output_group.add_argument('--print-assets', help=h, dest='printassets', default=False, action='store_true')
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
 
     def parse_args(self, *args, **kwargs):
@@ -54,14 +52,6 @@ class SatUtilsParser(argparse.ArgumentParser):
         # set logging level
         if 'verbosity' in args:
             logging.basicConfig(stream=sys.stdout, level=(50-args.pop('verbosity') * 10))
-
-        # set global configuration options
-        if 'url' in args:
-            config.API_URL = args.pop('url').rstrip('/') + '/'
-        if 'datadir' in args:
-            config.DATADIR = args.pop('datadir')
-        if 'filename' in args:
-            config.FILENAME = args.pop('filename')
 
         # if a filename, read the GeoJSON file
         if 'intersects' in args:
@@ -97,7 +87,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         parser.search_group.add_argument('--sort', help='Sort by fields', nargs='*')
         h = 'Only output how many Items found'
         parser.search_group.add_argument('--found', help=h, action='store_true', default=False)
-        parser.search_group.add_argument('--url', help='URL of the API', default=config.API_URL)
+        parser.search_group.add_argument('--url', help='URL of the API', default=API_URL)
 
         parents.append(parser.download_parser)
         lparser = subparser.add_parser('load', help='Load items from previous search', parents=parents)
@@ -112,7 +102,8 @@ class SatUtilsParser(argparse.ArgumentParser):
                 setattr(namespace, n, {'eq': v})
 
 
-def main(items=None, printmd=None, printcal=None, found=False,
+def main(items=None, printmd=None, printcal=None, printassets=None,
+         found=False, filename_template='${collection}/${date}/${id}',
          save=None, download=None, requester_pays=False, **kwargs):
     """ Main function for performing a search """
     
@@ -138,6 +129,9 @@ def main(items=None, printmd=None, printcal=None, found=False,
     if printcal:
         print(items.calendar(printcal))
 
+    if printassets:
+        print(items.assets_definition())
+
     # save all metadata in JSON file
     if save is not None:
         items.save(filename=save)
@@ -148,7 +142,7 @@ def main(items=None, printmd=None, printcal=None, found=False,
             # get complete set of assets
             download = set([k for i in items for k in i.assets])
         for key in download:
-            items.download(key=key, path=config.DATADIR, filename=config.FILENAME, requester_pays=requester_pays)
+            items.download(key=key, filename_template=filename_template, requester_pays=requester_pays)
 
     return items
 

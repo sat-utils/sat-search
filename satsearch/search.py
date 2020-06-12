@@ -3,14 +3,14 @@ import os
 import logging
 import requests
 
-import satsearch.config as config
-
 from satstac import Collection, Item, ItemCollection
 from satstac.utils import dict_merge
 from urllib.parse import urljoin
 
 
 logger = logging.getLogger(__name__)
+
+API_URL = os.getenv('STAC_API_URL', 'https://1tqdbvsut9.execute-api.us-west-2.amazonaws.com/v0').rstrip('/') + '/'
 
 
 class SatSearchError(Exception):
@@ -22,9 +22,9 @@ class Search(object):
     search_op_list = ['>=', '<=', '=', '>', '<']
     search_op_to_stac_op = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
 
-    def __init__(self, api_url=config.API_URL, **kwargs):
+    def __init__(self, url=API_URL, **kwargs):
         """ Initialize a Search object with parameters """
-        self.api_url = api_url.rstrip("/") + "/"
+        self.url = url.rstrip("/") + "/"
         self.kwargs = kwargs
 
     @classmethod
@@ -63,13 +63,13 @@ class Search(object):
             'limit': 0
         }
         kwargs.update(self.kwargs)
-        url = urljoin(self.api_url, 'search')
+        url = urljoin(self.url, 'search')
         results = self.query(url=url, **kwargs)
         logger.debug(f"Found results: {json.dumps(results)}")
         return results['context']['matched']
 
     @classmethod
-    def query(cls, url=urljoin(config.API_URL, 'search'), **kwargs):
+    def query(cls, url=urljoin(API_URL, 'search'), **kwargs):
         """ Get request """
         logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
         response = requests.post(url, data=json.dumps(kwargs))
@@ -80,14 +80,14 @@ class Search(object):
 
     def collection(self, cid):
         """ Get a Collection record """
-        url = urljoin(self.api_url, 'collections/%s' % cid)
+        url = urljoin(self.url, 'collections/%s' % cid)
         return Collection(self.query(url=url))
 
     def items_by_id(self, ids, collection):
         """ Return Items from collection with matching ids """
         col = self.collection(collection)
         items = []
-        base_url = urljoin(self.api_url, 'collections/%s/items/' % collection)
+        base_url = urljoin(self.url, 'collections/%s/items/' % collection)
         for id in ids:
             try:
                 items.append(Item(self.query(url=urljoin(base_url, id))))
@@ -114,7 +114,7 @@ class Search(object):
             'limit': min(_limit, maxitems)
         }
         kwargs.update(self.kwargs)
-        url = urljoin(self.api_url, 'search')
+        url = urljoin(self.url, 'search')
         while len(items) < maxitems:
             items += [Item(i) for i in self.query(url=url, **kwargs)['features']]
             kwargs['page'] += 1
