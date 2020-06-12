@@ -1,1 +1,2 @@
-sat-stac~=0.4.0-rc1
+#sat-stac~=0.4.0-rc2
+sat-stac
