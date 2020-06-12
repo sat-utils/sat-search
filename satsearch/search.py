@@ -29,35 +29,30 @@ class Search(object):
 
     @classmethod
     def search(cls, headers=None, **kwargs):
-        if 'property' in kwargs and isinstance(kwargs['property'], list):
+        if 'query' in kwargs and isinstance(kwargs['query'], list):
             queries = {}
-            for prop in kwargs['property']:
+            for q in kwargs['query']:
                 for s in Search.search_op_list:
-                    parts = prop.split(s)
+                    parts = q.split(s)
                     if len(parts) == 2:
                         queries = dict_merge(queries, {parts[0]: {Search.search_op_to_stac_op[s]: parts[1]}})
                         break
-            del kwargs['property']
             kwargs['query'] = queries
-        directions = {'>': 'desc', '<': 'asc'}
-        if 'sort' in kwargs and isinstance(kwargs['sort'], list):
+        directions = {'-': 'desc', '+': 'asc'}
+        if 'sortby' in kwargs and isinstance(kwargs['sortby'], list):
             sorts = []
-            for a in kwargs['sort']:
+            for a in kwargs['sortby']:
                 if a[0] not in directions:
-                    a = '>' + a
+                    a = '+' + a
                 sorts.append({
                     'field': a[1:],
                     'direction': directions[a[0]]
                 })
-            del kwargs['sort']
-            kwargs['sort'] = sorts
+            kwargs['sortby'] = sorts
         return Search(**kwargs)
 
     def found(self, headers=None):
         """ Small query to determine total number of hits """
-        if 'ids' in self.kwargs:
-            cid = self.kwargs['query']['collection']['eq']
-            return len(self.items_by_id(self.kwargs['ids'], cid))
         kwargs = {
             'page': 1,
             'limit': 0
@@ -65,8 +60,11 @@ class Search(object):
         kwargs.update(self.kwargs)
         url = urljoin(self.url, 'search')
         results = self.query(url=url, headers=headers, **kwargs)
+        # TODO - check for status_code
         logger.debug(f"Found results: {json.dumps(results)}")
-        return results['context']['matched']
+        if 'context' in results:
+            return results['context']['matched']
+        return 0
 
     @classmethod
     def query(cls, url=urljoin(API_URL, 'search'),  headers=None, **kwargs):
@@ -83,26 +81,9 @@ class Search(object):
         url = urljoin(self.url, 'collections/%s' % cid)
         return Collection(self.query(url=url, headers=headers))
 
-    def items_by_id(self, ids, collection, headers=None):
-        """ Return Items from collection with matching ids """
-        col = self.collection(collection, headers=headers)
-        items = []
-        base_url = urljoin(self.url, 'collections/%s/items/' % collection)
-        for id in ids:
-            try:
-                items.append(Item(self.query(url=urljoin(base_url, id), headers=headers)))
-            except SatSearchError as err:
-                pass
-        return ItemCollection(items, collections=[col])
-
     def items(self, limit=10000, headers=None):
         """ Return all of the Items and Collections for this search """
         _limit = 500
-        if 'ids' in self.kwargs:
-            col = self.kwargs.get('query', {}).get('collection', {}).get('eq', None)
-            if col is None:
-                raise SatSearchError('Collection required when searching by id')
-            return self.items_by_id(self.kwargs['ids'], col, headers=headers)
 
         items = []
         found = self.found(headers=headers)
