@@ -6,11 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## Changed
+- Updated to work with [STAC API v0.9.0-rc1](https://github.com/radiantearth/stac-spec/blob/master/CHANGELOG.md#v090-rc1---2020-01-06)
+- `SATUTILS_API_URL` envvar changed to `STAC_API_URL`
+
 ## [v0.2.2] - 2019-09-20
 
 ### Changed
 - Parser module now handles reading JSON from file
 - sat-stac dependency bumped to 0.3.0 - tests updated
+- requestor-pays CLI switch, and requestor_pays keyword arg now properly spelled as requester-pays and requester_pays
 
 ### Fixed
 - Fixed issue with some comparison ops not being evaluated

@@ -34,6 +34,7 @@ The table below shows the corresponding versions between sat-search and STAC. Ad
 | --------   | ----  |
 | 0.1.x      | 0.5.x - 0.6.x |
 | 0.2.x      | 0.5.x - 0.7.x |
+| 0.3.x      | 0.9.x |
 
 
 ## Using sat-search
@@ -109,6 +110,8 @@ search options:
                         supported) (default: None)
   --url URL             URL of the API (default: https://n34f767n91.execute-
                         api.us-east-1.amazonaws.com/prod)
+  --headers HEADERS
+                        JSON Request Headers (file or string) (default: None)
 ```
 
 **Search options**
