@@ -3,10 +3,8 @@ import glob
 import json
 import unittest
 
-import satsearch.config as config
-
 from satstac import Item
-from satsearch.search import SatSearchError, Search
+from satsearch.search import SatSearchError, Search, API_URL
 
 
 class Test(unittest.TestCase):
@@ -31,11 +29,11 @@ class Test(unittest.TestCase):
         dts = [r['properties']['datetime'] for r in self.results]
         
         assert(len(search.kwargs) == 1)
-        assert('time' in search.kwargs)
+        assert('datetime' in search.kwargs)
         for kw in search.kwargs:
             self.assertTrue(search.kwargs[kw] in dts)
 
-    def test_search_for_items_by_date(self):
+    def _test_search_for_items_by_date(self):
         """ Search for specific item """
         search = self.get_searches()[0]
         sids = [r['id'] for r in self.results]
@@ -52,47 +50,35 @@ class Test(unittest.TestCase):
     def test_geo_search(self):
         """ Perform simple query """
         with open(os.path.join(self.path, 'aoi1.geojson')) as f:
-            aoi = json.dumps(json.load(f))
-        search = Search(datetime='2019-07-01', intersects=aoi)
-        assert(search.found() == 13)
+            aoi = json.load(f)
+        search = Search(datetime='2020-06-07', intersects=aoi['geometry'])
+        assert(search.found() == 12)
         items = search.items()
-        assert(len(items) == 13)
+        assert(len(items) == 12)
         assert(isinstance(items[0], Item))
 
     def test_search_sort(self):
         """ Perform search with sort """
         with open(os.path.join(self.path, 'aoi1.geojson')) as f:
-            aoi = json.dumps(json.load(f))
-        search = Search.search(datetime='2019-07-01/2019-07-07', intersects=aoi, sort=['<datetime'])
+            aoi = json.load(f)
+        search = Search.search(datetime='2020-06-07', intersects=aoi['geometry'], sortby=['-properties.datetime'])
         items = search.items()
-        assert(len(items) == 27)
-
-    def test_get_items_by_id(self):
-        """ Get Items by ID """
-        ids = ['LC81692212019263', 'LC81691102019263']
-        items = Search.items_by_id(ids, collection='landsat-8-l1')
-        assert(len(items) == 2)
+        assert(len(items) == 12)
 
     def test_get_ids_search(self):
         """ Get Items by ID through normal search """
-        ids = ['LC81692212019263', 'LC81691102019263']
-        search = Search.search(ids=ids, collection='landsat-8-l1')
+        ids = ['S2A_28QBH_20200611_0_L2A', 'S2A_28QCH_20200611_0_L2A']
+        search = Search.search(ids=ids)
         items = search.items()
-        assert(search.found() == 2)
-        assert(len(items) == 2)
+        assert(search.found() == 4)
+        assert(len(items) == 4)
 
-    def test_get_ids_without_collection(self):
+    def _test_query_bad_url(self):
         with self.assertRaises(SatSearchError):
-            search = Search.search(ids=['LC80340332018034LGN00'])
-            items = search.items()
+            Search.query(url=os.path.join(API_URL, 'collections/nosuchcollection'))
 
-    def test_query_bad_url(self):
-        with self.assertRaises(SatSearchError):
-            Search.query(url=os.path.join(config.API_URL, 'collections/nosuchcollection'))
-
-    def test_search_property_operator(self):
-        expected = {'query': {'eo:cloud_cover': {'lte': '10'}, 'collection': {'eq': 'sentinel-2-l1c'}}}
-        instance = Search.search(collection='sentinel-2-l1c',
-                                 property=['eo:cloud_cover<=10'])
-        actual = instance.kwargs
-        assert actual == expected
+    def test_search_query_operator(self):
+        expected = {'collections': ['sentinel-s2-l1c'], 'query': {'eo:cloud_cover': {'lte': '10'}, 'data_coverage': {'gt': '80'}}}
+        instance = Search.search(collections=['sentinel-s2-l1c'],
+                                 query=['eo:cloud_cover<=10', 'data_coverage>80'])
+        assert instance.kwargs == expected
