@@ -1,7 +1,7 @@
 import os
 
 # API URL
-API_URL = os.getenv('SATUTILS_API_URL', 'https://earth-search.aws.element84.com')
+API_URL = os.getenv('SATUTILS_API_URL', 'https://earth-search-legacy.aws.element84.com')
 
 # data directory to store downloaded imagery
 DATADIR = os.getenv('SATUTILS_DATADIR', '${collection}/${date}')
