@@ -36,7 +36,8 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.output_group.add_argument('--print-md', help=h, default=None, nargs='*', dest='printmd')
         h = 'Print calendar showing dates'
         self.output_group.add_argument('--print-cal', help=h, dest='printcal')
-        self.output_group.add_argument('--print-assets', help=h, dest='printassets', default=False, action='store_true')
+        #h = 'Print Item Asset definition from Collections'
+        #self.output_group.add_argument('--print-assets', help=h, dest='printassets', default=False, action='store_true')
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
 
     def parse_args(self, *args, **kwargs):
@@ -112,7 +113,7 @@ class SatUtilsParser(argparse.ArgumentParser):
                 setattr(namespace, n, {'eq': v})
 
 
-def main(items=None, printmd=None, printcal=None, printassets=None,
+def main(items=None, printmd=None, printcal=None, #printassets=None,
          found=False, filename_template='${collection}/${date}/${id}',
          save=None, download=None, requester_pays=False, headers=None, **kwargs):
     """ Main function for performing a search """
@@ -139,8 +140,8 @@ def main(items=None, printmd=None, printcal=None, printassets=None,
     if printcal:
         print(items.calendar(printcal))
 
-    if printassets:
-        print(items.assets_definition())
+    #if printassets:
+    #    print(items.assets_definition())
 
     # save all metadata in JSON file
     if save is not None:
