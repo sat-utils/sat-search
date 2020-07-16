@@ -10,7 +10,7 @@ from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 
-API_URL = os.getenv('STAC_API_URL', 'https://1tqdbvsut9.execute-api.us-west-2.amazonaws.com/v0').rstrip('/') + '/'
+API_URL = os.getenv('STAC_API_URL', 'https://earth-search.aws.element84.com/v0').rstrip('/') + '/'
 
 
 class SatSearchError(Exception):
