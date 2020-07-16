@@ -30,7 +30,7 @@ class Test(unittest.TestCase):
         """ Parse empty arguments """
         parser = self.get_test_parser()
         args = parser.parse_args(['search'])
-        self.assertEqual(len(args), 4)
+        self.assertEqual(len(args), 3)
         self.assertFalse(args['found'])
 
     def test_parse_args(self):
@@ -39,7 +39,7 @@ class Test(unittest.TestCase):
         args = 'search --datetime 2017-01-01 -q eo:cloud_cover<10 platform=sentinel-2a'.split(' ')
         
         args = parser.parse_args(args)
-        self.assertEqual(len(args), 6)
+        self.assertEqual(len(args), 5)
         self.assertEqual(args['datetime'], '2017-01-01')
         #assert(args['eo:cloud_cover'] == '0/20')
         #self.assertEqual(args['cloud_from'], 0)
