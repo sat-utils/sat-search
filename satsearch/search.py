@@ -54,8 +54,8 @@ class Search(object):
     def found(self, headers=None):
         """ Small query to determine total number of hits """
         kwargs = {
-            'page': 1,
-            'limit': 0
+            'page_num': 1,
+            'page_size': 0
         }
         kwargs.update(self.kwargs)
         url = urljoin(self.url, 'search')
@@ -91,14 +91,14 @@ class Search(object):
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
         maxitems = min(found, limit)
         kwargs = {
-            'page': 1,
-            'limit': min(_limit, maxitems)
+            'page_num': 1,
+            'page_size': min(_limit, maxitems)
         }
         kwargs.update(self.kwargs)
         url = urljoin(self.url, 'search')
         while len(items) < maxitems:
             items += [Item(i) for i in self.query(url=url, headers=headers, **kwargs)['features']]
-            kwargs['page'] += 1
+            kwargs['page_num'] += 1
 
         # retrieve collections
         collections = []
