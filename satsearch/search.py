@@ -64,6 +64,8 @@ class Search(object):
         logger.debug(f"Found results: {json.dumps(results)}")
         if 'context' in results:
             return results['context']['matched']
+        elif 'features' in results:
+            return len(results['features'])
         return 0
 
     @classmethod
