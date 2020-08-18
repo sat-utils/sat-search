@@ -27,7 +27,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.download_group.add_argument('--filename_template', default='${collection}/${date}/${id}',
                            help='Save assets with this filename pattern based on metadata keys')
         self.download_group.add_argument('--download', help='Download assets', default=None, nargs='*')
-        h = 'Acknowledge paying egress costs for downloads (if in request pays bucket)'
+        h = 'Acknowledge paying egress costs for downloads (if in requester pays bucket on AWS)'
         self.download_group.add_argument('--requester-pays', help=h, default=False, action='store_true', dest='requester_pays')
 
         self.output_parser = argparse.ArgumentParser(add_help=False)
@@ -37,7 +37,6 @@ class SatUtilsParser(argparse.ArgumentParser):
         h = 'Print calendar showing dates'
         self.output_group.add_argument('--print-cal', help=h, dest='printcal')
         #h = 'Print Item Asset definition from Collections'
-        #self.output_group.add_argument('--print-assets', help=h, dest='printassets', default=False, action='store_true')
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
 
     def parse_args(self, *args, **kwargs):
@@ -113,7 +112,7 @@ class SatUtilsParser(argparse.ArgumentParser):
                 setattr(namespace, n, {'eq': v})
 
 
-def main(items=None, printmd=None, printcal=None, #printassets=None,
+def main(items=None, printmd=None, printcal=None,
          found=False, filename_template='${collection}/${date}/${id}',
          save=None, download=None, requester_pays=False, headers=None, **kwargs):
     """ Main function for performing a search """
@@ -139,9 +138,6 @@ def main(items=None, printmd=None, printcal=None, #printassets=None,
     # print calendar
     if printcal:
         print(items.calendar(printcal))
-
-    #if printassets:
-    #    print(items.assets_definition())
 
     # save all metadata in JSON file
     if save is not None:
