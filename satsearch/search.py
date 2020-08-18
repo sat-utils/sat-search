@@ -7,10 +7,7 @@ from satstac import Collection, Item, ItemCollection
 from satstac.utils import dict_merge
 from urllib.parse import urljoin
 
-
 logger = logging.getLogger(__name__)
-
-API_URL = os.getenv('STAC_API_URL', 'https://earth-search.aws.element84.com/v0').rstrip('/') + '/'
 
 
 class SatSearchError(Exception):
@@ -22,8 +19,10 @@ class Search(object):
     search_op_list = ['>=', '<=', '=', '>', '<']
     search_op_to_stac_op = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
 
-    def __init__(self, url=API_URL, **kwargs):
+    def __init__(self, url=os.getenv('STAC_API_URL', None), **kwargs):
         """ Initialize a Search object with parameters """
+        if url is None:
+            raise SatSearchError("URL not provided, pass into Search or define STAC_API_URL environment variable")
         self.url = url.rstrip("/") + "/"
         self.kwargs = kwargs
 
@@ -66,9 +65,9 @@ class Search(object):
             return results['context']['matched']
         return 0
 
-    @classmethod
-    def query(cls, url=urljoin(API_URL, 'search'),  headers=None, **kwargs):
+    def query(self, headers=None, **kwargs):
         """ Get request """
+        url = urljoin(self.url, 'search')
         logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
         response = requests.post(url, data=json.dumps(kwargs), headers=headers)
         # API error
