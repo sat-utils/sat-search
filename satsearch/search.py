@@ -53,7 +53,6 @@ class Search(object):
     def found(self, headers=None):
         """ Small query to determine total number of hits """
         kwargs = {
-            'page': 1,
             'limit': 0
         }
         kwargs.update(self.kwargs)
@@ -61,9 +60,12 @@ class Search(object):
         results = self.query(url=url, headers=headers, **kwargs)
         # TODO - check for status_code
         logger.debug(f"Found results: {json.dumps(results)}")
+        found = 0
         if 'context' in results:
-            return results['context']['matched']
-        return 0
+            found = results['context']['matched']
+        elif 'numberMatched' in results:
+            found = results['numberMatched']
+        return found
 
     def query(self, headers=None, **kwargs):
         """ Get request """
