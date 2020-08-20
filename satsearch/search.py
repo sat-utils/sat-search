@@ -82,24 +82,30 @@ class Search(object):
         url = urljoin(self.url, 'collections/%s' % cid)
         return Collection(self.query(url=url, headers=headers))
 
-    def items(self, limit=10000, headers=None):
+    def items(self, limit=10000, page_limit=500, headers=None):
         """ Return all of the Items and Collections for this search """
-        _limit = 500
-
-        items = []
         found = self.found(headers=headers)
         if found > limit:
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
-        maxitems = min(found, limit)
-        kwargs = {
-            'page': 1,
-            'limit': min(_limit, maxitems)
+
+        nextlink = {
+            'url': urljoin(self.url, 'search'),
+            'headers': headers,
+            'body': self.kwargs,
+            'merge': False
         }
-        kwargs.update(self.kwargs)
-        url = urljoin(self.url, 'search')
-        while len(items) < maxitems:
-            items += [Item(i) for i in self.query(url=url, headers=headers, **kwargs)['features']]
-            kwargs['page'] += 1
+
+        maxitems = min(found, limit)
+        items = []
+        while nextlink and len(items) < maxitems:
+            _headers = nextlink['headers']
+            _body = nextlink['body']
+            _body.update({'limit': page_limit})
+            if nextlink.get('merge', False):
+                _headers.update(headers)
+                _body.update(self.kwargs)
+            resp = self.query(url=nextlink['url'], headers=_headers, **_body)
+            items += [Item(i) for i in resp['features']]
 
         # retrieve collections
         collections = []
