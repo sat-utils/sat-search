@@ -122,6 +122,4 @@ class Search(object):
         except:
             pass
 
-        import pdb; pdb.set_trace()
-
         return ItemCollection(items, collections=collections)
