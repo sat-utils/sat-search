@@ -2,7 +2,15 @@
 
 [![CircleCI](https://circleci.com/gh/sat-utils/sat-search.svg?style=svg&circle-token=a66861b5cbba7acd4abd7975f804ab061a365e1b)](https://circleci.com/gh/sat-utils/sat-search)
 
-Sat-search is a Python 3 library and a command line tool for discovering and downloading publicly available satellite imagery using a conformant API such as [sat-api](https://github.com/sat-utils/sat-api).
+Sat-search is a Python 3 library and a command line tool for discovering and downloading publicly available satellite imagery using STAC compliant API.
+
+## STAC APIs
+
+Starting with v0.3.0, sat-search does not have a default STAC endpoint. This can be passed as a parameter when using the library, or define the environment variable `STAC_API_URL`. Endpoints known to work are provided in this table:
+
+| Endpoint  | Data |
+| --------  | ----  |
+| https://earth-search.aws.element84.com/v0  | Sentinel-2 |
 
 
 ## Installation

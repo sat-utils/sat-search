@@ -5,9 +5,11 @@ import os
 import sys
 
 from .version import __version__
-from satsearch import Search, API_URL
+from satsearch import Search
 from satstac import ItemCollection
 from satstac.utils import dict_merge
+
+API_URL = os.getenv('STAC_API_URL', None)
 
 
 class SatUtilsParser(argparse.ArgumentParser):
