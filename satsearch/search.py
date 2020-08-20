@@ -59,7 +59,7 @@ class Search(object):
         url = urljoin(self.url, 'search')
         results = self.query(url=url, headers=headers, **kwargs)
         # TODO - check for status_code
-        logger.debug(f"Found results: {json.dumps(results)}")
+        logger.debug(f"Found: {json.dumps(results)}")
         found = 0
         if 'context' in results:
             found = results['context']['matched']
@@ -72,6 +72,7 @@ class Search(object):
         url = urljoin(self.url, 'search')
         logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
         response = requests.post(url, data=json.dumps(kwargs), headers=headers)
+        logger.debug(f"Response: {response.text}")
         # API error
         if response.status_code != 200:
             raise SatSearchError(response.text)
@@ -89,7 +90,7 @@ class Search(object):
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
 
         nextlink = {
-            'url': urljoin(self.url, 'search'),
+            'href': urljoin(self.url, 'search'),
             'headers': headers,
             'body': self.kwargs,
             'merge': False
@@ -98,14 +99,16 @@ class Search(object):
         maxitems = min(found, limit)
         items = []
         while nextlink and len(items) < maxitems:
-            _headers = nextlink['headers']
-            _body = nextlink['body']
+            _headers = nextlink.get('headers', {})
+            _body = nextlink.get('body', {})
             _body.update({'limit': page_limit})
             if nextlink.get('merge', False):
                 _headers.update(headers)
                 _body.update(self.kwargs)
-            resp = self.query(url=nextlink['url'], headers=_headers, **_body)
+            resp = self.query(url=nextlink['href'], headers=_headers, **_body)
             items += [Item(i) for i in resp['features']]
+            links = [l for l in resp['links'] if l['rel'] == 'next']
+            nextlink = links[0] if len(links) == 1 else None
 
         # retrieve collections
         collections = []
