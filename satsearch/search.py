@@ -98,14 +98,17 @@ class Search(object):
 
         maxitems = min(found, limit)
         items = []
-        while nextlink and len(items) < maxitems:
+        while nextlink: #and len(items) < maxitems:
             _headers = nextlink.get('headers', {})
             _body = nextlink.get('body', {})
             _body.update({'limit': page_limit})
             if nextlink.get('merge', False):
                 _headers.update(headers)
                 _body.update(self.kwargs)
-            resp = self.query(url=nextlink['href'], headers=_headers, **_body)
+            if nextlink.get('method', 'GET'):
+                resp = self.query(url=nextlink['href'])
+            else:
+                resp = self.query(url=nextlink['href'], headers=_headers, **_body)
             items += [Item(i) for i in resp['features']]
             links = [l for l in resp['links'] if l['rel'] == 'next']
             nextlink = links[0] if len(links) == 1 else None
@@ -118,5 +121,7 @@ class Search(object):
                 #del collections[c]['links']
         except:
             pass
+
+        import pdb; pdb.set_trace()
 
         return ItemCollection(items, collections=collections)
