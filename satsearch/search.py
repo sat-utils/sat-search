@@ -121,7 +121,5 @@ class Search(object):
                 #del collections[c]['links']
         except:
             pass
-
         logger.debug(f"Found: {len(items)}")
-
         return ItemCollection(items, collections=collections)
