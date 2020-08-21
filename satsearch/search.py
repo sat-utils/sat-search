@@ -87,7 +87,7 @@ class Search(object):
 
     def items(self, limit=10000, page_limit=500, headers=None):
         """ Return all of the Items and Collections for this search """
-        found = 0 #self.found(headers=headers)
+        found = self.found(headers=headers)
         limit = self.limit or limit
         if found > limit:
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
@@ -100,9 +100,8 @@ class Search(object):
             'merge': False
         }
 
-        maxitems = limit #min(found, limit)
         items = []
-        while nextlink and len(items) < maxitems:
+        while nextlink and len(items) < limit:
             if nextlink.get('method', 'GET') == 'GET':
                 resp = self.query(url=nextlink['href'], headers=headers, **self.kwargs)
             else:

@@ -38,7 +38,6 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.output_group.add_argument('--print-md', help=h, default=None, nargs='*', dest='printmd')
         h = 'Print calendar showing dates'
         self.output_group.add_argument('--print-cal', help=h, dest='printcal')
-        #h = 'Print Item Asset definition from Collections'
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
 
     def parse_args(self, *args, **kwargs):

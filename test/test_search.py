@@ -75,10 +75,6 @@ class Test(unittest.TestCase):
         assert(search.found() == 4)
         assert(len(items) == 4)
 
-    #def _test_query_bad_url(self):
-    #    with self.assertRaises(SatSearchError):
-    #        Search.query(url=os.path.join(API_URL, 'collections/nosuchcollection'))
-
     def test_search_query_operator(self):
         expected = {'collections': ['sentinel-s2-l1c'], 'query': {'eo:cloud_cover': {'lte': '10'}, 'data_coverage': {'gt': '80'}}}
         instance = Search.search(collections=['sentinel-s2-l1c'],
