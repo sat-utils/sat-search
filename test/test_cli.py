@@ -59,8 +59,8 @@ class Test(unittest.TestCase):
 
     def test_main_found(self):
         """ Run main function """
-        found = main(datetime='2019-07-01', found=True)
-        self.assertEqual(found, 24737)
+        found = main(datetime='2020-01-01', found=True)
+        self.assertEqual(found, 17819)
 
     def test_main_load(self):
         items = main(items=os.path.join(testpath, 'scenes.geojson'))

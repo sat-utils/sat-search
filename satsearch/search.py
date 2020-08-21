@@ -58,6 +58,7 @@ class Search(object):
         }
         kwargs.update(self.kwargs)
         url = urljoin(self.url, 'search')
+        
         results = self.query(url=url, headers=headers, **kwargs)
         # TODO - check for status_code
         logger.debug(f"Found: {json.dumps(results)}")
@@ -92,6 +93,7 @@ class Search(object):
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
 
         nextlink = {
+            'method': 'POST',
             'href': urljoin(self.url, 'search'),
             'headers': headers,
             'body': self.kwargs,
@@ -101,12 +103,13 @@ class Search(object):
         maxitems = limit #min(found, limit)
         items = []
         while nextlink and len(items) < maxitems:
-            if nextlink.get('method', 'GET'):
+            if nextlink.get('method', 'GET') == 'GET':
                 resp = self.query(url=nextlink['href'], headers=headers, **self.kwargs)
             else:
                 _headers = nextlink.get('headers', {})
                 _body = nextlink.get('body', {})
                 _body.update({'limit': page_limit})
+                
                 if nextlink.get('merge', False):
                     _headers.update(headers)
                     _body.update(self.kwargs)

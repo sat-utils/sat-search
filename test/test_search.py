@@ -4,7 +4,9 @@ import json
 import unittest
 
 from satstac import Item
-from satsearch.search import SatSearchError, Search, API_URL
+from satsearch.search import SatSearchError, Search
+
+API_URL = 'https://earth-search.aws.element84.com/v0'
 
 
 class Test(unittest.TestCase):
@@ -21,7 +23,7 @@ class Test(unittest.TestCase):
 
     def get_searches(self):
         """ Initialize and return search object """
-        return [Search(datetime=r['properties']['datetime']) for r in self.results]
+        return [Search(datetime=r['properties']['datetime'], url=API_URL) for r in self.results]
 
     def test_search_init(self):
         """ Initialize a search object """
@@ -73,9 +75,9 @@ class Test(unittest.TestCase):
         assert(search.found() == 4)
         assert(len(items) == 4)
 
-    def _test_query_bad_url(self):
-        with self.assertRaises(SatSearchError):
-            Search.query(url=os.path.join(API_URL, 'collections/nosuchcollection'))
+    #def _test_query_bad_url(self):
+    #    with self.assertRaises(SatSearchError):
+    #        Search.query(url=os.path.join(API_URL, 'collections/nosuchcollection'))
 
     def test_search_query_operator(self):
         expected = {'collections': ['sentinel-s2-l1c'], 'query': {'eo:cloud_cover': {'lte': '10'}, 'data_coverage': {'gt': '80'}}}

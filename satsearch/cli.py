@@ -124,10 +124,10 @@ def main(items=None, printmd=None, printcal=None,
         ## if there are no items then perform a search
         search = Search.search(headers=headers, **kwargs)
         ## Commenting out found logic until functions correctly.
-        # if found:
-        #     num = search.found(headers=headers)
-        #     print('%s items found' % num)
-        #     return num
+        if found:
+             num = search.found(headers=headers)
+             print('%s items found' % num)
+             return num
         items = search.items(headers=headers)
     else:
         # otherwise, load a search from a file
