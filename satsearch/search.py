@@ -7,10 +7,7 @@ from satstac import Collection, Item, ItemCollection
 from satstac.utils import dict_merge
 from urllib.parse import urljoin
 
-
 logger = logging.getLogger(__name__)
-
-API_URL = os.getenv('STAC_API_URL', 'https://1tqdbvsut9.execute-api.us-west-2.amazonaws.com/v0').rstrip('/') + '/'
 
 
 class SatSearchError(Exception):
@@ -22,10 +19,13 @@ class Search(object):
     search_op_list = ['>=', '<=', '=', '>', '<']
     search_op_to_stac_op = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
 
-    def __init__(self, url=API_URL, **kwargs):
+    def __init__(self, url=os.getenv('STAC_API_URL', None), **kwargs):
         """ Initialize a Search object with parameters """
+        if url is None:
+            raise SatSearchError("URL not provided, pass into Search or define STAC_API_URL environment variable")
         self.url = url.rstrip("/") + "/"
         self.kwargs = kwargs
+        self.limit = int(self.kwargs['limit']) if 'limit' in self.kwargs else None
 
     @classmethod
     def search(cls, headers=None, **kwargs):
@@ -54,23 +54,27 @@ class Search(object):
     def found(self, headers=None):
         """ Small query to determine total number of hits """
         kwargs = {
-            'page': 1,
             'limit': 0
         }
         kwargs.update(self.kwargs)
         url = urljoin(self.url, 'search')
+        
         results = self.query(url=url, headers=headers, **kwargs)
         # TODO - check for status_code
-        logger.debug(f"Found results: {json.dumps(results)}")
+        logger.debug(f"Found: {json.dumps(results)}")
+        found = 0
         if 'context' in results:
-            return results['context']['matched']
-        return 0
+            found = results['context']['matched']
+        elif 'numberMatched' in results:
+            found = results['numberMatched']
+        return found
 
-    @classmethod
-    def query(cls, url=urljoin(API_URL, 'search'),  headers=None, **kwargs):
+    def query(self, url=None, headers=None, **kwargs):
         """ Get request """
+        url = url or urljoin(self.url, 'search')
         logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
-        response = requests.post(url, data=json.dumps(kwargs), headers=headers)
+        response = requests.post(url, json=kwargs, headers=headers)
+        logger.debug(f"Response: {response.text}")
         # API error
         if response.status_code != 200:
             raise SatSearchError(response.text)
@@ -81,24 +85,37 @@ class Search(object):
         url = urljoin(self.url, 'collections/%s' % cid)
         return Collection(self.query(url=url, headers=headers))
 
-    def items(self, limit=10000, headers=None):
+    def items(self, limit=10000, page_limit=500, headers=None):
         """ Return all of the Items and Collections for this search """
-        _limit = 500
-
-        items = []
         found = self.found(headers=headers)
+        limit = self.limit or limit
         if found > limit:
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
-        maxitems = min(found, limit)
-        kwargs = {
-            'page': 1,
-            'limit': min(_limit, maxitems)
+
+        nextlink = {
+            'method': 'POST',
+            'href': urljoin(self.url, 'search'),
+            'headers': headers,
+            'body': self.kwargs,
+            'merge': False
         }
-        kwargs.update(self.kwargs)
-        url = urljoin(self.url, 'search')
-        while len(items) < maxitems:
-            items += [Item(i) for i in self.query(url=url, headers=headers, **kwargs)['features']]
-            kwargs['page'] += 1
+
+        items = []
+        while nextlink and len(items) < limit:
+            if nextlink.get('method', 'GET') == 'GET':
+                resp = self.query(url=nextlink['href'], headers=headers, **self.kwargs)
+            else:
+                _headers = nextlink.get('headers', {})
+                _body = nextlink.get('body', {})
+                _body.update({'limit': page_limit})
+                
+                if nextlink.get('merge', False):
+                    _headers.update(headers)
+                    _body.update(self.kwargs)
+                resp = self.query(url=nextlink['href'], headers=_headers, **_body)
+            items += [Item(i) for i in resp['features']]
+            links = [l for l in resp['links'] if l['rel'] == 'next']
+            nextlink = links[0] if len(links) == 1 else None
 
         # retrieve collections
         collections = []
@@ -108,5 +125,5 @@ class Search(object):
                 #del collections[c]['links']
         except:
             pass
-
+        logger.debug(f"Found: {len(items)}")
         return ItemCollection(items, collections=collections)

@@ -30,7 +30,7 @@ class Test(unittest.TestCase):
         """ Parse empty arguments """
         parser = self.get_test_parser()
         args = parser.parse_args(['search'])
-        self.assertEqual(len(args), 4)
+        self.assertEqual(len(args), 3)
         self.assertFalse(args['found'])
 
     def test_parse_args(self):
@@ -39,7 +39,7 @@ class Test(unittest.TestCase):
         args = 'search --datetime 2017-01-01 -q eo:cloud_cover<10 platform=sentinel-2a'.split(' ')
         
         args = parser.parse_args(args)
-        self.assertEqual(len(args), 6)
+        self.assertEqual(len(args), 5)
         self.assertEqual(args['datetime'], '2017-01-01')
         #assert(args['eo:cloud_cover'] == '0/20')
         #self.assertEqual(args['cloud_from'], 0)
@@ -59,8 +59,8 @@ class Test(unittest.TestCase):
 
     def test_main_found(self):
         """ Run main function """
-        found = main(datetime='2019-07-01', found=True)
-        self.assertEqual(found, 24737)
+        found = main(datetime='2020-01-01', found=True)
+        self.assertEqual(found, 17819)
 
     def test_main_load(self):
         items = main(items=os.path.join(testpath, 'scenes.geojson'))

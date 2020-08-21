@@ -1,4 +1,4 @@
-from satsearch.search import Search, API_URL
+from satsearch.search import Search
 from satsearch.version import __version__
 
 import logging

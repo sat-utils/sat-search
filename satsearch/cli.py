@@ -5,9 +5,11 @@ import os
 import sys
 
 from .version import __version__
-from satsearch import Search, API_URL
+from satsearch import Search
 from satstac import ItemCollection
 from satstac.utils import dict_merge
+
+API_URL = os.getenv('STAC_API_URL', None)
 
 
 class SatUtilsParser(argparse.ArgumentParser):
@@ -27,7 +29,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.download_group.add_argument('--filename_template', default='${collection}/${date}/${id}',
                            help='Save assets with this filename pattern based on metadata keys')
         self.download_group.add_argument('--download', help='Download assets', default=None, nargs='*')
-        h = 'Acknowledge paying egress costs for downloads (if in request pays bucket)'
+        h = 'Acknowledge paying egress costs for downloads (if in requester pays bucket on AWS)'
         self.download_group.add_argument('--requester-pays', help=h, default=False, action='store_true', dest='requester_pays')
 
         self.output_parser = argparse.ArgumentParser(add_help=False)
@@ -36,7 +38,6 @@ class SatUtilsParser(argparse.ArgumentParser):
         self.output_group.add_argument('--print-md', help=h, default=None, nargs='*', dest='printmd')
         h = 'Print calendar showing dates'
         self.output_group.add_argument('--print-cal', help=h, dest='printcal')
-        self.output_group.add_argument('--print-assets', help=h, dest='printassets', default=False, action='store_true')
         self.output_group.add_argument('--save', help='Save results as GeoJSON', default=None)
 
     def parse_args(self, *args, **kwargs):
@@ -98,6 +99,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         parser.search_group.add_argument('--found', help=h, action='store_true', default=False)
         parser.search_group.add_argument('--url', help='URL of the API', default=API_URL)
         parser.search_group.add_argument('--headers', help='Additional request headers (JSON file or string)', default=None)
+        parser.search_group.add_argument('--limit', help='Limits the total number of items returned', default=None)
 
         parents.append(parser.download_parser)
         lparser = subparser.add_parser('load', help='Load items from previous search', parents=parents)
@@ -112,7 +114,7 @@ class SatUtilsParser(argparse.ArgumentParser):
                 setattr(namespace, n, {'eq': v})
 
 
-def main(items=None, printmd=None, printcal=None, printassets=None,
+def main(items=None, printmd=None, printcal=None,
          found=False, filename_template='${collection}/${date}/${id}',
          save=None, download=None, requester_pays=False, headers=None, **kwargs):
     """ Main function for performing a search """
@@ -120,10 +122,11 @@ def main(items=None, printmd=None, printcal=None, printassets=None,
     if items is None:
         ## if there are no items then perform a search
         search = Search.search(headers=headers, **kwargs)
+        ## Commenting out found logic until functions correctly.
         if found:
-            num = search.found(headers=headers)
-            print('%s items found' % num)
-            return num
+             num = search.found(headers=headers)
+             print('%s items found' % num)
+             return num
         items = search.items(headers=headers)
     else:
         # otherwise, load a search from a file
@@ -138,9 +141,6 @@ def main(items=None, printmd=None, printcal=None, printassets=None,
     # print calendar
     if printcal:
         print(items.calendar(printcal))
-
-    if printassets:
-        print(items.assets_definition())
 
     # save all metadata in JSON file
     if save is not None:

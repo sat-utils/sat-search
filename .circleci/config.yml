@@ -44,7 +44,7 @@ jobs:
             pwd
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
-            pytest --cov satsearch test/
+            STAC_API_URL=https://earth-search.aws.element84.com/v0 pytest --cov satsearch test/
       - save_cache:
           key: v1-dependencies-{{ checksum "requirements.txt"}}
           paths:
