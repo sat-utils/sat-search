@@ -25,6 +25,7 @@ class Search(object):
             raise SatSearchError("URL not provided, pass into Search or define STAC_API_URL environment variable")
         self.url = url.rstrip("/") + "/"
         self.kwargs = kwargs
+        self.limit = int(self.kwargs['limit']) if 'limit' in self.kwargs else None
 
     @classmethod
     def search(cls, headers=None, **kwargs):
@@ -86,6 +87,7 @@ class Search(object):
     def items(self, limit=10000, page_limit=500, headers=None):
         """ Return all of the Items and Collections for this search """
         found = 0 #self.found(headers=headers)
+        limit = self.limit or limit
         if found > limit:
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
 
