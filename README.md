@@ -77,21 +77,27 @@ As can be seen there are two subcommands, `search` and `load`, each of which has
 
 ```
 $ sat-search search -h
-usage: sat-search search [-h] [--version] [-v VERBOSITY] [--print-md [PRINTMD [PRINTMD ...]]]
-                         [--print-cal PRINTCAL] [--save SAVE] [-c [COLLECTIONS [COLLECTIONS ...]]]
-                         [--ids [IDS [IDS ...]]] [--bbox BBOX BBOX BBOX BBOX] [--intersects INTERSECTS]
-                         [--datetime DATETIME] [-q [QUERY [QUERY ...]]] [--sortby [SORTBY [SORTBY ...]]] [--found]
-                         [--url URL] [--headers HEADERS]
+usage: sat-search search [-h] [--version] [-v VERBOSITY]
+                         [--print-md [PRINTMD [PRINTMD ...]]]
+                         [--print-cal PRINTCAL] [--save SAVE]
+                         [-c [COLLECTIONS [COLLECTIONS ...]]]
+                         [--ids [IDS [IDS ...]]] [--bbox BBOX BBOX BBOX BBOX]
+                         [--intersects INTERSECTS] [--datetime DATETIME]
+                         [-q [QUERY [QUERY ...]]]
+                         [--sortby [SORTBY [SORTBY ...]]] [--found]
+                         [--url URL] [--headers HEADERS] [--limit LIMIT]
 
 optional arguments:
   -h, --help            show this help message and exit
   --version             Print version and exit
   -v VERBOSITY, --verbosity VERBOSITY
-                        0:quiet, 1:error, 2:warning, 3:info, 4:debug (default: 2)
+                        0:quiet, 1:error, 2:warning, 3:info, 4:debug (default:
+                        2)
 
 output options:
   --print-md [PRINTMD [PRINTMD ...]]
-                        Print specified metadata for matched scenes (default: None)
+                        Print specified metadata for matched scenes (default:
+                        None)
   --print-cal PRINTCAL  Print calendar showing dates (default: None)
   --save SAVE           Save results as GeoJSON (default: None)
 
@@ -99,21 +105,26 @@ search options:
   -c [COLLECTIONS [COLLECTIONS ...]], --collections [COLLECTIONS [COLLECTIONS ...]]
                         Name of collection (default: None)
   --ids [IDS [IDS ...]]
-                        One or more scene IDs from provided collection (ignores other parameters) (default: None)
+                        One or more scene IDs from provided collection
+                        (ignores other parameters) (default: None)
   --bbox BBOX BBOX BBOX BBOX
-                        Bounding box (min lon, min lat, max lon, max lat) (default: None)
+                        Bounding box (min lon, min lat, max lon, max lat)
+                        (default: None)
   --intersects INTERSECTS
                         GeoJSON Feature (file or string) (default: None)
-  --datetime DATETIME   Single date/time or begin and end date/time (e.g., 2017-01-01/2017-02-15) (default: None)
+  --datetime DATETIME   Single date/time or begin and end date/time (e.g.,
+                        2017-01-01/2017-02-15) (default: None)
   -q [QUERY [QUERY ...]], --query [QUERY [QUERY ...]]
-                        Query properties of form KEY=VALUE (<, >, <=, >=, = supported) (default: None)
+                        Query properties of form KEY=VALUE (<, >, <=, >=, =
+                        supported) (default: None)
   --sortby [SORTBY [SORTBY ...]]
                         Sort by fields (default: None)
   --found               Only output how many Items found (default: False)
-  --url URL             URL of the API (default: https://earth-search.aws.element84.com/v0/)
-  --headers HEADERS     Additional request headers (JSON file or string) (default: None)
-  --limit LIMIT         Limits total number of Items returned (default: Unlimited)
-```
+  --url URL             URL of the API (default: None)
+  --headers HEADERS     Additional request headers (JSON file or string)
+                        (default: None)
+  --limit LIMIT         Limits the total number of items returned (default:
+                        None)
 
 **Search options**
 
