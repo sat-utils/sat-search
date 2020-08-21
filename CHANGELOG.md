@@ -4,13 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [v0.3.0] - 2020-07-16
+## [v0.3.0] - 2020-08-21
 
 ## Changed
 - Updated to work with STAC API v0.9.0 and v1.0.0-beta.2
-- `SATUTILS_API_URL` envvar changed to `STAC_API_URL`
-- Refactored how envvar was set for URL to fix issues on some platforms
+- `SATUTILS_API_URL` envvar changed to `STAC_API_URL` and default value removed. Specify with envvar or pass into Search when using library
 - When downloading, specify `filename_template` for location instead of both `datadir` and `filename`.
+- Update pagination to precisely follow STAC spec
 
 ## [v0.2.3] - 2019-06-25
 
