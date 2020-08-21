@@ -25,6 +25,7 @@ class Search(object):
             raise SatSearchError("URL not provided, pass into Search or define STAC_API_URL environment variable")
         self.url = url.rstrip("/") + "/"
         self.kwargs = kwargs
+        self.limit = int(self.kwargs['limit']) if 'limit' in self.kwargs else None
 
     @classmethod
     def search(cls, headers=None, **kwargs):
@@ -67,11 +68,11 @@ class Search(object):
             found = results['numberMatched']
         return found
 
-    def query(self, headers=None, **kwargs):
+    def query(self, url=None, headers=None, **kwargs):
         """ Get request """
-        url = urljoin(self.url, 'search')
+        url = url or urljoin(self.url, 'search')
         logger.debug('Query URL: %s, Body: %s' % (url, json.dumps(kwargs)))
-        response = requests.post(url, data=json.dumps(kwargs), headers=headers)
+        response = requests.post(url, json=kwargs, headers=headers)
         logger.debug(f"Response: {response.text}")
         # API error
         if response.status_code != 200:
@@ -85,7 +86,8 @@ class Search(object):
 
     def items(self, limit=10000, page_limit=500, headers=None):
         """ Return all of the Items and Collections for this search """
-        found = self.found(headers=headers)
+        found = 0 #self.found(headers=headers)
+        limit = self.limit or limit
         if found > limit:
             logger.warning('There are more items found (%s) than the limit (%s) provided.' % (found, limit))
 
@@ -96,18 +98,18 @@ class Search(object):
             'merge': False
         }
 
-        maxitems = min(found, limit)
+        maxitems = limit #min(found, limit)
         items = []
-        while nextlink: #and len(items) < maxitems:
-            _headers = nextlink.get('headers', {})
-            _body = nextlink.get('body', {})
-            _body.update({'limit': page_limit})
-            if nextlink.get('merge', False):
-                _headers.update(headers)
-                _body.update(self.kwargs)
+        while nextlink and len(items) < maxitems:
             if nextlink.get('method', 'GET'):
-                resp = self.query(url=nextlink['href'])
+                resp = self.query(url=nextlink['href'], headers=headers, **self.kwargs)
             else:
+                _headers = nextlink.get('headers', {})
+                _body = nextlink.get('body', {})
+                _body.update({'limit': page_limit})
+                if nextlink.get('merge', False):
+                    _headers.update(headers)
+                    _body.update(self.kwargs)
                 resp = self.query(url=nextlink['href'], headers=_headers, **_body)
             items += [Item(i) for i in resp['features']]
             links = [l for l in resp['links'] if l['rel'] == 'next']
@@ -121,5 +123,5 @@ class Search(object):
                 #del collections[c]['links']
         except:
             pass
-
+        logger.debug(f"Found: {len(items)}")
         return ItemCollection(items, collections=collections)

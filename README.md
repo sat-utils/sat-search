@@ -112,6 +112,7 @@ search options:
   --found               Only output how many Items found (default: False)
   --url URL             URL of the API (default: https://earth-search.aws.element84.com/v0/)
   --headers HEADERS     Additional request headers (JSON file or string) (default: None)
+  --limit LIMIT         Limits total number of Items returned (default: Unlimited)
 ```
 
 **Search options**
@@ -125,6 +126,7 @@ search options:
 - **found** - This will print out the total number of scenes found, then exit without fetching the actual items (i.e., the query is made with limit=0). 
 - **url** - The URL endpoint of a STAC compliant API, this can also be set with the environment variable STAC_API_URL
 - **headers** - Additional request headers useful for specifying authentication parameters
+- **limit** - Limits total number of Items returned
 
 **Output options**
 These options control what to do with the search results, multiple switches can be provided.

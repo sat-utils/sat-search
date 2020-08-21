@@ -100,6 +100,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         parser.search_group.add_argument('--found', help=h, action='store_true', default=False)
         parser.search_group.add_argument('--url', help='URL of the API', default=API_URL)
         parser.search_group.add_argument('--headers', help='Additional request headers (JSON file or string)', default=None)
+        parser.search_group.add_argument('--limit', help='Limits the total number of items returned', default=None)
 
         parents.append(parser.download_parser)
         lparser = subparser.add_parser('load', help='Load items from previous search', parents=parents)
@@ -122,10 +123,11 @@ def main(items=None, printmd=None, printcal=None,
     if items is None:
         ## if there are no items then perform a search
         search = Search.search(headers=headers, **kwargs)
-        if found:
-            num = search.found(headers=headers)
-            print('%s items found' % num)
-            return num
+        ## Commenting out found logic until functions correctly.
+        # if found:
+        #     num = search.found(headers=headers)
+        #     print('%s items found' % num)
+        #     return num
         items = search.items(headers=headers)
     else:
         # otherwise, load a search from a file
