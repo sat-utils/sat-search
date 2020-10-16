@@ -30,10 +30,10 @@ $ pip install .
 ```
 
 #### Versions
-The latest version of sat-search is 0.2.2, which uses [STAC v0.7.0](https://github.com/radiantearth/stac-spec/tree/v0.7.0). To install other versions of sat-search, specify the version in the call to pip. 
+The latest version of sat-search is 0.3.0, which uses [STAC v0.9.0](https://github.com/radiantearth/stac-spec/tree/v0.9.0). To install other versions of sat-search, specify the version in the call to pip. 
 
 ```bash
-pip install sat-search==0.2.0
+pip install sat-search==0.2.3
 ```
 
 The table below shows the corresponding versions between sat-search and STAC. Additional information can be found in the [CHANGELOG](CHANGELOG.md)
