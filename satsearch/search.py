@@ -110,7 +110,7 @@ class Search(object):
                 _body.update({'limit': page_limit})
                 
                 if nextlink.get('merge', False):
-                    _headers.update(headers)
+                    _headers.update(headers or {})
                     _body.update(self.kwargs)
                 resp = self.query(url=nextlink['href'], headers=_headers, **_body)
             items += [Item(i) for i in resp['features']]
