@@ -67,7 +67,7 @@ class SatUtilsParser(argparse.ArgumentParser):
         if 'intersects' in args:
             if os.path.exists(args['intersects']):
                 with open(args['intersects']) as f:
-                    args['intersects'] = json.loads(f.read())
+                    args['intersects'] = json.loads(f.read())['geometry']
 
         return args
 
