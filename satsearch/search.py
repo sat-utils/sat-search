@@ -22,9 +22,11 @@ class Search(object):
     search_op_list = ['>=', '<=', '=', '>', '<']
     search_op_to_stac_op = {'>=': 'gte', '<=': 'lte', '=': 'eq', '>': 'gt', '<': 'lt'}
 
-    def __init__(self, **kwargs):
+    def __init__(self, url=None, **kwargs):
         """ Initialize a Search object with parameters """
         self._collection = kwargs.pop('collection', None)
+        if url is none None:
+            config.API_URL = url
         self.kwargs = {}
         for k in kwargs:
             if k == 'datetime':
