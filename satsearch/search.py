@@ -24,7 +24,13 @@ class Search(object):
 
     def __init__(self, url=None, **kwargs):
         """ Initialize a Search object with parameters """
-        self._collection = kwargs.pop('collection', None)
+        if 'collections' in kwargs:
+            if len(kwargs['collections']) > 1:
+                raise SatSearchError('Cannot search with multiple collections')
+            else:
+                self._collection = kwargs.pop('collections')[0]
+        else:
+            self._collection = kwargs.pop('collection', None)
         if url is not None:
             config.API_URL = url
         self.kwargs = {}
