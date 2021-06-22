@@ -112,11 +112,12 @@ class Search(object):
                 if nextlink.get('merge', False):
                     _headers.update(headers or {})
                     _body.update(self.kwargs)
-                resp = self.query(url=nextlink['href'], headers=_headers, **_body)
+
+                resp = self.query(url=nextlink['href'], headers=headers, **_body)
             items += [Item(i) for i in resp['features']]
             links = [l for l in resp['links'] if l['rel'] == 'next']
             nextlink = links[0] if len(links) == 1 else None
-
+       
         # retrieve collections
         collections = []
         try:

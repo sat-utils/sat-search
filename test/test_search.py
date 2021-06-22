@@ -54,9 +54,10 @@ class Test(unittest.TestCase):
         with open(os.path.join(self.path, 'aoi1.geojson')) as f:
             aoi = json.load(f)
         search = Search(datetime='2020-06-07', intersects=aoi['geometry'])
-        assert(search.found() == 12)
+        min_found = 12
+        assert(search.found() >= min_found)
         items = search.items()
-        assert(len(items) == 12)
+        assert(len(items) >= min_found)
         assert(isinstance(items[0], Item))
 
     def test_search_sort(self):
@@ -65,7 +66,8 @@ class Test(unittest.TestCase):
             aoi = json.load(f)
         search = Search.search(datetime='2020-06-07', intersects=aoi['geometry'], sortby=['-properties.datetime'])
         items = search.items()
-        assert(len(items) == 12)
+        min_found = 12
+        assert(len(items) >= min_found)
 
     def test_get_ids_search(self):
         """ Get Items by ID through normal search """

@@ -12,3 +12,5 @@ MANIFEST
 .tox
 .coverage
 .cache
+.pytest_cache/
+test-download/
